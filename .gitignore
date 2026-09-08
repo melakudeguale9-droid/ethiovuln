@@ -1,0 +1,67 @@
+# ─── Python / Backend ────────────────────────────────────────────────────────
+backend/venv/
+backend/__pycache__/
+backend/**/__pycache__/
+backend/**/*.pyc
+backend/**/*.pyo
+backend/.env
+backend/*.egg-info/
+backend/dist/
+backend/build/
+backend/.pytest_cache/
+backend/htmlcov/
+backend/.coverage
+
+# ─── Nuclei binary (large file) ──────────────────────────────────────────────
+backend/nuclei.exe
+backend/nuclei
+
+# ─── Frontend ────────────────────────────────────────────────────────────────
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/build/
+frontend/.env.local
+frontend/.env*.local
+
+# ─── Environment / Secrets ───────────────────────────────────────────────────
+.env
+.env.local
+.env.production
+.env.staging
+*.env
+
+# ─── OS ──────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ─── IDE ─────────────────────────────────────────────────────────────────────
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# ─── Logs ────────────────────────────────────────────────────────────────────
+*.log
+logs/
+
+# ─── Temp test files ─────────────────────────────────────────────────────────
+nuclei_test.txt
+nuclei_test_err.txt
+backend/test_celery.py
+
+# ─── Redis ───────────────────────────────────────────────────────────────────
+dump.rdb
+*.rdb
+
+# ─── Reports / Generated files ───────────────────────────────────────────────
+*.pdf
+reports/
+
+# ─── Setup/debug scripts ─────────────────────────────────────────────────────
+check_env*.sh
+pycheck*.py
+imp_fastapi.py
+pycheck3.sh
+/tmp/
