@@ -34,6 +34,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
     { href: '/dashboard/scans', icon: '⬡', label: 'Scans' },
     { href: '/dashboard/scans/new', icon: '＋', label: 'New Scan' },
     { href: '/dashboard/reports', icon: '◧', label: 'Reports' },
+    { href: '/dashboard/settings', icon: '⚙', label: 'Settings' },
   ];
 
   return (
@@ -69,7 +70,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
           }}>E</div>
           {!sidebarCollapsed && (
             <span style={{ fontWeight: 700, fontSize: 16 }}>
-              <span className="text-gradient">DAST</span>
+              <span className="text-gradient">EthioVuln</span>
             </span>
           )}
         </div>

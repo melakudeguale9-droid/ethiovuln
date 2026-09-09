@@ -138,6 +138,7 @@ async def get_me(current_user: User = Depends(get_current_user)):
 
 @router.post("/accept-tos", response_model=UserResponse)
 async def accept_tos(
+async def accept_tos(
     data: AcceptTosRequest,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
@@ -148,3 +149,37 @@ async def accept_tos(
         await db.flush()
         await db.refresh(current_user)
     return current_user
+
+
+from pydantic import BaseModel
+
+class ChangePasswordRequest(BaseModel):
+    current_password: str
+    new_password: str
+
+
+@router.post("/change-password")
+@limiter.limit("5/minute")
+async def change_password(
+    request: Request,
+    data: ChangePasswordRequest,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Change the current user's password."""
+    if not verify_password(data.current_password, current_user.hashed_password):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Current password is incorrect",
+        )
+
+    if len(data.new_password) < 8:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="New password must be at least 8 characters",
+        )
+
+    current_user.hashed_password = hash_password(data.new_password)
+    await db.flush()
+    await db.refresh(current_user)
+    return {"message": "Password changed successfully"}

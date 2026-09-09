@@ -139,6 +139,13 @@ class ApiClient {
     });
   }
 
+  async changePassword(currentPassword: string, newPassword: string) {
+    return this.request('/api/auth/change-password', {
+      method: 'POST',
+      body: JSON.stringify({ current_password: currentPassword, new_password: newPassword }),
+    });
+  }
+
   logout() {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
