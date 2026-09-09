@@ -80,7 +80,12 @@ export default function NewScanPage() {
   const router = useRouter();
   const { user, refreshUser } = useAuth();
   const [targetUrl, setTargetUrl] = useState('');
-  const [scanType, setScanType] = useState('full');
+  const [scanType, setScanType] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('default_scan_type') || 'full';
+    }
+    return 'full';
+  });
   const [showDisclaimer, setShowDisclaimer] = useState(false);
   const [tosAccepted, setTosAccepted] = useState(false);
   const [loading, setLoading] = useState(false);

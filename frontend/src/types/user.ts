@@ -5,6 +5,7 @@ export interface User {
   email: string;
   username: string;
   full_name: string | null;
+  avatar_url: string | null;
   is_active: boolean;
   is_admin: boolean;
   tos_accepted_at: string | null;

@@ -193,3 +193,56 @@ async def change_password(
     await db.flush()
     await db.refresh(current_user)
     return {"message": "Password changed successfully"}
+
+
+import os
+import uuid as _uuid
+from fastapi import UploadFile, File
+
+AVATAR_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "avatars")
+os.makedirs(AVATAR_DIR, exist_ok=True)
+
+@router.post("/avatar")
+async def upload_avatar(
+    file: UploadFile = File(...),
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Upload a profile avatar image."""
+    # Validate file type
+    allowed = {"image/jpeg", "image/png", "image/webp", "image/gif"}
+    if file.content_type not in allowed:
+        raise HTTPException(status_code=400, detail="Only JPEG, PNG, WEBP, and GIF images are allowed")
+
+    # Validate file size (max 5MB)
+    contents = await file.read()
+    if len(contents) > 5 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="File size must be under 5MB")
+
+    # Save file with unique name
+    ext = file.filename.rsplit(".", 1)[-1].lower() if "." in file.filename else "jpg"
+    filename = f"{current_user.id}_{_uuid.uuid4().hex[:8]}.{ext}"
+    filepath = os.path.join(AVATAR_DIR, filename)
+
+    with open(filepath, "wb") as f:
+        f.write(contents)
+
+    # Save URL to user record
+    avatar_url = f"/api/auth/avatar/{filename}"
+    current_user.avatar_url = avatar_url
+    await db.flush()
+    await db.refresh(current_user)
+    return {"avatar_url": avatar_url}
+
+
+@router.get("/avatar/{filename}")
+async def get_avatar(filename: str):
+    """Serve avatar image."""
+    from fastapi.responses import FileResponse
+    filepath = os.path.join(AVATAR_DIR, filename)
+    if not os.path.isfile(filepath):
+        raise HTTPException(status_code=404, detail="Avatar not found")
+    # Security: prevent path traversal
+    if ".." in filename or "/" in filename:
+        raise HTTPException(status_code=400, detail="Invalid filename")
+    return FileResponse(filepath)

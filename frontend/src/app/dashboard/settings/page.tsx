@@ -41,6 +41,10 @@ export default function SettingsPage() {
   const [username, setUsername] = useState(user?.username || '');
   const [profileMsg, setProfileMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [profileLoading, setProfileLoading] = useState(false);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(
+    user?.avatar_url ? `http://localhost:8000${user.avatar_url}` : null
+  );
+  const [avatarLoading, setAvatarLoading] = useState(false);
 
   // ── Password state ────────────────────────────────────────────────────────
   const [currentPw, setCurrentPw] = useState('');
@@ -66,6 +70,25 @@ export default function SettingsPage() {
   const [deleteMsg, setDeleteMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   // ── Handlers ──────────────────────────────────────────────────────────────
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setAvatarLoading(true);
+    setProfileMsg(null);
+    try {
+      const reader = new FileReader();
+      reader.onload = (ev) => setAvatarPreview(ev.target?.result as string);
+      reader.readAsDataURL(file);
+      const res = await api.uploadAvatar(file);
+      setAvatarPreview(`http://localhost:8000${res.avatar_url}`);
+      setProfileMsg({ type: 'success', text: 'Profile photo updated' });
+    } catch (err: unknown) {
+      setProfileMsg({ type: 'error', text: err instanceof Error ? err.message : 'Upload failed' });
+    } finally {
+      setAvatarLoading(false);
+    }
+  };
+
   const handleProfileSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setProfileLoading(true);
@@ -179,6 +202,36 @@ export default function SettingsPage() {
       {/* ── 1. Profile ──────────────────────────────────────────────────────── */}
       <Section title="Profile" icon="👤">
         {profileMsg && <Alert type={profileMsg.type} message={profileMsg.text} />}
+        {/* Avatar upload */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 20, marginBottom: 20 }}>
+          <div style={{
+            width: 72, height: 72, borderRadius: '50%',
+            border: '2px solid rgba(0,255,136,0.3)',
+            overflow: 'hidden', flexShrink: 0,
+            background: 'rgba(0,255,136,0.05)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            {avatarPreview ? (
+              <img src={avatarPreview} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            ) : (
+              <svg width="36" height="36" viewBox="0 0 80 80" fill="none">
+                <circle cx="40" cy="30" r="18" fill="rgba(0,255,136,0.2)" stroke="#00ff88" strokeWidth="1.5"/>
+                <path d="M10 70c0-16.569 13.431-30 30-30s30 13.431 30 30" fill="rgba(0,255,136,0.1)" stroke="#00ff88" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
+            )}
+          </div>
+          <div>
+            <label htmlFor="avatar-upload" style={{
+              display: 'inline-block', padding: '8px 16px', fontSize: 13,
+              background: 'rgba(0,255,136,0.08)', border: '1px solid rgba(0,255,136,0.3)',
+              borderRadius: 8, color: '#00ff88', cursor: 'pointer', fontWeight: 600,
+            }}>
+              {avatarLoading ? 'Uploading...' : '📷 Change Photo'}
+            </label>
+            <input id="avatar-upload" type="file" accept="image/jpeg,image/png,image/webp" onChange={handleAvatarChange} style={{ display: 'none' }} />
+            <p style={{ fontSize: 11, color: '#64748b', marginTop: 4 }}>JPEG, PNG or WEBP — max 5MB</p>
+          </div>
+        </div>
         <form onSubmit={handleProfileSave}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
             <div>
