@@ -146,6 +146,23 @@ class ApiClient {
     });
   }
 
+  async updateProfile(data: { full_name?: string; username?: string }) {
+    return this.request('/api/auth/me', {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async generateApiToken() {
+    return this.request<{ api_token: string; note: string }>('/api/auth/generate-token', {
+      method: 'POST',
+    });
+  }
+
+  async deleteAccount() {
+    return this.request('/api/auth/me', { method: 'DELETE' });
+  }
+
   logout() {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');

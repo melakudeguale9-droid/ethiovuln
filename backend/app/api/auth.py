@@ -4,6 +4,7 @@ EthioVuln — Authentication API Routes
 
 from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, Request, status
+from pydantic import BaseModel
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -33,27 +34,22 @@ router = APIRouter(prefix="/api/auth", tags=["Authentication"])
 limiter = Limiter(key_func=get_remote_address)
 
 
+class ChangePasswordRequest(BaseModel):
+    current_password: str
+    new_password: str
+
+
 @router.post("/register", response_model=UserResponse, status_code=201)
 @limiter.limit("10/minute")
 async def register(request: Request, data: UserCreate, db: AsyncSession = Depends(get_db)):
     """Register a new user account."""
-    # Check if email already exists
     existing = await db.execute(select(User).where(User.email == data.email))
     if existing.scalar_one_or_none():
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="Email already registered",
-        )
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Email already registered")
 
-    # Check if username already exists
-    existing = await db.execute(
-        select(User).where(User.username == data.username)
-    )
+    existing = await db.execute(select(User).where(User.username == data.username))
     if existing.scalar_one_or_none():
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="Username already taken",
-        )
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Username already taken")
 
     user = User(
         email=data.email,
@@ -75,16 +71,10 @@ async def login(request: Request, data: UserLogin, db: AsyncSession = Depends(ge
     user = result.scalar_one_or_none()
 
     if not user or not verify_password(data.password, user.hashed_password):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid email or password",
-        )
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid email or password")
 
     if not user.is_active:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Account is deactivated",
-        )
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Account is deactivated")
 
     access_token = create_access_token(str(user.id), user.email)
     refresh_token = create_refresh_token(str(user.id))
@@ -101,24 +91,15 @@ async def refresh_token(data: TokenRefresh, db: AsyncSession = Depends(get_db)):
     """Refresh an expired access token."""
     payload = verify_refresh_token(data.refresh_token)
     if not payload:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid or expired refresh token",
-        )
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or expired refresh token")
 
     import uuid
-
     user_id = payload.get("sub")
-    result = await db.execute(
-        select(User).where(User.id == uuid.UUID(user_id))
-    )
+    result = await db.execute(select(User).where(User.id == uuid.UUID(user_id)))
     user = result.scalar_one_or_none()
 
     if not user or not user.is_active:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="User not found or deactivated",
-        )
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found or deactivated")
 
     access_token = create_access_token(str(user.id), user.email)
     new_refresh = create_refresh_token(str(user.id))
@@ -138,7 +119,6 @@ async def get_me(current_user: User = Depends(get_current_user)):
 
 @router.post("/accept-tos", response_model=UserResponse)
 async def accept_tos(
-async def accept_tos(
     data: AcceptTosRequest,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
@@ -151,11 +131,47 @@ async def accept_tos(
     return current_user
 
 
-from pydantic import BaseModel
+class UpdateProfileRequest(BaseModel):
+    full_name: str | None = None
+    username: str | None = None
 
-class ChangePasswordRequest(BaseModel):
-    current_password: str
-    new_password: str
+
+@router.put("/me", response_model=UserResponse)
+async def update_profile(
+    data: UpdateProfileRequest,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Update current user profile."""
+    if data.username and data.username != current_user.username:
+        existing = await db.execute(select(User).where(User.username == data.username))
+        if existing.scalar_one_or_none():
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Username already taken")
+        current_user.username = data.username
+    if data.full_name is not None:
+        current_user.full_name = data.full_name
+    await db.flush()
+    await db.refresh(current_user)
+    return current_user
+
+
+@router.post("/generate-token")
+async def generate_api_token(current_user: User = Depends(get_current_user)):
+    """Generate a long-lived API token for programmatic access."""
+    import secrets
+    token = create_access_token(str(current_user.id), current_user.email)
+    return {"api_token": token, "note": "Store this token securely. It will not be shown again."}
+
+
+@router.delete("/me")
+async def delete_account(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Permanently delete the current user account and all associated data."""
+    await db.delete(current_user)
+    await db.commit()
+    return {"message": "Account deleted successfully"}
 
 
 @router.post("/change-password")
@@ -168,16 +184,10 @@ async def change_password(
 ):
     """Change the current user's password."""
     if not verify_password(data.current_password, current_user.hashed_password):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Current password is incorrect",
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Current password is incorrect")
 
     if len(data.new_password) < 8:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="New password must be at least 8 characters",
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="New password must be at least 8 characters")
 
     current_user.hashed_password = hash_password(data.new_password)
     await db.flush()
