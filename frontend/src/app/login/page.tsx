@@ -53,7 +53,7 @@ export default function LoginPage() {
             color: '#0a0e1a',
             marginBottom: 16,
           }}>
-            D
+            E
           </div>
           <h1 style={{ fontSize: 24, fontWeight: 700, marginBottom: 4 }}>
             <span className="text-gradient">EthioVuln</span>

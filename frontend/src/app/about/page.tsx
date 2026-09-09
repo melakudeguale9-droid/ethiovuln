@@ -185,7 +185,8 @@ export default function AboutPage() {
               flexShrink: 0,
               position: 'relative',
             }}>
-              <img src="/profile2.png" alt="Melaku Deguale" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              {/* Profile photo */}
+              <img src="/profile.png" alt="Melaku Deguale" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               {/* Animated ring */}
               <div style={{
                 position: 'absolute',
@@ -279,12 +280,8 @@ export default function AboutPage() {
                 boxShadow: '0 0 30px rgba(0,255,136,0.08)',
                 position: 'relative',
               }}>
-                <img src="/profile2.png" alt="Melaku Deguale - Security Researcher" style={{
-                  width: '100%',
-                  height: 280,
-                  objectFit: 'cover',
-                  display: 'block',
-                }} />
+                {/* Avatar card placeholder */}
+                <img src="/profile.png" alt="Melaku Deguale - Security Researcher" style={{ width: '100%', height: 280, objectFit: 'cover', display: 'block' }} />
                 {/* Overlay gradient */}
                 <div style={{
                   position: 'absolute',

@@ -76,7 +76,7 @@ export default function RegisterPage() {
             background: 'linear-gradient(135deg, #00ff88, #0088ff)',
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             fontSize: 24, fontWeight: 700, color: '#0a0e1a', marginBottom: 16,
-          }}>D</div>
+          }}>E</div>
           <h1 style={{ fontSize: 24, fontWeight: 700, marginBottom: 4 }}>
             <span className="text-gradient">Create Account</span>
           </h1>
