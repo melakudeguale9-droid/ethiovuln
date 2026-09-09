@@ -95,11 +95,13 @@ from app.api.auth import router as auth_router
 from app.api.scans import router as scans_router
 from app.api.reports import router as reports_router
 from app.api.websocket import router as ws_router
+from app.api.settings import router as settings_router
 
 app.include_router(auth_router)
 app.include_router(scans_router)
 app.include_router(reports_router)
 app.include_router(ws_router)
+app.include_router(settings_router)
 
 
 # ─── Health Check ────────────────────────────────────────────────────────────

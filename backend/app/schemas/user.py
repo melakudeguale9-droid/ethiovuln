@@ -24,7 +24,6 @@ class UserResponse(BaseModel):
     email: str
     username: str
     full_name: str | None
-    avatar_url: str | None
     is_active: bool
     is_admin: bool
     tos_accepted_at: datetime | None

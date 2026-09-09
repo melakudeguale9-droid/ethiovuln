@@ -146,39 +146,6 @@ class ApiClient {
     });
   }
 
-  async updateProfile(data: { full_name?: string; username?: string }) {
-    return this.request('/api/auth/me', {
-      method: 'PUT',
-      body: JSON.stringify(data),
-    });
-  }
-
-  async generateApiToken() {
-    return this.request<{ api_token: string; note: string }>('/api/auth/generate-token', {
-      method: 'POST',
-    });
-  }
-
-  async deleteAccount() {
-    return this.request('/api/auth/me', { method: 'DELETE' });
-  }
-
-  async uploadAvatar(file: File) {
-    const formData = new FormData();
-    formData.append('file', file);
-    const token = this.getToken();
-    const response = await fetch(`${this.baseUrl}/api/auth/avatar`, {
-      method: 'POST',
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
-      body: formData,
-    });
-    if (!response.ok) {
-      const err = await response.json().catch(() => ({}));
-      throw new Error(err.detail || 'Upload failed');
-    }
-    return response.json() as Promise<{ avatar_url: string }>;
-  }
-
   logout() {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');

@@ -1,358 +1,580 @@
-// EthioVuln — Settings Page
+// EthioVuln — Full Settings Page
 
 'use client';
 
-import { useState } from 'react';
-import { api } from '@/lib/api';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { settingsApi } from '@/lib/settingsApi';
+import { api } from '@/lib/api';
 
-// ─── Reusable section card ────────────────────────────────────────────────────
-function Section({ title, icon, children }: { title: string; icon: string; children: React.ReactNode }) {
-  return (
-    <div className="glass-card" style={{ padding: 28, marginBottom: 24 }}>
-      <h2 style={{ fontSize: 15, fontWeight: 700, color: '#f1f5f9', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 8, borderBottom: '1px solid rgba(148,163,184,0.1)', paddingBottom: 14 }}>
-        <span>{icon}</span> {title}
-      </h2>
-      {children}
-    </div>
-  );
-}
+// ─── Reusable components ──────────────────────────────────────────────────────
 
-// ─── Alert component ─────────────────────────────────────────────────────────
-function Alert({ type, message }: { type: 'success' | 'error'; message: string }) {
-  const isSuccess = type === 'success';
-  return (
-    <div style={{
-      background: isSuccess ? 'rgba(0,255,136,0.08)' : 'rgba(255,0,64,0.08)',
-      border: `1px solid ${isSuccess ? 'rgba(0,255,136,0.3)' : 'rgba(255,0,64,0.3)'}`,
-      borderRadius: 10, padding: '10px 16px', marginBottom: 16,
-      color: isSuccess ? '#00ff88' : '#ff4444', fontSize: 13,
-    }}>
-      {isSuccess ? '✓' : '✗'} {message}
+const Card = ({ children, danger = false }: { children: React.ReactNode; danger?: boolean }) => (
+  <div style={{
+    background: 'rgba(17,24,39,0.8)',
+    border: `1px solid ${danger ? 'rgba(255,0,64,0.25)' : 'rgba(148,163,184,0.1)'}`,
+    borderRadius: 16,
+    padding: 28,
+    marginBottom: 20,
+  }}>{children}</div>
+);
+
+const SectionHeader = ({ icon, title, subtitle }: { icon: string; title: string; subtitle: string }) => (
+  <div style={{ marginBottom: 20 }}>
+    <h2 style={{ fontSize: 15, fontWeight: 700, color: '#f1f5f9', marginBottom: 4 }}>{icon} {title}</h2>
+    <p style={{ fontSize: 12, color: '#64748b' }}>{subtitle}</p>
+  </div>
+);
+
+const Field = ({ label, children }: { label: string; children: React.ReactNode }) => (
+  <div style={{ marginBottom: 14 }}>
+    <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: '#94a3b8', marginBottom: 6 }}>{label}</label>
+    {children}
+  </div>
+);
+
+const Toggle = ({ checked, onChange, label }: { checked: boolean; onChange: (v: boolean) => void; label: string }) => (
+  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid rgba(148,163,184,0.06)' }}>
+    <span style={{ fontSize: 13, color: '#94a3b8' }}>{label}</span>
+    <div
+      onClick={() => onChange(!checked)}
+      style={{
+        width: 44, height: 24, borderRadius: 12, cursor: 'pointer', transition: 'background 0.2s',
+        background: checked ? '#00ff88' : 'rgba(148,163,184,0.2)',
+        position: 'relative', flexShrink: 0,
+      }}
+    >
+      <div style={{
+        position: 'absolute', top: 3, width: 18, height: 18, borderRadius: '50%', background: '#fff',
+        transition: 'left 0.2s', left: checked ? 23 : 3,
+      }} />
     </div>
-  );
-}
+  </div>
+);
+
+const Alert = ({ type, msg }: { type: 'success' | 'error'; msg: string }) => (
+  <div style={{
+    background: type === 'success' ? 'rgba(0,255,136,0.08)' : 'rgba(255,0,64,0.08)',
+    border: `1px solid ${type === 'success' ? 'rgba(0,255,136,0.3)' : 'rgba(255,0,64,0.3)'}`,
+    borderRadius: 10, padding: '10px 16px', marginBottom: 16,
+    color: type === 'success' ? '#00ff88' : '#ff4444', fontSize: 13,
+  }}>
+    {type === 'success' ? '✓ ' : '✗ '}{msg}
+  </div>
+);
+
+// ─── Main Page ────────────────────────────────────────────────────────────────
 
 export default function SettingsPage() {
   const { user } = useAuth();
 
-  // ── Profile state ──────────────────────────────────────────────────────────
-  const [fullName, setFullName] = useState(user?.full_name || '');
-  const [username, setUsername] = useState(user?.username || '');
-  const [profileMsg, setProfileMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
-  const [profileLoading, setProfileLoading] = useState(false);
-  const [avatarPreview, setAvatarPreview] = useState<string | null>(
-    user?.avatar_url ? `http://localhost:8000${user.avatar_url}` : null
-  );
-  const [avatarLoading, setAvatarLoading] = useState(false);
+  // Active tab
+  const [tab, setTab] = useState('profile');
 
-  // ── Password state ────────────────────────────────────────────────────────
-  const [currentPw, setCurrentPw] = useState('');
-  const [newPw, setNewPw] = useState('');
-  const [confirmPw, setConfirmPw] = useState('');
-  const [pwMsg, setPwMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  // Profile
+  const [profile, setProfile] = useState({ full_name: '', username: '', email: '' });
+  const [profileMsg, setProfileMsg] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
+  const [profileLoading, setProfileLoading] = useState(false);
+
+  // Password
+  const [pw, setPw] = useState({ current: '', new: '', confirm: '' });
+  const [pwMsg, setPwMsg] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
   const [pwLoading, setPwLoading] = useState(false);
 
-  // ── Scan defaults state ───────────────────────────────────────────────────
-  const [defaultScanType, setDefaultScanType] = useState(
-    typeof window !== 'undefined' ? localStorage.getItem('default_scan_type') || 'full' : 'full'
-  );
+  // Login history
+  const [loginHistory, setLoginHistory] = useState<any[]>([]);
 
-  // ── API token state ───────────────────────────────────────────────────────
-  const [apiToken, setApiToken] = useState('');
-  const [tokenMsg, setTokenMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
-  const [tokenLoading, setTokenLoading] = useState(false);
-  const [tokenCopied, setTokenCopied] = useState(false);
+  // API Keys
+  const [apiKeys, setApiKeys] = useState<any[]>([]);
+  const [newKeyName, setNewKeyName] = useState('');
+  const [newKeyResult, setNewKeyResult] = useState<string | null>(null);
+  const [apiKeyMsg, setApiKeyMsg] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
 
-  // ── Delete account state ──────────────────────────────────────────────────
-  const [deleteConfirm, setDeleteConfirm] = useState('');
-  const [deleteLoading, setDeleteLoading] = useState(false);
-  const [deleteMsg, setDeleteMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  // Preferences
+  const [prefs, setPrefs] = useState<Record<string, any>>({});
+  const [prefsMsg, setPrefsMsg] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
+  const [prefsLoading, setPrefsLoading] = useState(false);
+
+  // Session
+  const [sessionInfo, setSessionInfo] = useState<{ created: string; expires: string } | null>(null);
+
+  // Danger zone
+  const [dangerMsg, setDangerMsg] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
+  const [deleteAccountPw, setDeleteAccountPw] = useState('');
+  const [confirmDeleteHistory, setConfirmDeleteHistory] = useState(false);
+  const [confirmDeleteAccount, setConfirmDeleteAccount] = useState(false);
+
+  // Load data
+  useEffect(() => {
+    if (user) {
+      setProfile({ full_name: user.full_name || '', username: user.username || '', email: user.email || '' });
+    }
+    const token = localStorage.getItem('access_token');
+    if (token) {
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        setSessionInfo({
+          created: new Date(payload.iat * 1000).toLocaleString(),
+          expires: new Date(payload.exp * 1000).toLocaleString(),
+        });
+      } catch { /* ignore */ }
+    }
+    loadApiKeys();
+    loadLoginHistory();
+    loadPreferences();
+  }, [user]);
+
+  const loadApiKeys = async () => {
+    try { setApiKeys((await settingsApi.listApiKeys()) as any[]); } catch { /* ignore */ }
+  };
+
+  const loadLoginHistory = async () => {
+    try { setLoginHistory((await settingsApi.getLoginHistory()) as any[]); } catch { /* ignore */ }
+  };
+
+  const loadPreferences = async () => {
+    try { setPrefs((await settingsApi.getPreferences()) as Record<string, any>); } catch { /* ignore */ }
+  };
 
   // ── Handlers ──────────────────────────────────────────────────────────────
-  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setAvatarLoading(true);
-    setProfileMsg(null);
-    try {
-      const reader = new FileReader();
-      reader.onload = (ev) => setAvatarPreview(ev.target?.result as string);
-      reader.readAsDataURL(file);
-      const res = await api.uploadAvatar(file);
-      setAvatarPreview(`http://localhost:8000${res.avatar_url}`);
-      setProfileMsg({ type: 'success', text: 'Profile photo updated' });
-    } catch (err: unknown) {
-      setProfileMsg({ type: 'error', text: err instanceof Error ? err.message : 'Upload failed' });
-    } finally {
-      setAvatarLoading(false);
-    }
-  };
 
-  const handleProfileSave = async (e: React.FormEvent) => {
+  const saveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
-    setProfileLoading(true);
-    setProfileMsg(null);
+    setProfileLoading(true); setProfileMsg(null);
     try {
-      await api.updateProfile({ full_name: fullName, username });
-      setProfileMsg({ type: 'success', text: 'Profile updated successfully' });
-    } catch (err: unknown) {
-      setProfileMsg({ type: 'error', text: err instanceof Error ? err.message : 'Failed to update profile' });
-    } finally {
-      setProfileLoading(false);
-    }
+      await settingsApi.updateProfile(profile);
+      setProfileMsg({ type: 'success', msg: 'Profile updated successfully' });
+    } catch (err: any) {
+      setProfileMsg({ type: 'error', msg: err.message || 'Failed to update profile' });
+    } finally { setProfileLoading(false); }
   };
 
-  const handlePasswordChange = async (e: React.FormEvent) => {
+  const savePassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setPwMsg(null);
-    if (newPw !== confirmPw) { setPwMsg({ type: 'error', text: 'Passwords do not match' }); return; }
-    if (newPw.length < 8) { setPwMsg({ type: 'error', text: 'Password must be at least 8 characters' }); return; }
+    if (pw.new !== pw.confirm) { setPwMsg({ type: 'error', msg: 'Passwords do not match' }); return; }
+    if (pw.new.length < 8) { setPwMsg({ type: 'error', msg: 'Password must be at least 8 characters' }); return; }
     setPwLoading(true);
     try {
-      await api.changePassword(currentPw, newPw);
-      setPwMsg({ type: 'success', text: 'Password changed successfully' });
-      setCurrentPw(''); setNewPw(''); setConfirmPw('');
-    } catch (err: unknown) {
-      setPwMsg({ type: 'error', text: err instanceof Error ? err.message : 'Failed to change password' });
-    } finally {
-      setPwLoading(false);
-    }
+      await api.changePassword(pw.current, pw.new);
+      setPwMsg({ type: 'success', msg: 'Password changed successfully' });
+      setPw({ current: '', new: '', confirm: '' });
+    } catch (err: any) {
+      setPwMsg({ type: 'error', msg: err.message || 'Failed to change password' });
+    } finally { setPwLoading(false); }
   };
 
-  const handleScanDefaultSave = () => {
-    localStorage.setItem('default_scan_type', defaultScanType);
-    alert('Scan defaults saved');
-  };
-
-  const handleGenerateToken = async () => {
-    setTokenLoading(true);
-    setTokenMsg(null);
-    setApiToken('');
-    try {
-      const res = await api.generateApiToken() as { api_token: string; note: string };
-      setApiToken(res.api_token);
-      setTokenMsg({ type: 'success', text: 'Token generated. Copy it now — it will not be shown again.' });
-    } catch (err: unknown) {
-      setTokenMsg({ type: 'error', text: err instanceof Error ? err.message : 'Failed to generate token' });
-    } finally {
-      setTokenLoading(false);
-    }
-  };
-
-  const handleCopyToken = () => {
-    navigator.clipboard.writeText(apiToken);
-    setTokenCopied(true);
-    setTimeout(() => setTokenCopied(false), 2000);
-  };
-
-  const handleDeleteAccount = async (e: React.FormEvent) => {
+  const createApiKey = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (deleteConfirm !== 'DELETE') {
-      setDeleteMsg({ type: 'error', text: 'Type DELETE to confirm' });
-      return;
-    }
-    setDeleteLoading(true);
+    setApiKeyMsg(null); setNewKeyResult(null);
+    if (!newKeyName.trim()) return;
     try {
-      await api.deleteAccount();
-      localStorage.clear();
-      window.location.href = '/';
-    } catch (err: unknown) {
-      setDeleteMsg({ type: 'error', text: err instanceof Error ? err.message : 'Failed to delete account' });
-      setDeleteLoading(false);
+      const result = await settingsApi.createApiKey(newKeyName) as any;
+      setNewKeyResult(result.raw_key);
+      setNewKeyName('');
+      loadApiKeys();
+    } catch (err: any) {
+      setApiKeyMsg({ type: 'error', msg: err.message || 'Failed to create API key' });
     }
   };
 
-  const inputStyle = {
-    width: '100%',
-    background: 'rgba(255,255,255,0.05)',
-    border: '1px solid rgba(148,163,184,0.15)',
-    borderRadius: 8,
-    padding: '10px 14px',
-    color: '#f1f5f9',
-    fontSize: 14,
-    outline: 'none',
-    boxSizing: 'border-box' as const,
+  const revokeApiKey = async (id: string) => {
+    try {
+      await settingsApi.revokeApiKey(id);
+      setApiKeys(prev => prev.filter(k => k.id !== id));
+    } catch (err: any) {
+      setApiKeyMsg({ type: 'error', msg: err.message || 'Failed to revoke key' });
+    }
   };
 
-  const labelStyle = {
-    display: 'block',
-    fontSize: 13,
-    fontWeight: 500,
-    color: '#94a3b8',
-    marginBottom: 6,
+  const savePrefs = async () => {
+    setPrefsLoading(true); setPrefsMsg(null);
+    try {
+      await settingsApi.updatePreferences(prefs);
+      setPrefsMsg({ type: 'success', msg: 'Preferences saved' });
+    } catch (err: any) {
+      setPrefsMsg({ type: 'error', msg: err.message || 'Failed to save preferences' });
+    } finally { setPrefsLoading(false); }
   };
 
-  const scanTypes = [
-    { value: 'full', label: '🔍 Full Scan' },
-    { value: 'nuclei', label: '⚡ Nuclei Scan' },
-    { value: 'discovery', label: '🗺️ Discovery + Fuzzing' },
-    { value: 'zap_spider', label: '🕷️ ZAP Spider' },
-    { value: 'zap_nuclei', label: '🛡️ ZAP + Nuclei' },
+  const exportData = async () => {
+    try {
+      const data = await settingsApi.exportData();
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'ethiovuln-export.json'; a.click();
+      URL.revokeObjectURL(url);
+    } catch (err: any) {
+      setDangerMsg({ type: 'error', msg: err.message || 'Export failed' });
+    }
+  };
+
+  const deleteHistory = async () => {
+    try {
+      await settingsApi.deleteScanHistory();
+      setDangerMsg({ type: 'success', msg: 'All scan history deleted' });
+      setConfirmDeleteHistory(false);
+    } catch (err: any) {
+      setDangerMsg({ type: 'error', msg: err.message || 'Failed to delete history' });
+    }
+  };
+
+  const deleteAccount = async () => {
+    try {
+      await settingsApi.deleteAccount(deleteAccountPw);
+      api.logout();
+    } catch (err: any) {
+      setDangerMsg({ type: 'error', msg: err.message || 'Failed to delete account' });
+    }
+  };
+
+  // ── Tabs config ───────────────────────────────────────────────────────────
+
+  const tabs = [
+    { id: 'profile', label: '👤 Profile' },
+    { id: 'security', label: '🔑 Security' },
+    { id: 'scans', label: '🔍 Scan Prefs' },
+    { id: 'dashboard', label: '📊 Dashboard' },
+    { id: 'notifications', label: '🔔 Notifications' },
+    { id: 'reports', label: '📄 Reports' },
+    { id: 'apikeys', label: '🌐 API Keys' },
+    { id: 'danger', label: '⚠️ Danger Zone' },
   ];
 
   return (
-    <div style={{ maxWidth: 640 }}>
+    <div>
       {/* Header */}
-      <div style={{ marginBottom: 28 }}>
-        <h1 style={{ fontSize: 22, fontWeight: 700, color: '#f1f5f9', marginBottom: 4 }}>⚙️ Settings</h1>
-        <p style={{ color: '#64748b', fontSize: 13 }}>Manage your account, security, and preferences</p>
+      <div style={{ marginBottom: 24 }}>
+        <h1 style={{ fontSize: 24, fontWeight: 700, color: '#f1f5f9', marginBottom: 4 }}>⚙️ Settings</h1>
+        <p style={{ color: '#64748b', fontSize: 14 }}>Manage your account, preferences, and security</p>
       </div>
 
-      {/* ── 1. Profile ──────────────────────────────────────────────────────── */}
-      <Section title="Profile" icon="👤">
-        {profileMsg && <Alert type={profileMsg.type} message={profileMsg.text} />}
-        {/* Avatar upload */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 20, marginBottom: 20 }}>
-          <div style={{
-            width: 72, height: 72, borderRadius: '50%',
-            border: '2px solid rgba(0,255,136,0.3)',
-            overflow: 'hidden', flexShrink: 0,
-            background: 'rgba(0,255,136,0.05)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
-            {avatarPreview ? (
-              <img src={avatarPreview} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            ) : (
-              <svg width="36" height="36" viewBox="0 0 80 80" fill="none">
-                <circle cx="40" cy="30" r="18" fill="rgba(0,255,136,0.2)" stroke="#00ff88" strokeWidth="1.5"/>
-                <path d="M10 70c0-16.569 13.431-30 30-30s30 13.431 30 30" fill="rgba(0,255,136,0.1)" stroke="#00ff88" strokeWidth="1.5" strokeLinecap="round"/>
-              </svg>
-            )}
-          </div>
-          <div>
-            <label htmlFor="avatar-upload" style={{
-              display: 'inline-block', padding: '8px 16px', fontSize: 13,
-              background: 'rgba(0,255,136,0.08)', border: '1px solid rgba(0,255,136,0.3)',
-              borderRadius: 8, color: '#00ff88', cursor: 'pointer', fontWeight: 600,
-            }}>
-              {avatarLoading ? 'Uploading...' : '📷 Change Photo'}
-            </label>
-            <input id="avatar-upload" type="file" accept="image/jpeg,image/png,image/webp" onChange={handleAvatarChange} style={{ display: 'none' }} />
-            <p style={{ fontSize: 11, color: '#64748b', marginTop: 4 }}>JPEG, PNG or WEBP — max 5MB</p>
-          </div>
-        </div>
-        <form onSubmit={handleProfileSave}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
-            <div>
-              <label style={labelStyle}>Full Name</label>
-              <input style={inputStyle} className="input-field" value={fullName} onChange={e => setFullName(e.target.value)} placeholder="Your full name" />
-            </div>
-            <div>
-              <label style={labelStyle}>Username</label>
-              <input style={inputStyle} className="input-field" value={username} onChange={e => setUsername(e.target.value)} placeholder="username" />
-            </div>
-          </div>
-          <div style={{ marginBottom: 16 }}>
-            <label style={labelStyle}>Email Address</label>
-            <input style={{ ...inputStyle, opacity: 0.5, cursor: 'not-allowed' }} value={user?.email || ''} disabled />
-            <p style={{ fontSize: 11, color: '#64748b', marginTop: 4 }}>Email cannot be changed</p>
-          </div>
-          <button type="submit" className="btn-glow btn-glow-green" disabled={profileLoading} style={{ fontSize: 13, padding: '9px 20px' }}>
-            {profileLoading ? 'Saving...' : '💾 Save Profile'}
-          </button>
-        </form>
-      </Section>
+      {/* Tab Bar */}
+      <div style={{
+        display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 24,
+        borderBottom: '1px solid rgba(148,163,184,0.1)', paddingBottom: 12,
+      }}>
+        {tabs.map(t => (
+          <button key={t.id} onClick={() => setTab(t.id)} style={{
+            padding: '7px 14px', borderRadius: 8, border: 'none', cursor: 'pointer',
+            fontSize: 12, fontWeight: 600, transition: 'all 0.2s',
+            background: tab === t.id ? 'rgba(0,255,136,0.12)' : 'rgba(255,255,255,0.03)',
+            color: tab === t.id ? '#00ff88' : '#64748b',
+            outline: tab === t.id ? '1px solid rgba(0,255,136,0.3)' : '1px solid transparent',
+          }}>{t.label}</button>
+        ))}
+      </div>
 
-      {/* ── 2. Change Password ───────────────────────────────────────────────── */}
-      <Section title="Change Password" icon="🔑">
-        {pwMsg && <Alert type={pwMsg.type} message={pwMsg.text} />}
-        <form onSubmit={handlePasswordChange}>
-          <div style={{ marginBottom: 14 }}>
-            <label style={labelStyle}>Current Password</label>
-            <input type="password" style={inputStyle} className="input-field" value={currentPw} onChange={e => setCurrentPw(e.target.value)} placeholder="••••••••" required />
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 16 }}>
-            <div>
-              <label style={labelStyle}>New Password</label>
-              <input type="password" style={inputStyle} className="input-field" value={newPw} onChange={e => setNewPw(e.target.value)} placeholder="••••••••" required />
-            </div>
-            <div>
-              <label style={labelStyle}>Confirm Password</label>
-              <input type="password" style={inputStyle} className="input-field" value={confirmPw} onChange={e => setConfirmPw(e.target.value)} placeholder="••••••••" required />
-            </div>
-          </div>
-          <button type="submit" className="btn-glow btn-glow-green" disabled={pwLoading} style={{ fontSize: 13, padding: '9px 20px' }}>
-            {pwLoading ? 'Changing...' : '🔐 Change Password'}
-          </button>
-        </form>
-      </Section>
+      <div style={{ maxWidth: 600 }}>
 
-      {/* ── 3. Scan Defaults ─────────────────────────────────────────────────── */}
-      <Section title="Scan Defaults" icon="🔍">
-        <div style={{ marginBottom: 16 }}>
-          <label style={labelStyle}>Default Scan Type</label>
-          <select
-            value={defaultScanType}
-            onChange={e => setDefaultScanType(e.target.value)}
-            style={{ ...inputStyle, cursor: 'pointer' }}
-          >
-            {scanTypes.map(s => (
-              <option key={s.value} value={s.value} style={{ background: '#111827' }}>{s.label}</option>
-            ))}
-          </select>
-          <p style={{ fontSize: 11, color: '#64748b', marginTop: 4 }}>This will be pre-selected when you create a new scan</p>
-        </div>
-        <button onClick={handleScanDefaultSave} className="btn-glow btn-glow-green" style={{ fontSize: 13, padding: '9px 20px' }}>
-          💾 Save Defaults
-        </button>
-      </Section>
-
-      {/* ── 4. API Access ────────────────────────────────────────────────────── */}
-      <Section title="API Access" icon="🔌">
-        <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 16, lineHeight: 1.6 }}>
-          Generate a personal API token to access EthioVuln programmatically.
-          Use it in the <code style={{ background: 'rgba(0,255,136,0.1)', padding: '2px 6px', borderRadius: 4, color: '#00ff88', fontSize: 12 }}>Authorization: Bearer &lt;token&gt;</code> header.
-        </p>
-        {tokenMsg && <Alert type={tokenMsg.type} message={tokenMsg.text} />}
-        {apiToken && (
-          <div style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(0,255,136,0.2)', borderRadius: 8, padding: '10px 14px', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 10 }}>
-            <code style={{ fontSize: 11, color: '#00ff88', fontFamily: 'JetBrains Mono, monospace', flex: 1, wordBreak: 'break-all' }}>
-              {apiToken}
-            </code>
-            <button onClick={handleCopyToken} className="btn-outline" style={{ fontSize: 11, padding: '4px 10px', flexShrink: 0 }}>
-              {tokenCopied ? '✓ Copied' : 'Copy'}
-            </button>
-          </div>
+        {/* ── PROFILE ─────────────────────────────────────────────── */}
+        {tab === 'profile' && (
+          <Card>
+            <SectionHeader icon="👤" title="Profile Information" subtitle="Update your display name, username, and email address" />
+            {profileMsg && <Alert type={profileMsg.type} msg={profileMsg.msg} />}
+            <form onSubmit={saveProfile}>
+              <Field label="Full Name">
+                <input className="input-field" value={profile.full_name} onChange={e => setProfile(p => ({ ...p, full_name: e.target.value }))} placeholder="Your full name" />
+              </Field>
+              <Field label="Username">
+                <input className="input-field" value={profile.username} onChange={e => setProfile(p => ({ ...p, username: e.target.value }))} placeholder="username" />
+              </Field>
+              <Field label="Email Address">
+                <input type="email" className="input-field" value={profile.email} onChange={e => setProfile(p => ({ ...p, email: e.target.value }))} placeholder="you@example.com" />
+              </Field>
+              <div style={{ marginTop: 8, padding: '10px 14px', background: 'rgba(255,255,255,0.03)', borderRadius: 10, border: '1px solid rgba(148,163,184,0.08)' }}>
+                <div style={{ fontSize: 11, color: '#64748b', marginBottom: 2 }}>Role</div>
+                <div style={{ fontSize: 13, color: '#f1f5f9' }}>{user?.is_admin ? '🛡️ Administrator' : '👤 User'}</div>
+              </div>
+              <button type="submit" className="btn-glow btn-glow-green" disabled={profileLoading} style={{ width: '100%', marginTop: 18, fontSize: 14 }}>
+                {profileLoading ? 'Saving...' : '💾 Save Profile'}
+              </button>
+            </form>
+          </Card>
         )}
-        <button onClick={handleGenerateToken} className="btn-glow btn-glow-green" disabled={tokenLoading} style={{ fontSize: 13, padding: '9px 20px' }}>
-          {tokenLoading ? 'Generating...' : '⚡ Generate API Token'}
-        </button>
-      </Section>
 
-      {/* ── 5. Danger Zone ───────────────────────────────────────────────────── */}
-      <div className="glass-card" style={{ padding: 28, border: '1px solid rgba(255,0,64,0.2)' }}>
-        <h2 style={{ fontSize: 15, fontWeight: 700, color: '#ff4444', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
-          ⚠️ Danger Zone
-        </h2>
-        <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 20, lineHeight: 1.6 }}>
-          Permanently delete your account and all associated scans, vulnerabilities, and reports. This action cannot be undone.
-        </p>
-        {deleteMsg && <Alert type={deleteMsg.type} message={deleteMsg.text} />}
-        <form onSubmit={handleDeleteAccount}>
-          <div style={{ marginBottom: 14 }}>
-            <label style={{ ...labelStyle, color: '#ff4444' }}>Type <strong>DELETE</strong> to confirm</label>
-            <input
-              style={{ ...inputStyle, borderColor: 'rgba(255,0,64,0.3)' }}
-              value={deleteConfirm}
-              onChange={e => setDeleteConfirm(e.target.value)}
-              placeholder="DELETE"
-            />
-          </div>
-          <button
-            type="submit"
-            disabled={deleteLoading || deleteConfirm !== 'DELETE'}
-            style={{
-              padding: '9px 20px', fontSize: 13, fontWeight: 600,
-              background: deleteConfirm === 'DELETE' ? 'rgba(255,0,64,0.15)' : 'rgba(255,255,255,0.03)',
-              border: '1px solid rgba(255,0,64,0.4)', borderRadius: 8,
-              color: deleteConfirm === 'DELETE' ? '#ff4444' : '#64748b',
-              cursor: deleteConfirm === 'DELETE' ? 'pointer' : 'not-allowed',
-            }}
-          >
-            {deleteLoading ? 'Deleting...' : '🗑️ Delete My Account'}
-          </button>
-        </form>
+        {/* ── SECURITY ────────────────────────────────────────────── */}
+        {tab === 'security' && (
+          <>
+            <Card>
+              <SectionHeader icon="🔑" title="Change Password" subtitle="Use a strong password with uppercase, lowercase, numbers, and symbols" />
+              {pwMsg && <Alert type={pwMsg.type} msg={pwMsg.msg} />}
+              <form onSubmit={savePassword}>
+                <Field label="Current Password">
+                  <input type="password" className="input-field" value={pw.current} onChange={e => setPw(p => ({ ...p, current: e.target.value }))} placeholder="Current password" required />
+                </Field>
+                <Field label="New Password">
+                  <input type="password" className="input-field" value={pw.new} onChange={e => setPw(p => ({ ...p, new: e.target.value }))} placeholder="New password (min 8 chars)" required />
+                </Field>
+                <Field label="Confirm New Password">
+                  <input type="password" className="input-field" value={pw.confirm} onChange={e => setPw(p => ({ ...p, confirm: e.target.value }))} placeholder="Confirm new password" required />
+                </Field>
+                <button type="submit" className="btn-glow btn-glow-green" disabled={pwLoading} style={{ width: '100%', marginTop: 8, fontSize: 14 }}>
+                  {pwLoading ? 'Changing...' : '🔐 Change Password'}
+                </button>
+              </form>
+            </Card>
+
+            <Card>
+              <SectionHeader icon="🕐" title="Login History" subtitle="Last 20 login attempts to your account" />
+              {loginHistory.length === 0 ? (
+                <p style={{ fontSize: 13, color: '#64748b' }}>No login history yet</p>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {loginHistory.map(h => (
+                    <div key={h.id} style={{
+                      display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                      padding: '10px 14px', borderRadius: 10, background: 'rgba(255,255,255,0.03)',
+                      border: `1px solid ${h.success ? 'rgba(0,255,136,0.1)' : 'rgba(255,0,64,0.1)'}`,
+                    }}>
+                      <div>
+                        <div style={{ fontSize: 12, color: h.success ? '#00ff88' : '#ff4444', fontWeight: 600 }}>
+                          {h.success ? '✓ Success' : '✗ Failed'}
+                        </div>
+                        <div style={{ fontSize: 11, color: '#64748b' }}>IP: {h.ip_address}</div>
+                      </div>
+                      <div style={{ fontSize: 11, color: '#64748b', textAlign: 'right' }}>
+                        {new Date(h.created_at).toLocaleString()}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </Card>
+
+            {sessionInfo && (
+              <Card>
+                <SectionHeader icon="🔒" title="Current Session" subtitle="Details about your active login session" />
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                  {[{ label: 'Session Started', value: sessionInfo.created }, { label: 'Session Expires', value: sessionInfo.expires }].map(({ label, value }) => (
+                    <div key={label} style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 10, padding: '10px 14px', border: '1px solid rgba(148,163,184,0.08)' }}>
+                      <div style={{ fontSize: 11, color: '#64748b', marginBottom: 4 }}>{label}</div>
+                      <div style={{ fontSize: 12, color: '#f1f5f9', fontWeight: 500 }}>{value}</div>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            )}
+          </>
+        )}
+
+        {/* ── SCAN PREFERENCES ────────────────────────────────────── */}
+        {tab === 'scans' && (
+          <Card>
+            <SectionHeader icon="🔍" title="Scan Preferences" subtitle="Default settings applied when creating new scans" />
+            {prefsMsg && <Alert type={prefsMsg.type} msg={prefsMsg.msg} />}
+            <Field label="Default Scan Type">
+              <select className="input-field" value={prefs.default_scan_type || 'full'} onChange={e => setPrefs(p => ({ ...p, default_scan_type: e.target.value }))}>
+                <option value="full">Full Scan</option>
+                <option value="nuclei_only">Nuclei Only</option>
+                <option value="zap_only">ZAP Only</option>
+                <option value="fuzz_only">Fuzzing Only</option>
+                <option value="nuclei_zap">Nuclei + ZAP</option>
+              </select>
+            </Field>
+            <Field label={`Default Scan Timeout — ${prefs.default_scan_timeout || 30} minutes`}>
+              <input type="range" min={5} max={120} step={5} value={prefs.default_scan_timeout || 30}
+                onChange={e => setPrefs(p => ({ ...p, default_scan_timeout: parseInt(e.target.value) }))}
+                style={{ width: '100%', accentColor: '#00ff88' }} />
+            </Field>
+            <Field label={`Default Fuzzer Threads — ${prefs.default_fuzzer_threads || 30}`}>
+              <input type="range" min={5} max={100} step={5} value={prefs.default_fuzzer_threads || 30}
+                onChange={e => setPrefs(p => ({ ...p, default_fuzzer_threads: parseInt(e.target.value) }))}
+                style={{ width: '100%', accentColor: '#00ff88' }} />
+            </Field>
+            <Toggle checked={prefs.auto_stop_on_critical || false} onChange={v => setPrefs(p => ({ ...p, auto_stop_on_critical: v }))} label="Auto-stop scan on critical finding" />
+            <Field label="Exclude Paths (comma-separated)">
+              <input className="input-field" value={prefs.exclude_paths || ''} onChange={e => setPrefs(p => ({ ...p, exclude_paths: e.target.value }))} placeholder="/admin, /logout, /static" />
+            </Field>
+            <button onClick={savePrefs} className="btn-glow btn-glow-green" disabled={prefsLoading} style={{ width: '100%', marginTop: 16, fontSize: 14 }}>
+              {prefsLoading ? 'Saving...' : '💾 Save Scan Preferences'}
+            </button>
+          </Card>
+        )}
+
+        {/* ── DASHBOARD PREFERENCES ───────────────────────────────── */}
+        {tab === 'dashboard' && (
+          <Card>
+            <SectionHeader icon="📊" title="Dashboard Preferences" subtitle="Customize how the dashboard displays data" />
+            {prefsMsg && <Alert type={prefsMsg.type} msg={prefsMsg.msg} />}
+            <Field label="Default Severity Filter">
+              <select className="input-field" value={prefs.default_severity_filter || 'all'} onChange={e => setPrefs(p => ({ ...p, default_severity_filter: e.target.value }))}>
+                <option value="all">All Severities</option>
+                <option value="critical">Critical Only</option>
+                <option value="high">High & Above</option>
+                <option value="medium">Medium & Above</option>
+                <option value="low">Low & Above</option>
+              </select>
+            </Field>
+            <Field label="Items Per Page">
+              <select className="input-field" value={prefs.items_per_page || 20} onChange={e => setPrefs(p => ({ ...p, items_per_page: parseInt(e.target.value) }))}>
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+                <option value={50}>50</option>
+                <option value={100}>100</option>
+              </select>
+            </Field>
+            <Toggle checked={prefs.show_stats_cards !== false} onChange={v => setPrefs(p => ({ ...p, show_stats_cards: v }))} label="Show statistics cards on dashboard" />
+            <button onClick={savePrefs} className="btn-glow btn-glow-green" disabled={prefsLoading} style={{ width: '100%', marginTop: 16, fontSize: 14 }}>
+              {prefsLoading ? 'Saving...' : '💾 Save Dashboard Preferences'}
+            </button>
+          </Card>
+        )}
+
+        {/* ── NOTIFICATIONS ───────────────────────────────────────── */}
+        {tab === 'notifications' && (
+          <Card>
+            <SectionHeader icon="🔔" title="Notifications" subtitle="Control how and when you receive alerts" />
+            {prefsMsg && <Alert type={prefsMsg.type} msg={prefsMsg.msg} />}
+            <Toggle checked={prefs.notify_scan_complete !== false} onChange={v => setPrefs(p => ({ ...p, notify_scan_complete: v }))} label="Browser notification when scan completes" />
+            <Toggle checked={prefs.notify_critical_finding !== false} onChange={v => setPrefs(p => ({ ...p, notify_critical_finding: v }))} label="Alert when critical vulnerability found" />
+            <Toggle checked={prefs.notify_email || false} onChange={v => setPrefs(p => ({ ...p, notify_email: v }))} label="Email notification on scan completion" />
+            <button onClick={savePrefs} className="btn-glow btn-glow-green" disabled={prefsLoading} style={{ width: '100%', marginTop: 16, fontSize: 14 }}>
+              {prefsLoading ? 'Saving...' : '💾 Save Notification Preferences'}
+            </button>
+          </Card>
+        )}
+
+        {/* ── REPORTS ─────────────────────────────────────────────── */}
+        {tab === 'reports' && (
+          <Card>
+            <SectionHeader icon="📄" title="Report Settings" subtitle="Customize how vulnerability reports are generated" />
+            {prefsMsg && <Alert type={prefsMsg.type} msg={prefsMsg.msg} />}
+            <Toggle checked={prefs.report_include_low !== false} onChange={v => setPrefs(p => ({ ...p, report_include_low: v }))} label="Include low severity findings in reports" />
+            <Field label="Company / Organization Name">
+              <input className="input-field" value={prefs.report_company_name || ''} onChange={e => setPrefs(p => ({ ...p, report_company_name: e.target.value }))} placeholder="Your company name (appears in PDF header)" />
+            </Field>
+            <div style={{ marginTop: 8, padding: '10px 14px', background: 'rgba(255,255,255,0.03)', borderRadius: 10, border: '1px solid rgba(148,163,184,0.08)' }}>
+              <div style={{ fontSize: 11, color: '#64748b', marginBottom: 2 }}>Report Format</div>
+              <div style={{ fontSize: 13, color: '#f1f5f9' }}>PDF (WeasyPrint)</div>
+            </div>
+            <button onClick={savePrefs} className="btn-glow btn-glow-green" disabled={prefsLoading} style={{ width: '100%', marginTop: 16, fontSize: 14 }}>
+              {prefsLoading ? 'Saving...' : '💾 Save Report Settings'}
+            </button>
+          </Card>
+        )}
+
+        {/* ── API KEYS ─────────────────────────────────────────────── */}
+        {tab === 'apikeys' && (
+          <>
+            <Card>
+              <SectionHeader icon="🌐" title="API Keys" subtitle="Generate keys for programmatic access to the EthioVuln API" />
+              {apiKeyMsg && <Alert type={apiKeyMsg.type} msg={apiKeyMsg.msg} />}
+
+              {newKeyResult && (
+                <div style={{ background: 'rgba(0,255,136,0.06)', border: '1px solid rgba(0,255,136,0.3)', borderRadius: 10, padding: 16, marginBottom: 16 }}>
+                  <p style={{ fontSize: 12, color: '#00ff88', fontWeight: 600, marginBottom: 8 }}>⚠️ Copy this key now — it will not be shown again</p>
+                  <code style={{ fontSize: 12, color: '#f1f5f9', wordBreak: 'break-all', background: 'rgba(0,0,0,0.3)', padding: '8px 12px', borderRadius: 6, display: 'block' }}>{newKeyResult}</code>
+                  <button onClick={() => { navigator.clipboard.writeText(newKeyResult); }} style={{ marginTop: 10, padding: '6px 14px', background: 'rgba(0,255,136,0.15)', border: '1px solid rgba(0,255,136,0.3)', borderRadius: 6, color: '#00ff88', fontSize: 12, cursor: 'pointer' }}>
+                    📋 Copy to Clipboard
+                  </button>
+                </div>
+              )}
+
+              <form onSubmit={createApiKey} style={{ display: 'flex', gap: 10, marginBottom: 20 }}>
+                <input className="input-field" value={newKeyName} onChange={e => setNewKeyName(e.target.value)} placeholder="Key name (e.g. CI Pipeline)" style={{ flex: 1 }} required />
+                <button type="submit" className="btn-glow btn-glow-green" style={{ padding: '0 20px', fontSize: 13, whiteSpace: 'nowrap' }}>+ Generate</button>
+              </form>
+
+              {apiKeys.length === 0 ? (
+                <p style={{ fontSize: 13, color: '#64748b' }}>No API keys yet</p>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {apiKeys.map(k => (
+                    <div key={k.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', borderRadius: 10, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(148,163,184,0.08)' }}>
+                      <div>
+                        <div style={{ fontSize: 13, color: '#f1f5f9', fontWeight: 600 }}>{k.name}</div>
+                        <div style={{ fontSize: 11, color: '#64748b' }}>{k.key_prefix}•••• · Created {new Date(k.created_at).toLocaleDateString()}</div>
+                      </div>
+                      <button onClick={() => revokeApiKey(k.id)} style={{ padding: '5px 12px', background: 'rgba(255,0,64,0.08)', border: '1px solid rgba(255,0,64,0.2)', borderRadius: 6, color: '#ff4444', fontSize: 11, cursor: 'pointer' }}>Revoke</button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </Card>
+
+            <Card>
+              <SectionHeader icon="ℹ️" title="Platform Info" subtitle="EthioVuln system details" />
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                {[
+                  { label: 'Platform', value: 'EthioVuln' },
+                  { label: 'Version', value: 'v1.1.0' },
+                  { label: 'Scan Engines', value: 'Nuclei, ZAP, Fuzzer' },
+                  { label: 'API Docs', value: 'localhost:8000/api/docs' },
+                ].map(({ label, value }) => (
+                  <div key={label} style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 10, padding: '10px 14px', border: '1px solid rgba(148,163,184,0.08)' }}>
+                    <div style={{ fontSize: 11, color: '#64748b', marginBottom: 4 }}>{label}</div>
+                    <div style={{ fontSize: 13, color: '#f1f5f9', fontWeight: 500 }}>{value}</div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </>
+        )}
+
+        {/* ── DANGER ZONE ──────────────────────────────────────────── */}
+        {tab === 'danger' && (
+          <Card danger>
+            <SectionHeader icon="⚠️" title="Danger Zone" subtitle="Irreversible actions — proceed with caution" />
+            {dangerMsg && <Alert type={dangerMsg.type} msg={dangerMsg.msg} />}
+
+            {/* Export */}
+            <div style={{ padding: '16px 0', borderBottom: '1px solid rgba(255,0,64,0.1)' }}>
+              <p style={{ fontSize: 13, color: '#f1f5f9', fontWeight: 600, marginBottom: 4 }}>📦 Export My Data</p>
+              <p style={{ fontSize: 12, color: '#64748b', marginBottom: 12 }}>Download all your account data and scan history as JSON</p>
+              <button onClick={exportData} style={{ padding: '8px 18px', background: 'rgba(0,136,255,0.1)', border: '1px solid rgba(0,136,255,0.3)', borderRadius: 8, color: '#0088ff', fontSize: 13, cursor: 'pointer', fontWeight: 600 }}>
+                ⬇️ Download Export
+              </button>
+            </div>
+
+            {/* Sign Out */}
+            <div style={{ padding: '16px 0', borderBottom: '1px solid rgba(255,0,64,0.1)' }}>
+              <p style={{ fontSize: 13, color: '#f1f5f9', fontWeight: 600, marginBottom: 4 }}>🚪 Sign Out</p>
+              <p style={{ fontSize: 12, color: '#64748b', marginBottom: 12 }}>End your current session</p>
+              <button onClick={() => api.logout()} style={{ padding: '8px 18px', background: 'rgba(148,163,184,0.08)', border: '1px solid rgba(148,163,184,0.2)', borderRadius: 8, color: '#94a3b8', fontSize: 13, cursor: 'pointer', fontWeight: 600 }}>
+                🚪 Sign Out
+              </button>
+            </div>
+
+            {/* Delete History */}
+            <div style={{ padding: '16px 0', borderBottom: '1px solid rgba(255,0,64,0.1)' }}>
+              <p style={{ fontSize: 13, color: '#ff4444', fontWeight: 600, marginBottom: 4 }}>🗑️ Delete All Scan History</p>
+              <p style={{ fontSize: 12, color: '#64748b', marginBottom: 12 }}>Permanently delete all scans and vulnerability findings. This cannot be undone.</p>
+              {!confirmDeleteHistory ? (
+                <button onClick={() => setConfirmDeleteHistory(true)} style={{ padding: '8px 18px', background: 'rgba(255,0,64,0.08)', border: '1px solid rgba(255,0,64,0.3)', borderRadius: 8, color: '#ff4444', fontSize: 13, cursor: 'pointer', fontWeight: 600 }}>
+                  🗑️ Delete All Scans
+                </button>
+              ) : (
+                <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                  <span style={{ fontSize: 12, color: '#ff4444' }}>Are you sure?</span>
+                  <button onClick={deleteHistory} style={{ padding: '6px 14px', background: '#ff0040', border: 'none', borderRadius: 6, color: '#fff', fontSize: 12, cursor: 'pointer', fontWeight: 700 }}>Yes, Delete</button>
+                  <button onClick={() => setConfirmDeleteHistory(false)} style={{ padding: '6px 14px', background: 'rgba(148,163,184,0.1)', border: '1px solid rgba(148,163,184,0.2)', borderRadius: 6, color: '#94a3b8', fontSize: 12, cursor: 'pointer' }}>Cancel</button>
+                </div>
+              )}
+            </div>
+
+            {/* Delete Account */}
+            <div style={{ paddingTop: 16 }}>
+              <p style={{ fontSize: 13, color: '#ff4444', fontWeight: 600, marginBottom: 4 }}>💀 Delete Account</p>
+              <p style={{ fontSize: 12, color: '#64748b', marginBottom: 12 }}>Permanently delete your account and all associated data. This action cannot be reversed.</p>
+              {!confirmDeleteAccount ? (
+                <button onClick={() => setConfirmDeleteAccount(true)} style={{ padding: '8px 18px', background: 'rgba(255,0,64,0.08)', border: '1px solid rgba(255,0,64,0.3)', borderRadius: 8, color: '#ff4444', fontSize: 13, cursor: 'pointer', fontWeight: 600 }}>
+                  💀 Delete My Account
+                </button>
+              ) : (
+                <div>
+                  <input type="password" className="input-field" value={deleteAccountPw} onChange={e => setDeleteAccountPw(e.target.value)} placeholder="Enter your password to confirm" style={{ marginBottom: 10 }} />
+                  <div style={{ display: 'flex', gap: 10 }}>
+                    <button onClick={deleteAccount} style={{ padding: '8px 18px', background: '#ff0040', border: 'none', borderRadius: 8, color: '#fff', fontSize: 13, cursor: 'pointer', fontWeight: 700 }}>Permanently Delete</button>
+                    <button onClick={() => { setConfirmDeleteAccount(false); setDeleteAccountPw(''); }} style={{ padding: '8px 18px', background: 'rgba(148,163,184,0.1)', border: '1px solid rgba(148,163,184,0.2)', borderRadius: 8, color: '#94a3b8', fontSize: 13, cursor: 'pointer' }}>Cancel</button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </Card>
+        )}
+
       </div>
     </div>
   );
