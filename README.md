@@ -14,7 +14,7 @@ Built for security researchers, penetration testers, and developers who need a p
 
 - **Multi-engine scanning** — Nuclei, OWASP ZAP, and a custom fuzzer working together
 - **Real-time monitoring** — WebSocket-based live scan progress and findings
-- **Vulnerability detection** — SQLi, XSS, SSTI, SSRF, LFI, CORS, Open Redirect, Clickjacking, and more
+- **Vulnerability detection** — SQLi, reflected XSS, CSRF form weaknesses, missing security headers, SSTI, SSRF, LFI, CORS, Open Redirect, Clickjacking, and more
 - **PDF reports** — Downloadable executive summary reports with CVSS scores and CWE classifications
 - **JWT authentication** — Secure login, role-based access control, and SSRF protection
 - **Multiple scan modes** — Full scan, Nuclei-only, Discovery + Fuzzing, ZAP Spider, ZAP + Nuclei
@@ -188,6 +188,7 @@ ethiovuln/
 │
 ├── docker-compose.yml    # PostgreSQL, Redis, OWASP ZAP
 ├── .env.example
+├── docs/              # Architecture, business plan, report, and presentation materials
 └── README.md
 ```
 
@@ -212,6 +213,29 @@ EthioVuln is intended **only for authorized security testing**.
 Do not scan websites, servers, APIs, or infrastructure without **explicit written permission** from the owner. The author is not responsible for any damage, unauthorized access, or legal consequences resulting from misuse.
 
 **Only test systems you own or have explicit authorization to assess.**
+
+## 🧪 Validation
+
+Run backend checks from the `backend` directory:
+
+```bash
+pytest -q
+python -m compileall -q app alembic
+alembic check
+```
+
+Run frontend checks from the `frontend` directory:
+
+```bash
+npm ci
+npm run lint
+npm run build
+```
+
+The scanner's custom fuzzer includes focused checks for SQL injection, reflected
+XSS, missing security headers, CSRF weaknesses in same-origin state-changing
+forms, CORS, clickjacking, information disclosure, and sensitive paths. Nuclei
+and OWASP ZAP add template-based and active/passive coverage when configured.
 
 ---
 

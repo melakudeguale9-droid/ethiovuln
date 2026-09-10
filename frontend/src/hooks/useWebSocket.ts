@@ -36,7 +36,7 @@ export function useWebSocket(scanId: string | null) {
   const reconnectAttemptsRef = useRef(0);
   const maxReconnectAttempts = 10;
 
-  const connect = useCallback(() => {
+  const connect = useCallback(function connectSocket() {
     if (!scanId) return;
 
     const token = localStorage.getItem('access_token');
@@ -115,7 +115,7 @@ export function useWebSocket(scanId: string | null) {
         if (reconnectAttemptsRef.current < maxReconnectAttempts) {
           const delay = Math.min(1000 * Math.pow(2, reconnectAttemptsRef.current), 30000);
           reconnectAttemptsRef.current++;
-          reconnectTimeoutRef.current = setTimeout(connect, delay);
+          reconnectTimeoutRef.current = setTimeout(connectSocket, delay);
         }
       };
 

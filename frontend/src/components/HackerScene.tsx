@@ -1,7 +1,5 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-
 // Stable deterministic positions - no Math.random() to avoid hydration errors
 const CHARACTERS = [
   { emoji: '🥷', label: 'HUNTER',   sub: 'scanning...',     color: '#00ff88', size: 56, bottom: '10%', anim: 'hw1', dur: '22s', delay: '0s',   bobAnim: 'hBounce', bobDur: '0.6s' },
@@ -27,10 +25,6 @@ const VULNS = [
 ];
 
 export default function HackerScene() {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => { setMounted(true); }, []);
-  if (!mounted) return null;
-
   return (
     <>
       <style>{`

@@ -6,6 +6,7 @@ Covers: SQLi, XSS, SSTI, SSRF, CORS, Headers, LFI, Open Redirect, Clickjacking
 import logging
 import random
 import time
+from html.parser import HTMLParser
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from urllib.parse import urljoin, quote, urlparse, parse_qs, urlencode, urlunparse
 import requests
@@ -129,6 +130,31 @@ INTERESTING_STATUS_CODES = {200, 201, 301, 302, 307, 308, 401, 403}
 SENSITIVE_STATUS_CODES = {200, 201}
 
 
+class _FormParser(HTMLParser):
+    """Extract HTML forms and their controls for lightweight CSRF checks."""
+
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.forms = []
+        self._current = None
+
+    def handle_starttag(self, tag, attrs):
+        attributes = dict(attrs)
+        if tag.lower() == "form":
+            self._current = {
+                "action": attributes.get("action", ""),
+                "method": attributes.get("method", "get").lower(),
+                "controls": [],
+            }
+        elif self._current is not None and tag.lower() in {"input", "button", "textarea", "select"}:
+            self._current["controls"].append(attributes)
+
+    def handle_endtag(self, tag):
+        if tag.lower() == "form" and self._current is not None:
+            self.forms.append(self._current)
+            self._current = None
+
+
 def make_finding(title, desc, severity, cvss, cwe_id, url, evidence,
                  req="", resp="", remediation="", template_id="fuzzer"):
     cwe_info = get_cwe_info(cwe_id)
@@ -243,6 +269,49 @@ class DirectoryFuzzer:
                 ))
         except Exception as e:
             logger.debug(f"CORS check error: {e}")
+        return findings
+
+    # ── CSRF ──────────────────────────────────────────────────────────────────
+    def _check_csrf(self, base_url):
+        findings = []
+        state_changing_methods = {"post", "put", "patch", "delete"}
+        token_names = ("csrf", "xsrf", "authenticity", "nonce", "token")
+        try:
+            resp = self.session.get(base_url, timeout=self.timeout)
+            parser = _FormParser()
+            parser.feed(resp.text)
+            base = urlparse(base_url)
+            vulnerable_forms = []
+
+            for form in parser.forms:
+                if form["method"] not in state_changing_methods:
+                    continue
+                action = urljoin(base_url, form["action"] or base_url)
+                action_url = urlparse(action)
+                if action_url.netloc and action_url.netloc != base.netloc:
+                    continue
+                has_token = any(
+                    any(marker in (control.get("name", "") or "").lower() for marker in token_names)
+                    for control in form["controls"]
+                )
+                if not has_token:
+                    vulnerable_forms.append(action)
+
+            if vulnerable_forms:
+                evidence = "\n".join(
+                    f"{method.upper()} {action} has no CSRF token field"
+                    for method, action in [("post", action) for action in vulnerable_forms]
+                )
+                findings.append(make_finding(
+                    "Potential Cross-Site Request Forgery (CSRF)",
+                    f"Found {len(vulnerable_forms)} same-origin state-changing form(s) without an apparent CSRF token.",
+                    "medium", 6.5, "CWE-352", base_url, evidence,
+                    f"GET {base_url}", resp.text[:500],
+                    "Add an unpredictable per-session CSRF token to every state-changing form and validate it server-side. Also use SameSite cookies and verify the Origin header.",
+                    "csrf-form-token",
+                ))
+        except Exception as e:
+            logger.debug(f"CSRF check error: {e}")
         return findings
 
     # ── XSS ───────────────────────────────────────────────────────────────────
@@ -644,35 +713,40 @@ class DirectoryFuzzer:
         logger.info(f"CORS check: {len(cors_findings)} findings")
         findings.extend(cors_findings)
 
-        cb(7, "Checking for Clickjacking...")
+        cb(6, "Checking CSRF protections...")
+        csrf_findings = self._check_csrf(target)
+        logger.info(f"CSRF check: {len(csrf_findings)} findings")
+        findings.extend(csrf_findings)
+
+        cb(8, "Checking for Clickjacking...")
         click_findings = self._check_clickjacking(target)
         logger.info(f"Clickjacking check: {len(click_findings)} findings")
         findings.extend(click_findings)
 
-        cb(9, "Checking information disclosure...")
+        cb(10, "Checking information disclosure...")
         info_findings = self._check_info_disclosure(target)
         logger.info(f"Info disclosure check: {len(info_findings)} findings")
         findings.extend(info_findings)
 
-        cb(12, "Testing for Reflected XSS...")
+        cb(13, "Testing for Reflected XSS...")
         findings.extend(self._check_xss(target))
 
-        cb(18, "Testing for SQL Injection...")
+        cb(19, "Testing for SQL Injection...")
         findings.extend(self._check_sqli(target))
 
-        cb(22, "Testing for SSTI...")
+        cb(23, "Testing for SSTI...")
         findings.extend(self._check_ssti(target))
 
-        cb(25, "Testing for Open Redirect...")
+        cb(26, "Testing for Open Redirect...")
         findings.extend(self._check_open_redirect(target))
 
-        cb(28, "Testing for LFI...")
+        cb(29, "Testing for LFI...")
         findings.extend(self._check_lfi(target))
 
-        cb(30, "Testing for SSRF...")
+        cb(31, "Testing for SSRF...")
         findings.extend(self._check_ssrf(target))
 
-        cb(33, f"Directory fuzzing ({total} paths)...")
+        cb(34, f"Directory fuzzing ({total} paths)...")
         with ThreadPoolExecutor(max_workers=self.threads) as executor:
             futures = {executor.submit(self._check_path, target, path): path for path in paths}
             for future in as_completed(futures):
@@ -680,7 +754,7 @@ class DirectoryFuzzer:
                     executor.shutdown(wait=False, cancel_futures=True)
                     break
                 completed += 1
-                progress = 33 + int((completed / total) * 67)
+                progress = 34 + int((completed / total) * 66)
                 result = future.result()
                 if result:
                     findings.append(result)

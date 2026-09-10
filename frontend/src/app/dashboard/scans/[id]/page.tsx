@@ -51,7 +51,7 @@ export default function ScanDetailPage() {
   const isRunning = status === 'running' || status === 'verifying' || status === 'pending';
   const displayVulns = ws.vulnerabilities.length > 0
     ? ws.vulnerabilities
-    : (scan as any)?.vulnerabilities || [];
+    : scan?.vulnerabilities || [];
 
   const handleStopScan = async () => {
     if (!isRunning) return; // Don't try to stop already finished scans

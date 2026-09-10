@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { api } from '@/lib/api';
 import { SCAN_STATUS_CONFIG } from '@/lib/constants';
 import type { Scan, ScanListResponse } from '@/types/scan';
@@ -178,7 +179,7 @@ export default function DashboardPage() {
       <div className="glass-card" style={{ padding:22 }}>
         <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:18 }}>
           <h2 style={{ fontSize:14, fontWeight:700, color:'#f1f5f9', display:'flex', alignItems:'center', gap:8 }}>🔍 Recent Scans</h2>
-          <a href="/dashboard/scans/new" className="btn-glow btn-glow-green" style={{ fontSize:12, padding:'6px 14px' }}>+ New Scan</a>
+          <Link href="/dashboard/scans/new" className="btn-glow btn-glow-green" style={{ fontSize:12, padding:'6px 14px' }}>+ New Scan</Link>
         </div>
 
         {loading ? (
@@ -187,7 +188,7 @@ export default function DashboardPage() {
           <div style={{ textAlign:'center', padding:40, color:'#64748b' }}>
             <div style={{ fontSize:40, marginBottom:10 }}>🎯</div>
             <p style={{ marginBottom:14 }}>No scans yet. Start your first security assessment.</p>
-            <a href="/dashboard/scans/new" className="btn-glow btn-glow-green" style={{ fontSize:13, padding:'10px 22px' }}>🔍 Launch First Scan</a>
+            <Link href="/dashboard/scans/new" className="btn-glow btn-glow-green" style={{ fontSize:13, padding:'10px 22px' }}>🔍 Launch First Scan</Link>
           </div>
         ) : (
           <div style={{ display:'grid', gap:6 }}>

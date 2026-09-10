@@ -10,7 +10,7 @@ export const settingsApi = {
 
   // Preferences
   getPreferences: () => api.request('/api/settings/preferences'),
-  updatePreferences: (data: Record<string, unknown>) =>
+  updatePreferences: (data: object) =>
     api.request('/api/settings/preferences', { method: 'PATCH', body: JSON.stringify(data) }),
 
   // API Keys

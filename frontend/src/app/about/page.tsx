@@ -2,16 +2,9 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
 export default function AboutPage() {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
   return (
     <div style={{ minHeight: '100vh', overflow: 'hidden' }}>
       {/* ─── Navigation ───────────────────────────────────────────── */}
@@ -73,7 +66,7 @@ export default function AboutPage() {
 
         {/* Floating Particles */}
         <div style={{ position: 'absolute', inset: 0, zIndex: 1, pointerEvents: 'none', overflow: 'hidden' }}>
-          {mounted && Array.from({ length: 15 }).map((_, i) => (
+          {Array.from({ length: 15 }).map((_, i) => (
             <div key={i} style={{
               position: 'absolute',
               width: (i % 3) + 2,
@@ -95,8 +88,8 @@ export default function AboutPage() {
           zIndex: 2,
           textAlign: 'center',
           padding: '60px 24px',
-          opacity: mounted ? 1 : 0,
-          transform: mounted ? 'translateY(0)' : 'translateY(20px)',
+          opacity: 1,
+          transform: 'translateY(0)',
           transition: 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
         }}>
           {/* Shield Icon */}
@@ -172,8 +165,8 @@ export default function AboutPage() {
           display: 'flex',
           flexDirection: 'column',
           gap: 40,
-          opacity: mounted ? 1 : 0,
-          transform: mounted ? 'translateY(0)' : 'translateY(20px)',
+          opacity: 1,
+          transform: 'translateY(0)',
           transition: 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s',
         }}>
           {/* Profile Header with Large Photo */}
@@ -248,8 +241,8 @@ export default function AboutPage() {
                     background: 'rgba(0,0,0,0.2)',
                     border: '1px solid rgba(148,163,184,0.06)',
                     transition: 'all 0.3s',
-                    opacity: mounted ? 1 : 0,
-                    transform: mounted ? 'translateX(0)' : 'translateX(-10px)',
+                    opacity: 1,
+                    transform: 'translateX(0)',
                     transitionDelay: `${0.4 + i * 0.1}s`,
                   }}>
                     <div style={{

@@ -2,7 +2,7 @@
 
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { settingsApi } from '@/lib/settingsApi';
 import { api } from '@/lib/api';
@@ -63,6 +63,44 @@ const Alert = ({ type, msg }: { type: 'success' | 'error'; msg: string }) => (
   </div>
 );
 
+interface LoginHistoryEntry {
+  id: string;
+  ip_address: string | null;
+  success: boolean;
+  created_at: string;
+}
+
+interface ApiKey {
+  id: string;
+  name: string;
+  key_prefix: string;
+  created_at: string;
+}
+
+interface Preferences {
+  default_scan_type?: string;
+  default_scan_timeout?: number;
+  default_fuzzer_threads?: number;
+  auto_stop_on_critical?: boolean;
+  exclude_paths?: string;
+  default_severity_filter?: string;
+  items_per_page?: number;
+  show_stats_cards?: boolean;
+  notify_scan_complete?: boolean;
+  notify_critical_finding?: boolean;
+  notify_email?: boolean;
+  report_include_low?: boolean;
+  report_company_name?: string;
+}
+
+interface ApiKeyResult {
+  raw_key: string;
+}
+
+function getErrorMessage(error: unknown, fallback: string): string {
+  return error instanceof Error ? error.message : fallback;
+}
+
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 export default function SettingsPage() {
@@ -82,16 +120,16 @@ export default function SettingsPage() {
   const [pwLoading, setPwLoading] = useState(false);
 
   // Login history
-  const [loginHistory, setLoginHistory] = useState<any[]>([]);
+  const [loginHistory, setLoginHistory] = useState<LoginHistoryEntry[]>([]);
 
   // API Keys
-  const [apiKeys, setApiKeys] = useState<any[]>([]);
+  const [apiKeys, setApiKeys] = useState<ApiKey[]>([]);
   const [newKeyName, setNewKeyName] = useState('');
   const [newKeyResult, setNewKeyResult] = useState<string | null>(null);
   const [apiKeyMsg, setApiKeyMsg] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
 
   // Preferences
-  const [prefs, setPrefs] = useState<Record<string, any>>({});
+  const [prefs, setPrefs] = useState<Preferences>({});
   const [prefsMsg, setPrefsMsg] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
   const [prefsLoading, setPrefsLoading] = useState(false);
 
@@ -125,15 +163,15 @@ export default function SettingsPage() {
   }, [user]);
 
   const loadApiKeys = async () => {
-    try { setApiKeys((await settingsApi.listApiKeys()) as any[]); } catch { /* ignore */ }
+    try { setApiKeys((await settingsApi.listApiKeys()) as ApiKey[]); } catch { /* ignore */ }
   };
 
   const loadLoginHistory = async () => {
-    try { setLoginHistory((await settingsApi.getLoginHistory()) as any[]); } catch { /* ignore */ }
+    try { setLoginHistory((await settingsApi.getLoginHistory()) as LoginHistoryEntry[]); } catch { /* ignore */ }
   };
 
   const loadPreferences = async () => {
-    try { setPrefs((await settingsApi.getPreferences()) as Record<string, any>); } catch { /* ignore */ }
+    try { setPrefs((await settingsApi.getPreferences()) as Preferences); } catch { /* ignore */ }
   };
 
   // ── Handlers ──────────────────────────────────────────────────────────────
@@ -144,8 +182,8 @@ export default function SettingsPage() {
     try {
       await settingsApi.updateProfile(profile);
       setProfileMsg({ type: 'success', msg: 'Profile updated successfully' });
-    } catch (err: any) {
-      setProfileMsg({ type: 'error', msg: err.message || 'Failed to update profile' });
+    } catch (err: unknown) {
+      setProfileMsg({ type: 'error', msg: getErrorMessage(err, 'Failed to update profile') });
     } finally { setProfileLoading(false); }
   };
 
@@ -159,8 +197,8 @@ export default function SettingsPage() {
       await api.changePassword(pw.current, pw.new);
       setPwMsg({ type: 'success', msg: 'Password changed successfully' });
       setPw({ current: '', new: '', confirm: '' });
-    } catch (err: any) {
-      setPwMsg({ type: 'error', msg: err.message || 'Failed to change password' });
+    } catch (err: unknown) {
+      setPwMsg({ type: 'error', msg: getErrorMessage(err, 'Failed to change password') });
     } finally { setPwLoading(false); }
   };
 
@@ -169,12 +207,12 @@ export default function SettingsPage() {
     setApiKeyMsg(null); setNewKeyResult(null);
     if (!newKeyName.trim()) return;
     try {
-      const result = await settingsApi.createApiKey(newKeyName) as any;
+      const result = await settingsApi.createApiKey(newKeyName) as ApiKeyResult;
       setNewKeyResult(result.raw_key);
       setNewKeyName('');
       loadApiKeys();
-    } catch (err: any) {
-      setApiKeyMsg({ type: 'error', msg: err.message || 'Failed to create API key' });
+    } catch (err: unknown) {
+      setApiKeyMsg({ type: 'error', msg: getErrorMessage(err, 'Failed to create API key') });
     }
   };
 
@@ -182,8 +220,8 @@ export default function SettingsPage() {
     try {
       await settingsApi.revokeApiKey(id);
       setApiKeys(prev => prev.filter(k => k.id !== id));
-    } catch (err: any) {
-      setApiKeyMsg({ type: 'error', msg: err.message || 'Failed to revoke key' });
+    } catch (err: unknown) {
+      setApiKeyMsg({ type: 'error', msg: getErrorMessage(err, 'Failed to revoke key') });
     }
   };
 
@@ -192,8 +230,8 @@ export default function SettingsPage() {
     try {
       await settingsApi.updatePreferences(prefs);
       setPrefsMsg({ type: 'success', msg: 'Preferences saved' });
-    } catch (err: any) {
-      setPrefsMsg({ type: 'error', msg: err.message || 'Failed to save preferences' });
+    } catch (err: unknown) {
+      setPrefsMsg({ type: 'error', msg: getErrorMessage(err, 'Failed to save preferences') });
     } finally { setPrefsLoading(false); }
   };
 
@@ -205,8 +243,8 @@ export default function SettingsPage() {
       const a = document.createElement('a');
       a.href = url; a.download = 'ethiovuln-export.json'; a.click();
       URL.revokeObjectURL(url);
-    } catch (err: any) {
-      setDangerMsg({ type: 'error', msg: err.message || 'Export failed' });
+    } catch (err: unknown) {
+      setDangerMsg({ type: 'error', msg: getErrorMessage(err, 'Export failed') });
     }
   };
 
@@ -215,8 +253,8 @@ export default function SettingsPage() {
       await settingsApi.deleteScanHistory();
       setDangerMsg({ type: 'success', msg: 'All scan history deleted' });
       setConfirmDeleteHistory(false);
-    } catch (err: any) {
-      setDangerMsg({ type: 'error', msg: err.message || 'Failed to delete history' });
+    } catch (err: unknown) {
+      setDangerMsg({ type: 'error', msg: getErrorMessage(err, 'Failed to delete history') });
     }
   };
 
@@ -224,8 +262,8 @@ export default function SettingsPage() {
     try {
       await settingsApi.deleteAccount(deleteAccountPw);
       api.logout();
-    } catch (err: any) {
-      setDangerMsg({ type: 'error', msg: err.message || 'Failed to delete account' });
+    } catch (err: unknown) {
+      setDangerMsg({ type: 'error', msg: getErrorMessage(err, 'Failed to delete account') });
     }
   };
 
