@@ -65,3 +65,8 @@ pycheck*.py
 imp_fastapi.py
 pycheck3.sh
 /tmp/
+backend/venv_old/
+venv/
+.venv/
+frontend/node_modules/
+frontend/.next/
