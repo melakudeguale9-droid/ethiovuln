@@ -69,7 +69,7 @@ async def register(request: Request, data: UserCreate, db: AsyncSession = Depend
 
 
 @router.post("/login", response_model=TokenResponse)
-@limiter.limit("5/minute")
+@limiter.limit("20/minute")
 async def login(request: Request, data: UserLogin, db: AsyncSession = Depends(get_db)):
     """Authenticate user and return JWT tokens."""
     result = await db.execute(select(User).where(User.email == data.email))

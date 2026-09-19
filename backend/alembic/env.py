@@ -9,6 +9,7 @@ from alembic import context
 # Import Base and all models so Alembic can detect them
 from app.database import Base
 from app.models import User, Scan, Vulnerability  # noqa
+from app.models.settings import UserPreferences, ApiKey, LoginHistory  # noqa
 
 config = context.config
 if config.config_file_name is not None:

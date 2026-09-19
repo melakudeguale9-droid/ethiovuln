@@ -4,7 +4,7 @@ EthioVuln — Scan Schemas (Pydantic)
 
 import uuid
 from datetime import datetime
-from pydantic import BaseModel, Field, HttpUrl
+from pydantic import BaseModel, Field, HttpUrl, model_validator
 from app.models.scan import ScanStatus, ScanType
 
 
@@ -40,10 +40,36 @@ class ScanResponse(BaseModel):
 
 
 class ScanListResponse(BaseModel):
-    scans: list[ScanResponse]
-    total: int
+    items: list[ScanResponse]
+    total_items: int
+    total_pages: int
     page: int
-    page_size: int
+    limit: int
+    # Compatibility fields for existing callers
+    scans: list[ScanResponse] | None = None
+    total: int | None = None
+    page_size: int | None = None
+
+    @model_validator(mode="before")
+    @classmethod
+    def populate_compat_fields(cls, data):
+        if isinstance(data, dict):
+            # Create a copy so we don't mutate input kwargs
+            d = dict(data)
+            if "items" in d and d.get("scans") is None:
+                d["scans"] = d["items"]
+            if "total_items" in d and d.get("total") is None:
+                d["total"] = d["total_items"]
+            if "limit" in d and d.get("page_size") is None:
+                d["page_size"] = d["limit"]
+            return d
+        return data
+
+    model_config = {"from_attributes": True}
+
+
+# Alias for clarity
+ScanPaginatedResponse = ScanListResponse
 
 
 class ScanDetailResponse(ScanResponse):

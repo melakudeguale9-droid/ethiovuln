@@ -181,11 +181,15 @@ def run_scan_task(self, scan_id: str):
             publish_progress(scan_id, 35, "Nuclei scan complete")
 
         # ─── Phase 2: ZAP Spider + Active Scan ────────────────
-        if scan_type in (ScanType.ZAP_ONLY, ScanType.NUCLEI_ZAP):
+        if scan_type in (ScanType.FULL, ScanType.ZAP_ONLY, ScanType.NUCLEI_ZAP):
             import socket
+            from urllib.parse import urlparse
             zap_available = False
             try:
-                s = socket.create_connection(("localhost", 8080), timeout=2)
+                _zap_parsed = urlparse(settings.ZAP_API_URL)
+                _zap_host = _zap_parsed.hostname or "localhost"
+                _zap_port = _zap_parsed.port or 8080
+                s = socket.create_connection((_zap_host, _zap_port), timeout=2)
                 s.close()
                 zap_available = True
             except Exception:

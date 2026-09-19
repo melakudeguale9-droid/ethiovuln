@@ -103,7 +103,7 @@ class TargetVerifier:
 
             # Check blocked patterns
             for pattern in BLOCKED_PATTERNS:
-                if re.match(pattern, domain):
+                if re.search(pattern, domain):
                     return VerificationResult(
                         status=VerificationStatus.BLOCKED_DOMAIN,
                         message=f"Domain '{domain}' matches a blocked pattern. Internal/private domains cannot be scanned.",

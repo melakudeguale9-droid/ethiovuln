@@ -18,7 +18,7 @@ services:
     image: postgres:16-alpine
     container_name: dast_postgres
     ports:
-      - "5432:5432"
+      - "5433:5432"
     environment:
       POSTGRES_USER: dast
       POSTGRES_PASSWORD: dast_secret
@@ -45,7 +45,7 @@ services:
       -config api.addrs.addr.regex=true
       -config api.key=${ZAP_API_KEY:-changeme}
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/JSON/core/view/version/"]
+      test: ["CMD-SHELL", "curl -f -H 'X-ZAP-API-Key: ${ZAP_API_KEY:-changeme}' http://localhost:8080/JSON/core/view/version/ || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 10
