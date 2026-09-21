@@ -3,6 +3,7 @@ EthioVuln — Database Engine & Session Management
 Async SQLAlchemy with asyncpg driver.
 """
 
+import os
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     async_sessionmaker,
@@ -13,10 +14,17 @@ from app.config import get_settings
 
 settings = get_settings()
 
+# Render provides postgres:// — normalize to postgresql+asyncpg://
+_db_url = settings.DATABASE_URL
+if _db_url.startswith("postgres://"):
+    _db_url = _db_url.replace("postgres://", "postgresql+asyncpg://", 1)
+elif _db_url.startswith("postgresql://") and "+asyncpg" not in _db_url:
+    _db_url = _db_url.replace("postgresql://", "postgresql+asyncpg://", 1)
+
 engine = create_async_engine(
-    settings.DATABASE_URL,
+    _db_url,
     echo=settings.DEBUG,
-    pool_size=20,
+    pool_size=5,
     max_overflow=10,
     pool_pre_ping=True,
 )

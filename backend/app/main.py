@@ -82,9 +82,21 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 app.add_middleware(SlowAPIMiddleware)
 
 # ─── CORS Middleware ─────────────────────────────────────────────────────────
+import os as _os
+
+_FRONTEND_URL = _os.getenv("FRONTEND_URL", "http://localhost:3000")
+_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://localhost:8000",
+    _FRONTEND_URL,
+]
+# Also allow any onrender.com subdomain for convenience
+_RENDER_PATTERN = r"https://.*\.onrender\.com"
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=_ALLOWED_ORIGINS,
+    allow_origin_regex=_RENDER_PATTERN,
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],

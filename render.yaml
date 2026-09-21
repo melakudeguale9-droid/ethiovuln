@@ -1,0 +1,84 @@
+services:
+
+  # ─── FastAPI Backend ───────────────────────────────────────────────────────
+  - type: web
+    name: ethiovuln-backend
+    runtime: python
+    region: oregon
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: bash render-start.sh
+    healthCheckPath: /api/health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ethiovuln-db
+          property: connectionString
+      - key: DATABASE_URL_SYNC
+        fromDatabase:
+          name: ethiovuln-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: ethiovuln-redis
+          type: keyvalue
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: JWT_ALGORITHM
+        value: HS256
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "1440"
+      - key: REFRESH_TOKEN_EXPIRE_DAYS
+        value: "7"
+      - key: APP_NAME
+        value: EthioVuln
+      - key: FRONTEND_URL
+        value: https://ethiovuln-frontend.onrender.com
+      - key: BACKEND_URL
+        value: https://ethiovuln-backend.onrender.com
+      - key: ZAP_API_KEY
+        value: changeme
+      - key: NUCLEI_PATH
+        value: /usr/bin/nuclei
+      - key: DEBUG
+        value: "false"
+      - key: PYTHON_VERSION
+        value: "3.11.0"
+
+  # ─── Next.js Frontend ─────────────────────────────────────────────────────
+  - type: web
+    name: ethiovuln-frontend
+    runtime: node
+    region: oregon
+    plan: free
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: BACKEND_URL
+        value: https://ethiovuln-backend.onrender.com
+      - key: NEXT_PUBLIC_WS_URL
+        value: wss://ethiovuln-backend.onrender.com
+      - key: NEXT_PUBLIC_API_URL
+        value: ""
+      - key: NODE_ENV
+        value: production
+
+# ─── PostgreSQL Database ───────────────────────────────────────────────────
+databases:
+  - name: ethiovuln-db
+    region: oregon
+    plan: free
+    databaseName: dast_db
+    user: dast
+
+# ─── Redis (Key Value) ────────────────────────────────────────────────────
+  - type: keyvalue
+    name: ethiovuln-redis
+    region: oregon
+    plan: free
+    ipAllowList: []
