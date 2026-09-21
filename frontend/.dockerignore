@@ -1,0 +1,22 @@
+# Dependencies (installed during build)
+node_modules/
+
+# Build output (rebuilt during Docker build)
+.next/
+out/
+build/
+
+# Environment files
+.env
+.env.local
+.env*.local
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+
+# Logs
+*.log

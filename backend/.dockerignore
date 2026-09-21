@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+venv/
+venv_old/
+.venv/
+env/
+
+# Environment files (injected by docker-compose)
+.env
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Test files
+tests/
+test_*.py

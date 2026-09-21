@@ -1,19 +1,6 @@
 services:
-  redis:
-    image: redis:7-alpine
-    container_name: dast_redis
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    command: redis-server --appendonly yes
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    restart: unless-stopped
 
+  # ─── PostgreSQL ────────────────────────────────────────────────────────────
   postgres:
     image: postgres:16-alpine
     container_name: dast_postgres
@@ -32,6 +19,23 @@ services:
       retries: 5
     restart: unless-stopped
 
+  # ─── Redis ────────────────────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: dast_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # ─── OWASP ZAP ────────────────────────────────────────────────────────────
   zap:
     image: ghcr.io/zaproxy/zaproxy:stable
     container_name: dast_zap
@@ -45,13 +49,95 @@ services:
       -config api.addrs.addr.regex=true
       -config api.key=${ZAP_API_KEY:-changeme}
     healthcheck:
-      test: ["CMD-SHELL", "curl -f -H 'X-ZAP-API-Key: ${ZAP_API_KEY:-changeme}' http://localhost:8080/JSON/core/view/version/ || exit 1"]
+      test: ["CMD-SHELL", "curl -sf -H 'X-ZAP-API-Key: ${ZAP_API_KEY:-changeme}' http://localhost:8080/JSON/core/view/version/ || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 10
       start_period: 60s
     restart: unless-stopped
 
+  # ─── FastAPI Backend ───────────────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: dast_backend
+    ports:
+      - "8000:8000"
+    environment:
+      # Inside Docker, services talk to each other by service name
+      DATABASE_URL: postgresql+asyncpg://dast:dast_secret@postgres:5432/dast_db
+      DATABASE_URL_SYNC: postgresql://dast:dast_secret@postgres:5432/dast_db
+      REDIS_URL: redis://redis:6379/0
+      ZAP_API_URL: http://zap:8080
+      ZAP_API_KEY: ${ZAP_API_KEY:-changeme}
+      NUCLEI_PATH: /usr/bin/nuclei
+      SECRET_KEY: ${SECRET_KEY:-3f8a2e1d9c7b4f6a0e5d3c2b1a9f8e7d6c5b4a3e2d1f0e9d8c7b6a5f4e3d2c1}
+      JWT_ALGORITHM: HS256
+      ACCESS_TOKEN_EXPIRE_MINUTES: 1440
+      REFRESH_TOKEN_EXPIRE_DAYS: 7
+      APP_NAME: EthioVuln
+      BACKEND_URL: http://localhost:8000
+      FRONTEND_URL: http://localhost:3000
+      DEBUG: "false"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8000/api/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+
+  # ─── Celery Worker ────────────────────────────────────────────────────────
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: dast_worker
+    command: celery -A app.workers.celery_app worker --loglevel=info --pool=solo
+    environment:
+      DATABASE_URL: postgresql+asyncpg://dast:dast_secret@postgres:5432/dast_db
+      DATABASE_URL_SYNC: postgresql://dast:dast_secret@postgres:5432/dast_db
+      REDIS_URL: redis://redis:6379/0
+      ZAP_API_URL: http://zap:8080
+      ZAP_API_KEY: ${ZAP_API_KEY:-changeme}
+      NUCLEI_PATH: /usr/bin/nuclei
+      SECRET_KEY: ${SECRET_KEY:-3f8a2e1d9c7b4f6a0e5d3c2b1a9f8e7d6c5b4a3e2d1f0e9d8c7b6a5f4e3d2c1}
+      JWT_ALGORITHM: HS256
+      DEBUG: "false"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ─── Next.js Frontend ─────────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        # Inside Docker, frontend container talks to backend service
+        BACKEND_URL: http://backend:8000
+        # WebSocket URL must be reachable from the browser (not the container)
+        NEXT_PUBLIC_WS_URL: ws://localhost:8000
+        DOCKER_BUILD: "1"
+    container_name: dast_frontend
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
 volumes:
-  redis_data:
   postgres_data:
+  redis_data:

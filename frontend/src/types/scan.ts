@@ -22,6 +22,7 @@ export interface Scan {
   started_at: string | null;
   completed_at: string | null;
   created_at: string;
+  vulnerabilities?: import('./vulnerability').Vulnerability[];
 }
 
 export interface ScanListResponse {

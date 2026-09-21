@@ -75,15 +75,19 @@ export default function LandingPage() {
     <div style={{ minHeight: '100vh', overflow: 'hidden' }}>
       {/* ─── Navigation ───────────────────────────────────────────── */}
       <header style={{
-        position: 'absolute',
+        position: 'fixed',
         top: 0,
         left: 0,
         right: 0,
-        padding: '24px 48px',
+        padding: '18px 48px',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        zIndex: 50,
+        zIndex: 100,
+        background: 'rgba(10,14,26,0.85)',
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
+        borderBottom: '1px solid rgba(148,163,184,0.08)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <div style={{
@@ -106,6 +110,7 @@ export default function LandingPage() {
       <section style={{
         position: 'relative',
         minHeight: '100vh',
+        paddingTop: 80,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',

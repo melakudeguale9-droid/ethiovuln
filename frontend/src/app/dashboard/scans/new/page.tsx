@@ -172,7 +172,6 @@ export default function NewScanPage() {
               <span style={{ fontSize: 11, color: '#64748b', marginRight: 8 }}>⚡ Quick test:</span>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 6 }}>
                 {QUICK_TESTS.map((qt, i) => {
-                  const isActive = scanType === qt.scanType && targetUrl === '';
                   return (
                     <button key={i} onClick={() => setScanType(qt.scanType)} style={{
                       padding: '5px 12px', borderRadius: 6, fontSize: 11, cursor: 'pointer',

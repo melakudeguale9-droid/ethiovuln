@@ -70,3 +70,6 @@ venv/
 .venv/
 frontend/node_modules/
 frontend/.next/
+
+# ─── Docker secrets ──────────────────────────────────────────────────────────
+.env.docker
