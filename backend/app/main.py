@@ -36,13 +36,16 @@ async def lifespan(app: FastAPI):
     logger.info("=" * 60)
 
     # Validate configuration before anything else
-    validate_settings(settings)
-    logger.info("✓ Configuration validated")
+    try:
+        validate_settings(settings)
+        logger.info("✓ Configuration validated")
+    except Exception as e:
+        logger.error(f"✗ Configuration validation failed: {e}")
 
-    # Initialize database tables (dev mode)
+    # Initialize database tables
     try:
         await init_db()
-        logger.info("✓ Database tables initialized")
+        logger.info("✓ Database tables initialized successfully")
     except Exception as e:
         logger.error(f"✗ Database initialization failed: {e}")
 
@@ -84,20 +87,22 @@ app.add_middleware(SlowAPIMiddleware)
 # ─── CORS Middleware ─────────────────────────────────────────────────────────
 import os as _os
 
-_FRONTEND_URL = _os.getenv("FRONTEND_URL", "http://localhost:3000")
+_FRONTEND_URL = _os.getenv("FRONTEND_URL", "https://ethiovuln-1.onrender.com")
+
 _ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:8000",
+    "https://ethiovuln-1.onrender.com",
     _FRONTEND_URL,
 ]
-# Also allow any onrender.com subdomain for convenience
+
 _RENDER_PATTERN = r"https://.*\.onrender\.com"
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=_ALLOWED_ORIGINS,
     allow_origin_regex=_RENDER_PATTERN,
-    allow_credentials=False,
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
