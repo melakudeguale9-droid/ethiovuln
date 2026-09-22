@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cherrytree>
+  <node unique_id="12" master_id="0" name="eslint.config.mjs" prog_lang="sh" tags="" readonly="0" nosearch_me="0" nosearch_ch="0" custom_icon_id="132" is_bold="1" foreground="" ts_creation="1789846210" ts_lastsave="1789846850">
+    <rich_text>## What is `eslint.config.mjs`?
+
+**ESLint** is a **code quality checker** — it automatically reads your code and warns you about mistakes, bad practices, or inconsistencies before you even run it.
+
+---
+
+### Simple analogy:
+
+```
+ESLint = spell checker for code
+         (like red underlines in Word, but for JavaScript/TypeScript)
+```
+
+---
+
+### What your config does:
+
+```js
+import nextVitals from "eslint-config-next/core-web-vitals";
+import nextTs    from "eslint-config-next/typescript";
+```
+
+It uses two rule sets:
+
+| Rule set | What it checks |
+|---|---|
+| `core-web-vitals` | Next.js performance rules (image optimization, no `&lt;a&gt;` inside `&lt;Link&gt;`, etc.) |
+| `typescript` | TypeScript rules (no unused variables, correct types, etc.) |
+
+And it ignores generated folders:
+```
+.next/    ← don't lint build output
+out/
+build/
+```
+
+---
+
+### How to run it:
+
+```bash
+cd /home/Melaku/Downloads/ethiovuln-main/frontend
+npm run lint
+```
+
+Example output:
+```
+✓ No ESLint warnings or errors   ← all good
+```
+or
+```
+Warning: 'isActive' is assigned but never used   ← we already fixed this one
+```
+
+---
+
+### Key facts:
+
+| Fact | Detail |
+|---|---|
+| **Runs automatically?** | Yes — `npm run build` runs it too |
+| **Blocks deployment?** | Yes — errors stop the build |
+| **Edit it?** | Rarely — only to add/remove rules |
+| **File extension `.mjs`** | Modern JavaScript module format |
+
+---
+
+### Summary:
+
+```
+eslint.config.mjs = rules that check your code for mistakes
+                    runs with: npm run lint
+                    catches bugs before they reach production
+```</rich_text>
+  </node>
+</cherrytree>

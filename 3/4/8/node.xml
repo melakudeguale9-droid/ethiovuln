@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cherrytree>
+  <node unique_id="8" master_id="0" name="public" prog_lang="sh" tags="" readonly="0" nosearch_me="0" nosearch_ch="0" custom_icon_id="132" is_bold="1" foreground="" ts_creation="1789846018" ts_lastsave="1789846526">
+    <rich_text>Let me check what's actually in your public folder first.## What is `frontend/public`?
+
+The `public` folder holds **static files** that are served directly to the browser — images, icons, fonts, and other assets that don't need to be processed by Next.js.
+
+---
+
+### How it works:
+
+Any file you put in `public/` is accessible at the root URL directly:
+
+```
+public/hero-bg.png     →   http://localhost:3000/hero-bg.png
+public/profile.png     →   http://localhost:3000/profile.png
+public/shield-icon.png →   http://localhost:3000/shield-icon.png
+```
+
+And in your code you reference them like:
+```tsx
+&lt;img src="/hero-bg.png" /&gt;
+&lt;img src="/profile.png" /&gt;
+```
+
+---
+
+### What's in YOUR `public/` folder:
+
+| File | Used for |
+|---|---|
+| `hero-bg.png` | Background image on the About/landing page |
+| `profile.png` | Melaku's profile photo on the About page |
+| `shield-icon.png` | Shield icon on the About page |
+| `file.svg` | Default Next.js starter icon |
+| `globe.svg` | Default Next.js starter icon |
+| `next.svg` | Next.js logo |
+| `vercel.svg` | Vercel logo |
+| `window.svg` | Default Next.js starter icon |
+
+The `file.svg`, `globe.svg`, `next.svg`, `vercel.svg`, `window.svg` are leftover from the **Next.js starter template** — they're not used in EthioVuln and can be deleted if you want to clean up.
+
+---
+
+### Key facts:
+
+| Fact | Detail |
+|---|---|
+| **Processed by Next.js?** | No — served as-is |
+| **Pushed to GitHub?** | Yes — these ARE committed |
+| **Edit files here?** | Yes — add images, icons, fonts here |
+| **Path in code** | Always starts with `/` (e.g. `"/profile.png"`) |
+
+---
+
+### Difference from `src/` files:
+
+```
+public/         →  static assets (images, icons) — no processing
+src/            →  React/TypeScript code — compiled by Next.js
+```</rich_text>
+  </node>
+</cherrytree>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cherrytree>
+  <node unique_id="7" master_id="0" name="node_modules" prog_lang="sh" tags="" readonly="0" nosearch_me="0" nosearch_ch="0" custom_icon_id="132" is_bold="1" foreground="" ts_creation="1789845986" ts_lastsave="1789846441">
+    <rich_text>## What is `frontend/node_modules`?
+
+`node_modules` is the folder where **all the libraries your project depends on** are installed.
+
+---
+
+### Simple analogy:
+
+```
+package.json          =   Shopping list
+npm install           =   Going to the store
+node_modules/         =   Your kitchen pantry (all the ingredients)
+```
+
+---
+
+### How it works:
+
+**1. You define what you need in `package.json`:**
+```json
+{
+  "dependencies": {
+    "next": "16.2.3",
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
+  }
+}
+```
+
+**2. You run `npm install` — it downloads everything into `node_modules/`:**
+```
+frontend/node_modules/
+├── next/          ← Next.js framework
+├── react/         ← React library
+├── react-dom/     ← React DOM rendering
+├── typescript/    ← TypeScript compiler
+├── tailwindcss/   ← CSS framework
+└── ... (hundreds more sub-dependencies)
+```
+
+---
+
+### Key facts:
+
+| Fact | Detail |
+|---|---|
+| **Size** | Usually 200MB–1GB+ |
+| **Edit it?** | Never — always auto-generated |
+| **In `.gitignore`?** | Yes — never pushed to GitHub |
+| **How to recreate** | Just run `npm install` |
+| **Safe to delete?** | Yes — `rm -rf node_modules &amp;&amp; npm install` rebuilds it |
+
+---
+
+### Why it's never pushed to GitHub:
+
+It can contain **hundreds of thousands of files** and is **huge in size**. Instead, only `package.json` is committed — anyone who clones the repo just runs `npm install` and gets the same packages.
+
+```
+# Your .gitignore already has:
+frontend/node_modules/   ← correctly ignored
+```
+
+---
+
+### Summary:
+
+```
+node_modules/  =  all the tools/libraries your code borrows from
+                  auto-downloaded, never edited, never committed
+```</rich_text>
+  </node>
+</cherrytree>

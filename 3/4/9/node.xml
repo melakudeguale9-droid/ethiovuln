@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cherrytree>
+  <node unique_id="9" master_id="0" name="src" prog_lang="sh" tags="" readonly="0" nosearch_me="0" nosearch_ch="0" custom_icon_id="132" is_bold="1" foreground="" ts_creation="1789846049" ts_lastsave="1789846625">
+    <rich_text>Let me check what's actually in your src folder.## What is `frontend/src`?
+
+`src` (short for **source**) is where **all your actual code lives**. This is what you write and edit.
+
+---
+
+### Your EthioVuln `src` structure:
+
+```
+src/
+├── app/           ← Pages (what users see at each URL)
+├── components/    ← Reusable UI pieces
+├── hooks/         ← Shared React logic
+├── lib/           ← API client &amp; utilities
+└── types/         ← TypeScript type definitions
+```
+
+---
+
+### Each folder explained:
+
+#### `app/` — Pages
+Every folder = a URL route:
+```
+app/page.tsx                        → /                    (landing page)
+app/login/page.tsx                  → /login
+app/register/page.tsx               → /register
+app/about/page.tsx                  → /about
+app/dashboard/page.tsx              → /dashboard
+app/dashboard/scans/page.tsx        → /dashboard/scans
+app/dashboard/scans/new/page.tsx    → /dashboard/scans/new
+app/dashboard/scans/[id]/page.tsx   → /dashboard/scans/abc123
+app/dashboard/reports/page.tsx      → /dashboard/reports
+app/dashboard/settings/page.tsx     → /dashboard/settings
+app/layout.tsx                      → wraps ALL pages
+app/globals.css                     → global styles
+app/error.tsx                       → error page
+app/not-found.tsx                   → 404 page
+```
+
+#### `components/` — Reusable UI pieces
+```
+PageNav.tsx   ← back/forward navigation bar
+              (used across multiple pages)
+```
+
+#### `hooks/` — Shared React logic
+```
+useAuth.tsx       ← handles login/logout/user state
+useWebSocket.ts   ← handles live scan WebSocket connection
+```
+
+#### `lib/` — Utilities &amp; API
+```
+api.ts          ← talks to backend (all HTTP requests)
+settingsApi.ts  ← settings-specific API calls
+constants.ts    ← shared values (colors, labels, URLs)
+cvss.ts         ← CVSS score helpers
+```
+
+#### `types/` — TypeScript definitions
+```
+scan.ts            ← Scan, ScanStatus, ScanType shapes
+user.ts            ← User, LoginRequest, TokenResponse shapes
+vulnerability.ts   ← Vulnerability, Severity shapes
+```
+
+---
+
+### Simple rule:
+
+```
+src/app/      →  what the user SEES  (pages)
+src/lib/      →  how it WORKS        (API, logic)
+src/hooks/    →  shared BEHAVIOR     (auth, websocket)
+src/types/    →  data SHAPES         (TypeScript)
+src/components/ → reusable UI PIECES
+```
+
+Everything in `src/` gets **compiled by Next.js** into the `.next/` folder when you run `npm run dev`.</rich_text>
+  </node>
+</cherrytree>

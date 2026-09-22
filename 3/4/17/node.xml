@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cherrytree>
+  <node unique_id="17" master_id="0" name="postcss.config.mjs" prog_lang="sh" tags="" readonly="0" nosearch_me="0" nosearch_ch="0" custom_icon_id="132" is_bold="1" foreground="" ts_creation="1789847080" ts_lastsave="1789848057">
+    <rich_text>## What is `postcss.config.mjs`?
+
+**PostCSS** is a **CSS processor** — it takes your CSS and transforms it before the browser sees it. This config file tells PostCSS which plugins to use.
+
+---
+
+### Your config is very simple:
+
+```js
+plugins: {
+  "@tailwindcss/postcss": {}   ← only one plugin
+}
+```
+
+It runs one plugin: **Tailwind CSS**.
+
+---
+
+### How the chain works:
+
+```
+You write CSS / Tailwind classes
+        │
+        ▼
+PostCSS reads it
+        │
+        ▼
+@tailwindcss/postcss plugin runs
+        │
+        ▼
+Generates final CSS the browser understands
+        │
+        ▼
+Browser renders your styles
+```
+
+---
+
+### Simple analogy:
+
+```
+PostCSS       = a factory machine
+Plugin        = the tool inside the machine
+Config file   = settings for the machine
+
+Your CSS goes in → processed → clean CSS comes out
+```
+
+---
+
+### Why Tailwind needs PostCSS:
+
+Tailwind CSS works by **scanning your code** for class names like `flex`, `text-red-500`, `p-4` and generating only the CSS that's actually used. PostCSS is what triggers that scan and generation process.
+
+---
+
+### Key facts:
+
+| Fact | Detail |
+|---|---|
+| **Auto-runs?** | Yes — every time `npm run dev` or `npm run build` runs |
+| **Edit it?** | Rarely — only if adding new CSS plugins |
+| **Without it?** | Tailwind classes would not work |
+| **File extension `.mjs`** | Modern JavaScript module format |
+
+---
+
+### Summary:
+
+```
+postcss.config.mjs = tells PostCSS to run Tailwind CSS
+                     on your styles before sending to browser
+
+You never touch this file — it just silently makes
+Tailwind CSS work in your project.
+```</rich_text>
+  </node>
+</cherrytree>

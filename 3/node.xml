@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cherrytree>
+  <node unique_id="3" master_id="0" name="Ethiovuln.ctz" prog_lang="sh" tags="" readonly="0" nosearch_me="1" nosearch_ch="1" custom_icon_id="132" is_bold="1" foreground="#ff0000" ts_creation="1789845307" ts_lastsave="1789845508">
+    <rich_text>Based on the codebase I've been working with, here's what EthioVuln is:
+
+---
+
+## EthioVuln
+
+**EthioVuln** is a full-stack **web vulnerability scanner** built by **Melaku Deguale**. It's a professional-grade Dynamic Application Security Testing (DAST) platform.
+
+### What it does
+You give it a target website URL, and it automatically:
+1. **Recons** the target (headers, DNS, tech stack)
+2. **Discovers content** (hidden directories, 153+ paths)
+3. **Crawls** the site with OWASP ZAP spider
+4. **Scans for vulnerabilities** using Nuclei templates (CVEs, misconfigs)
+5. **Fuzzes** for SQLi, XSS, SSTI, CORS, LFI, open redirects, etc.
+6. **Generates a PDF report** with CVSS scores and CWE classifications
+
+### What it finds
+- SQL Injection
+- XSS (Reflected &amp; Stored)
+- CORS Misconfiguration
+- Exposed `.env` / secrets
+- Missing Security Headers
+- Open Directories
+- Known CVEs
+- Admin Panel Exposure
+- And more...
+
+### Tech Stack
+| Part | Technology |
+|---|---|
+| Frontend | Next.js, React, TypeScript |
+| Backend | Python, FastAPI |
+| Database | PostgreSQL |
+| Task Queue | Celery + Redis |
+| Scan Engines | Nuclei, OWASP ZAP, Custom Fuzzer |
+| Reports | PDF with CVSS + CWE |
+| Auth | JWT tokens |
+
+### Key features
+- **Real-time live scan logs** via WebSocket
+- **Dashboard** showing all scans and findings
+- **PDF reports** downloadable after scan completes
+- **SSRF protection** — blocks scanning of internal/private IPs
+- **Rate limiting** and JWT authentication
+
+---
+
+It's essentially a self-hosted alternative to tools like **Burp Suite Scanner** or **OWASP ZAP** — but with a modern web dashboard, multiple engines running together, and PDF report generation. Built for security researchers and penetration testers doing **authorized** security assessments.</rich_text>
+  </node>
+</cherrytree>

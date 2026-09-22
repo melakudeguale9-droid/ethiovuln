@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cherrytree>
+  <node unique_id="13" master_id="0" name="next-env.d.ts" prog_lang="sh" tags="" readonly="0" nosearch_me="0" nosearch_ch="0" custom_icon_id="132" is_bold="1" foreground="" ts_creation="1789846935" ts_lastsave="1789847340">
+    <rich_text>## What is `next-env.d.ts`?
+
+It's a tiny **auto-generated TypeScript file** created by Next.js. You never write or edit it — Next.js manages it automatically.
+
+---
+
+### What it does:
+
+```ts
+/// &lt;reference types="next" /&gt;
+/// &lt;reference types="next/image-types/global" /&gt;
+```
+
+These two lines tell TypeScript:
+- **"Load all Next.js type definitions"** — so TypeScript knows about `NextPage`, `GetServerSideProps`, `Metadata`, etc.
+- **"Load Next.js image types"** — so TypeScript understands `&lt;Image&gt;` component props
+
+```ts
+import "./.next/dev/types/routes.d.ts";
+```
+This loads **auto-generated route types** — so TypeScript knows all valid URL paths in your app.
+
+---
+
+### Simple analogy:
+
+```
+next-env.d.ts = a dictionary that tells TypeScript
+                "here are all the Next.js words you're allowed to use"
+```
+
+---
+
+### Key facts:
+
+| Fact | Detail |
+|---|---|
+| **Auto-generated?** | Yes — by Next.js on every `npm run dev` |
+| **Edit it?** | Never — the file even says `// NOTE: This file should not be edited` |
+| **In `.gitignore`?** | Yes — never committed to GitHub |
+| **Without it?** | TypeScript would show errors on all Next.js features |
+
+---
+
+### Summary:
+
+```
+next-env.d.ts = auto-generated TypeScript glue file
+                makes Next.js features work with TypeScript
+                never touch it — Next.js owns it
+```
+
+It's one of the most boring but important files in a Next.js project — it just silently makes everything work.</rich_text>
+  </node>
+</cherrytree>

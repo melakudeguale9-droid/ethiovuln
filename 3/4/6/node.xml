@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cherrytree>
+  <node unique_id="6" master_id="0" name=".next" prog_lang="sh" tags="" readonly="0" nosearch_me="0" nosearch_ch="0" custom_icon_id="132" is_bold="1" foreground="" ts_creation="1789845948" ts_lastsave="1789846362">
+    <rich_text>## What is `frontend/.next`?
+
+The `.next` folder is the **build output directory** that Next.js automatically creates when you run `npm run dev` or `npm run build`.
+
+---
+
+### Think of it like this:
+
+```
+Your code (src/)          →   npm run build   →   .next/
+(what you write)              (compilation)       (what the browser runs)
+```
+
+---
+
+### What's inside `.next/`:
+
+| Folder | What it contains |
+|---|---|
+| `.next/cache/` | Cached files to make builds faster |
+| `.next/server/` | Server-side rendered pages |
+| `.next/static/` | CSS, JavaScript bundles for the browser |
+| `.next/types/` | Auto-generated TypeScript types |
+
+---
+
+### Key facts:
+
+**You never edit it** — it's auto-generated, always overwritten by Next.js
+
+**It's in `.gitignore`** — it should never be pushed to GitHub
+```
+frontend/.next/    ← already ignored in your project
+```
+
+**It gets recreated** every time you run:
+```bash
+npm run dev    # development mode
+npm run build  # production mode
+```
+
+**You can safely delete it** and it will be rebuilt:
+```bash
+rm -rf frontend/.next
+cd frontend &amp;&amp; npm run dev
+```
+
+---
+
+### Simple analogy:
+
+Your TypeScript/React source code (`.tsx` files) is like a **recipe written in English**.
+
+The `.next` folder is the **cooked meal** — the browser can't read TypeScript directly, so Next.js compiles it into plain JavaScript that browsers understand, and stores that in `.next/`.</rich_text>
+  </node>
+</cherrytree>

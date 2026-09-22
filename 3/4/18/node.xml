@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cherrytree>
+  <node unique_id="18" master_id="0" name="tsconfig.json" prog_lang="sh" tags="" readonly="0" nosearch_me="0" nosearch_ch="0" custom_icon_id="132" is_bold="1" foreground="" ts_creation="1789847168" ts_lastsave="1789848211">
+    <rich_text>## What is `tsconfig.json`?
+
+It's the **configuration file for TypeScript**. It tells the TypeScript compiler how to read, check, and understand your code.
+
+---
+
+### Breaking down YOUR config:
+
+#### `target` — what JavaScript version to output
+```json
+"target": "ES2017"
+```
+Compiles your modern TypeScript down to ES2017 JavaScript — compatible with all modern browsers.
+
+---
+
+#### `lib` — what built-in APIs TypeScript knows about
+```json
+"lib": ["dom", "dom.iterable", "esnext"]
+```
+| Value | Gives you access to |
+|---|---|
+| `dom` | `document`, `window`, `localStorage`, `fetch` |
+| `dom.iterable` | looping over DOM elements |
+| `esnext` | latest JS features (`async/await`, `Promise`, etc.) |
+
+---
+
+#### Important compiler options
+```json
+"strict": true          ← catches more bugs — enforces strict type checking
+"noEmit": true          ← TypeScript only checks, doesn't output files (Next.js handles that)
+"allowJs": true         ← allows mixing .js and .ts files
+"skipLibCheck": true    ← skips type checking node_modules (faster builds)
+"esModuleInterop": true ← lets you import CommonJS modules normally
+"resolveJsonModule": true ← lets you import .json files
+"jsx": "react-jsx"      ← understands React JSX syntax
+"incremental": true     ← caches results for faster rebuilds
+```
+
+---
+
+#### `paths` — the most useful setting for you
+```json
+"paths": {
+  "@/*": ["./src/*"]
+}
+```
+This is why you can write:
+```ts
+import { api } from '@/lib/api'        // ✅ works
+// instead of:
+import { api } from '../../lib/api'    // ❌ ugly relative path
+```
+
+`@/` is a shortcut that means `src/` — used everywhere in your code.
+
+---
+
+#### `include` / `exclude`
+```json
+"include": ["**/*.ts", "**/*.tsx", ...]   ← check all TypeScript files
+"exclude": ["node_modules"]               ← ignore node_modules
+```
+
+---
+
+### Summary:
+
+```
+tsconfig.json = settings for the TypeScript compiler
+
+Most important things it does in EthioVuln:
+  strict: true    → catches type errors early
+  @/* paths       → lets you use @/lib/api instead of ../../lib/api
+  noEmit: true    → TypeScript only checks, Next.js does the compiling
+  jsx             → understands React components
+```
+
+You rarely need to edit this file — it's already configured correctly for a Next.js + TypeScript project.</rich_text>
+  </node>
+</cherrytree>

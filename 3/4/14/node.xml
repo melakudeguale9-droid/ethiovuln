@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cherrytree>
+  <node unique_id="14" master_id="0" name="next.config.t" prog_lang="sh" tags="" readonly="0" nosearch_me="0" nosearch_ch="0" custom_icon_id="132" is_bold="1" foreground="" ts_creation="1789846976" ts_lastsave="1789847442">
+    <rich_text>## What is `next.config.ts`?
+
+It's the **main configuration file for Next.js**. It controls how your frontend app behaves — routing, proxying, allowed origins, and more.
+
+---
+
+### Breaking down YOUR config line by line:
+
+#### 1. Backend URL setting
+```ts
+const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:8000";
+```
+Reads the backend address from environment variables. Falls back to `localhost:8000` if not set. We fixed this — it was previously hardcoded.
+
+---
+
+#### 2. Allowed Dev Origins
+```ts
+allowedDevOrigins: ['172.29.192.1', '192.168.56.1', '192.168.1.*', '10.*.*.*']
+```
+Allows the frontend dev server to be accessed from these IP addresses — useful when testing from another device on the same network (e.g. your phone or VM).
+
+---
+
+#### 3. Rewrites (the most important part)
+```ts
+async rewrites() {
+  return [
+    {
+      source: "/api/:path*",
+      destination: `${BACKEND_URL}/api/:path*`,
+    },
+  ];
+}
+```
+
+This is a **proxy rule**. It means:
+
+```
+Browser calls:   http://localhost:3000/api/auth/login
+Next.js sends:   http://localhost:8000/api/auth/login
+                 (secretly, browser never knows)
+```
+
+Without this, the browser would get a **CORS error** trying to call `localhost:8000` directly from `localhost:3000`.
+
+---
+
+### Visual flow:
+
+```
+Browser (port 3000)
+    │
+    │  GET /api/auth/login
+    ▼
+Next.js (port 3000)   ← next.config.ts rewrite rule kicks in
+    │
+    │  forwards to → http://localhost:8000/api/auth/login
+    ▼
+FastAPI Backend (port 8000)
+    │
+    │  returns JSON
+    ▼
+Browser gets the response
+```
+
+---
+
+### Summary:
+
+```
+next.config.ts = settings file for Next.js
+
+Key things it does in EthioVuln:
+1. Proxies /api/* → backend at port 8000
+2. Allows access from local network IPs
+3. Uses BACKEND_URL env var (not hardcoded)
+```</rich_text>
+  </node>
+</cherrytree>

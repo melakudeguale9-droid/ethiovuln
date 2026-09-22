@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cherrytree>
+  <node unique_id="15" master_id="0" name="package-lock.json" prog_lang="sh" tags="" readonly="0" nosearch_me="0" nosearch_ch="0" custom_icon_id="132" is_bold="1" foreground="" ts_creation="1789847016" ts_lastsave="1789847609">
+    <rich_text>## What is `package-lock.json`?
+
+It's an **exact snapshot** of every package installed in `node_modules` — including the precise version, download URL, and checksum of every single dependency.
+
+---
+
+### Difference between `package.json` and `package-lock.json`:
+
+| File | Purpose | Example |
+|---|---|---|
+| `package.json` | Your wishlist — "I want React ~19" | `"react": "19.2.4"` |
+| `package-lock.json` | Exact record — "I installed React 19.2.4 from this exact URL with this exact hash" | Full tree locked |
+
+---
+
+### Simple analogy:
+
+```
+package.json       =  shopping list ("buy milk")
+package-lock.json  =  receipt       ("bought Lola milk 1L, 
+                                      from Store X, 
+                                      batch #ABC123, 
+                                      paid $1.20")
+```
+
+---
+
+### Why it exists:
+
+Without it, two developers running `npm install` on different days might get **different versions**:
+
+```
+Developer A installs on Monday  →  react-dom 19.2.4  ✅ works
+Developer B installs on Friday  →  react-dom 19.2.5  ❌ breaks
+
+With package-lock.json:
+Both get EXACTLY 19.2.4  ✅ always consistent
+```
+
+---
+
+### Key facts:
+
+| Fact | Detail |
+|---|---|
+| **Auto-generated?** | Yes — by `npm install` automatically |
+| **Edit it?** | Never — npm manages it |
+| **Commit to GitHub?** | Yes ✅ — always commit it |
+| **Size** | Can be thousands of lines |
+| **Recreate it?** | `rm package-lock.json &amp;&amp; npm install` |
+
+---
+
+### It's already in your project:
+
+```
+frontend/package-lock.json  ← committed to GitHub ✅
+frontend/package.json       ← committed to GitHub ✅
+frontend/node_modules/      ← NOT committed (in .gitignore) ✅
+```
+
+---
+
+### Summary:
+
+```
+package.json       = "what packages I need"        (you write this)
+package-lock.json  = "exact versions installed"    (npm writes this)
+node_modules/      = "the actual packages"         (npm downloads this)
+```
+
+Always commit `package-lock.json` — it guarantees everyone on the team gets identical packages.</rich_text>
+  </node>
+</cherrytree>

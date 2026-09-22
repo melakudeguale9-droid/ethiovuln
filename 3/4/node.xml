@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cherrytree>
+  <node unique_id="4" master_id="0" name="frontend" prog_lang="sh" tags="" readonly="0" nosearch_me="0" nosearch_ch="0" custom_icon_id="132" is_bold="1" foreground="#ff0000" ts_creation="1789845353" ts_lastsave="1789846083">
+    <rich_text>## What is Frontend?
+
+The **frontend** is the part of a website or app that you **see and interact with** in your browser.
+
+---
+
+### Simple way to think about it:
+
+| Part | What it is | Example |
+|---|---|---|
+| **Frontend** | What the user sees | Buttons, pages, forms, colors |
+| **Backend** | The server logic | Database, API, business rules |
+
+---
+
+### In EthioVuln specifically:
+
+The frontend is built with **Next.js + React** and has these pages:
+
+```
+http://localhost:3000/              ← Landing page
+http://localhost:3000/login         ← Login form
+http://localhost:3000/register      ← Register form
+http://localhost:3000/dashboard     ← Overview &amp; stats
+http://localhost:3000/dashboard/scans      ← Scan history list
+http://localhost:3000/dashboard/scans/new  ← Start a new scan
+http://localhost:3000/dashboard/scans/[id] ← Live scan results
+http://localhost:3000/dashboard/reports    ← Download PDF reports
+http://localhost:3000/dashboard/settings   ← User settings
+```
+
+### What the frontend does:
+- Shows the UI (buttons, tables, charts)
+- Talks to the **backend API** at `localhost:8000` to get/send data
+- Shows **live scan logs** via WebSocket in real time
+- Lets you download **PDF reports**
+
+### What the frontend does NOT do:
+- It does NOT run the scans itself
+- It does NOT touch the database directly
+- All the real work (scanning, fuzzing, ZAP) happens in the **backend**
+
+---
+
+Think of it like a restaurant:
+- **Frontend** = the dining room (what customers see)
+- **Backend** = the kitchen (where the actual work happens)</rich_text>
+  </node>
+</cherrytree>

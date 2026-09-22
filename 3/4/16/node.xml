@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cherrytree>
+  <node unique_id="16" master_id="0" name="package.json" prog_lang="sh" tags="" readonly="0" nosearch_me="0" nosearch_ch="0" custom_icon_id="132" is_bold="1" foreground="" ts_creation="1789847045" ts_lastsave="1789847928">
+    <rich_text>## What is `package.json`?
+
+It's the **identity card and instruction manual** for your frontend project. Every Node.js/Next.js project must have one.
+
+---
+
+### Breaking down YOUR `package.json`:
+
+#### Project info
+```json
+"name": "frontend",
+"version": "0.1.0",
+"private": true       ← can't be accidentally published to npm
+```
+
+---
+
+#### Scripts — commands you can run
+```json
+"scripts": {
+  "dev":   "next dev",     ← npm run dev   → starts dev server (localhost:3000)
+  "build": "next build",   ← npm run build → builds for production
+  "start": "next start",   ← npm run start → runs production build
+  "lint":  "eslint"        ← npm run lint  → checks code for errors
+}
+```
+
+These are the 4 commands you use daily:
+```bash
+npm run dev    # development — you use this
+npm run build  # production build
+npm run start  # run production build
+npm run lint   # check for code errors
+```
+
+---
+
+#### Dependencies — needed to RUN the app
+```json
+"dependencies": {
+  "next": "16.2.3",       ← Next.js framework
+  "react": "19.2.4",      ← React library
+  "react-dom": "19.2.4"   ← React DOM rendering
+}
+```
+Only 3 runtime dependencies — very minimal and clean.
+
+---
+
+#### DevDependencies — needed only during DEVELOPMENT
+```json
+"devDependencies": {
+  "@tailwindcss/postcss": "^4",  ← Tailwind CSS processor
+  "@types/node": "^20",          ← TypeScript types for Node.js
+  "@types/react": "^19",         ← TypeScript types for React
+  "@types/react-dom": "^19",     ← TypeScript types for React DOM
+  "eslint": "^9",                ← code linter
+  "eslint-config-next": "16.2.3",← Next.js ESLint rules
+  "tailwindcss": "^4",           ← CSS utility framework
+  "typescript": "^5"             ← TypeScript compiler
+}
+```
+These are NOT included in the final production build — only used while coding.
+
+---
+
+#### allowScripts — security whitelist
+```json
+"allowScripts": {
+  "sharp@0.34.5": true,        ← image optimization library
+  "unrs-resolver@1.11.1": true ← module resolver
+}
+```
+Explicitly allows these packages to run install scripts — a security feature.
+
+---
+
+### Summary:
+
+```
+package.json = project ID card + command list + dependency list
+
+Most important parts:
+  scripts      → commands you run (dev, build, lint)
+  dependencies → what the app needs to work
+  devDependencies → what YOU need to develop it
+```</rich_text>
+  </node>
+</cherrytree>
