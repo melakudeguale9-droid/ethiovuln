@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
 
-// Used by the API proxy rewrite (server-side at runtime, not baked in at build)
-const BACKEND_URL = process.env.BACKEND_URL || "https://ethiovuln-backend.onrender.com";
+// Ensure a valid URL string without trailing slashes
+const rawBackendUrl = process.env.BACKEND_URL || "https://ethiovuln-backend.onrender.com";
+const BACKEND_URL = rawBackendUrl.replace(/\/+$/, "");
 
 const nextConfig: NextConfig = {
   // Always enable standalone output for Docker deployments
