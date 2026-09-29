@@ -45,10 +45,8 @@ async def lifespan(app: FastAPI):
     # Initialize database tables
     try:
         from app.database import init_db
-        # Import models so they register with Base.metadata before create_all
-        import app.models.user
-        import app.models.scan
-        import app.models.vulnerability
+        # Import all models so they register with Base.metadata before create_all
+        import app.models
         
         await init_db()
         logger.info("✓ Database tables verified/created successfully.")

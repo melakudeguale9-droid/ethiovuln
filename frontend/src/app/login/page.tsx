@@ -43,7 +43,7 @@ function LoginForm() {
 
     try {
       await api.login(email, password);
-      window.location.href = '/dashboard';
+      router.push('/dashboard');
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Invalid email or password');
     } finally {
