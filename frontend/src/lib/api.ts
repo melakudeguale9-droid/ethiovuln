@@ -107,9 +107,17 @@ class ApiClient {
 
   // ─── Auth Endpoints ──────────────────────────────────────
   async login(email: string, password: string) {
+    const formData = new URLSearchParams();
+    formData.append('username', email); // OAuth2 expects 'username'
+    formData.append('password', password);
+
     const data = await this.request<TokenResponse>(
       '/api/auth/login',
-      { method: 'POST', body: JSON.stringify({ email, password }) },
+      { 
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: formData.toString()
+      },
       false
     );
     localStorage.setItem('access_token', data.access_token);

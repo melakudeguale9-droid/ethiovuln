@@ -68,11 +68,18 @@ async def register(request: Request, data: UserCreate, db: AsyncSession = Depend
     return user
 
 
+from fastapi.security import OAuth2PasswordRequestForm
+
 @router.post("/login", response_model=TokenResponse)
 @limiter.limit("20/minute")
-async def login(request: Request, data: UserLogin, db: AsyncSession = Depends(get_db)):
-    """Authenticate user and return JWT tokens."""
-    result = await db.execute(select(User).where(User.email == data.email))
+async def login(
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+    form_data: OAuth2PasswordRequestForm = Depends()
+):
+    """Authenticate user and return JWT tokens (supports Swagger UI & Frontend)."""
+    # Form data uses 'username' field, which we map to email
+    result = await db.execute(select(User).where(User.email == form_data.username))
     user = result.scalar_one_or_none()
 
     ip = request.client.host if request.client else None
@@ -80,10 +87,10 @@ async def login(request: Request, data: UserLogin, db: AsyncSession = Depends(ge
 
     if not user:
         # Prevent user enumeration timing attacks
-        hash_password(data.password)
+        hash_password(form_data.password)
         is_valid_password = False
     else:
-        is_valid_password = verify_password(data.password, user.hashed_password)
+        is_valid_password = verify_password(form_data.password, user.hashed_password)
 
     if not is_valid_password:
         # Record failed login
