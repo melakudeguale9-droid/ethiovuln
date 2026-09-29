@@ -17,8 +17,12 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    # Drop legacy avatar_url column from users
-    op.drop_column('users', 'avatar_url')
+    # Drop legacy avatar_url column from users (safe drop)
+    conn = op.get_bind()
+    inspector = sa.inspect(conn)
+    columns = [c['name'] for c in inspector.get_columns('users')]
+    if 'avatar_url' in columns:
+        op.drop_column('users', 'avatar_url')
 
     # ── user_preferences ────────────────────────────────────────────────────
     op.create_table(
