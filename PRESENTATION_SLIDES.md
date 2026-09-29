@@ -24,11 +24,12 @@
 - **Asynchronous Engine:** Celery & Redis (Scalable scanning)
 - **Database:** PostgreSQL (Reliable data storage)
 
-## Slide 5: Core Vulnerability Coverage
-- SQL Injection (SQLi)
-- Cross-Site Scripting (XSS)
-- Cross-Site Request Forgery (CSRF)
-- Security Misconfigurations (Missing Headers: CSP, HSTS)
+## Slide 5: Core Vulnerability Coverage (INSA Mandatory)
+- **SQL Injection (SQLi) - CWE-89**: Engine: ZAP | Score: 7.2-10.0 (High-Critical)
+- **Cross-Site Scripting (XSS) - CWE-79**: Engine: ZAP/Nuclei | Score: 5.4-8.2 (Medium-High)
+- **Cross-Site Request Forgery (CSRF) - CWE-352**: Engine: ZAP | Score: 4.3-8.8 (Medium-High)
+- **Missing Security Headers - CWE-1021/693**: Engine: Nuclei | Score: 2.6-5.3 (Low-Medium)
+- *Includes detailed detection mechanisms and remediation advice for each.*
 
 ## Slide 6: Advanced Security Hardening
 - **3-Tier SSRF Protection Gate:**

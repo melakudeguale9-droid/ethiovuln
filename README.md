@@ -193,6 +193,33 @@ EthioVuln avoids relying on a single scanning methodology by coordinating two in
 - Concurrent directory brute-forcing checking 153+ sensitive paths (`.env`, `.git/HEAD`, `wp-config.php.bak`, `backup.zip`).
 - Header audit examining Content Security Policy (CSP), HTTP Strict Transport Security (HSTS), and CORS policies.
 
+### Mandatory Vulnerability Detection (INSA Bootcamp Requirements)
+EthioVuln rigorously detects and reports on the four mandatory vulnerabilities:
+
+1. **SQL Injection (SQLi) - CWE-89**
+   - **Engine:** OWASP ZAP
+   - **Detection Mechanism:** Injects payloads (e.g., `' OR '1'='1`, time-based `WAITFOR`) to observe database errors or timing differences.
+   - **CVSS v3.1 Range:** 7.2 - 10.0 (High - Critical)
+   - **Remediation:** Parameterized queries, ORM usage, input sanitization.
+
+2. **Cross-Site Scripting (XSS) - CWE-79**
+   - **Engine:** OWASP ZAP & Nuclei
+   - **Detection Mechanism:** Injects benign JS (e.g., `"><script>alert(1)</script>`) and checks for unsanitized reflection or stored execution.
+   - **CVSS v3.1 Range:** 5.4 - 8.2 (Medium - High)
+   - **Remediation:** Context-aware output encoding, DOMPurify, Content Security Policy (CSP).
+
+3. **Cross-Site Request Forgery (CSRF) - CWE-352**
+   - **Engine:** OWASP ZAP
+   - **Detection Mechanism:** Identifies state-changing requests lacking or improperly validating anti-CSRF tokens.
+   - **CVSS v3.1 Range:** 4.3 - 8.8 (Medium - High)
+   - **Remediation:** Synchronizer Token Pattern, server-side validation, `SameSite` cookie attributes.
+
+4. **Missing Security Headers - CWE-1021 / CWE-693**
+   - **Engine:** Nuclei
+   - **Detection Mechanism:** Passive analysis of HTTP responses for missing/weak `CSP`, `HSTS`, `X-Frame-Options`, and `X-Content-Type-Options`.
+   - **CVSS v3.1 Range:** 2.6 - 5.3 (Low - Medium)
+   - **Remediation:** Enforce `Strict-Transport-Security`, `Content-Security-Policy: default-src 'self'`, and anti-clickjacking headers.
+
 ---
 
 ## 8. SSRF Protection Gate

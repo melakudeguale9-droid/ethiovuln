@@ -13,24 +13,33 @@ The system employs a robust, scalable architecture:
 ## 3. Vulnerability Detection and Remediation
 EthioVuln specifically targets critical vulnerabilities outlined in the bootcamp requirements:
 
-### 3.1 SQL Injection (SQLi)
-- **Detection Mechanism:** The scanner injects common SQL payloads (e.g., `' OR '1'='1`, `UNION SELECT`) into input fields and URL parameters. It analyzes HTTP responses for database error messages or time delays indicative of successful injection.
-- **Remediation:** Always use parameterized queries or prepared statements. Employ Object-Relational Mapping (ORM) frameworks to abstract SQL query construction. Validate and sanitize all user inputs.
+### 3.1 SQL Injection (SQLi) - CWE-89
+- **Detection Engine:** OWASP ZAP (Active Scanner)
+- **Detection Mechanism & Payloads:** The scanner identifies input vectors (URL parameters, forms, headers) and injects active SQL payloads (e.g., `' OR '1'='1`, `UNION SELECT null, version()--`, `WAITFOR DELAY '0:0:5'`). It analyzes HTTP responses for database error reflections or time delays indicative of blind SQLi.
+- **CVSS v3.1 Score Range:** 7.2 (High) - 10.0 (Critical)
+- **Exact Remediation Advice:** Always use parameterized queries or prepared statements. Employ Object-Relational Mapping (ORM) frameworks to abstract SQL query construction. Validate and sanitize all user inputs using strict allowlists.
 
-### 3.2 Cross-Site Scripting (XSS)
-- **Detection Mechanism:** The scanner submits benign JavaScript payloads (e.g., `<script>alert(1)</script>`) into inputs and checks if the payload is reflected unsanitized in the HTTP response (Reflected XSS) or stored and rendered on subsequent pages (Stored XSS).
-- **Remediation:** Implement strict context-aware output encoding. Sanitize HTML input using established libraries (e.g., DOMPurify). Utilize Content Security Policy (CSP) headers to restrict script execution sources.
+### 3.2 Cross-Site Scripting (XSS) - CWE-79
+- **Detection Engine:** OWASP ZAP and Nuclei
+- **Detection Mechanism & Payloads:** The scanner submits benign JavaScript payloads (e.g., `"><script>alert('XSS')</script>`, `<img src=x onerror=prompt(1)>`) into inputs and checks if the payload is reflected unsanitized in the HTTP response (Reflected XSS) or stored and rendered on subsequent pages (Stored XSS).
+- **CVSS v3.1 Score Range:** 5.4 (Medium) - 8.2 (High)
+- **Exact Remediation Advice:** Implement strict context-aware output encoding. Sanitize HTML input using established libraries (e.g., DOMPurify). Utilize strong Content Security Policy (CSP) headers to restrict script execution sources.
 
-### 3.3 Cross-Site Request Forgery (CSRF)
-- **Detection Mechanism:** The scanner identifies state-changing operations (e.g., POST, PUT, DELETE requests) that lack anti-CSRF tokens in headers or form bodies.
-- **Remediation:** Implement robust anti-CSRF tokens (Synchronizer Token Pattern) for all state-changing requests. Ensure tokens are tied to the user's session and validated on the server side. Utilize `SameSite` cookie attributes.
+### 3.3 Cross-Site Request Forgery (CSRF) - CWE-352
+- **Detection Engine:** OWASP ZAP (Passive & Active)
+- **Detection Mechanism & Payloads:** The scanner identifies state-changing operations (e.g., POST, PUT, DELETE requests) that lack anti-CSRF tokens in headers or form bodies, or improperly validate them. It attempts to submit forms without the token or with an invalid token to confirm vulnerability.
+- **CVSS v3.1 Score Range:** 4.3 (Medium) - 8.8 (High)
+- **Exact Remediation Advice:** Implement robust anti-CSRF tokens (Synchronizer Token Pattern) for all state-changing requests. Ensure tokens are cryptographically secure, tied to the user's session, and validated on the server side. Utilize `SameSite=Lax` or `SameSite=Strict` cookie attributes.
 
-### 3.4 Missing Security Headers
-- **Detection Mechanism:** The scanner analyzes HTTP response headers for the presence and correct configuration of critical security headers.
-- **Remediation:**
-  - **CSP (Content-Security-Policy):** Define approved sources for content (scripts, styles, images) to mitigate XSS and data injection attacks.
-  - **HSTS (Strict-Transport-Security):** Enforce secure (HTTPS) connections to the server, protecting against protocol downgrade attacks.
-  - **X-Frame-Options:** Prevent clickjacking by restricting how the site can be embedded in `<iframe>`, `<frame>`, or `<object>` elements.
+### 3.4 Missing Security Headers - CWE-1021 / CWE-693
+- **Detection Engine:** Nuclei (Template matching)
+- **Detection Mechanism & Payloads:** The scanner passively analyzes HTTP response headers for the absence or misconfiguration of critical security headers like `Content-Security-Policy`, `Strict-Transport-Security`, `X-Frame-Options`, and `X-Content-Type-Options`.
+- **CVSS v3.1 Score Range:** 2.6 (Low) - 5.3 (Medium)
+- **Exact Remediation Advice:**
+  - **CSP:** Define approved sources for content to mitigate XSS (`Content-Security-Policy: default-src 'self'`).
+  - **HSTS:** Enforce HTTPS connections (`Strict-Transport-Security: max-age=31536000; includeSubDomains`).
+  - **X-Frame-Options:** Prevent clickjacking (`X-Frame-Options: DENY` or `SAMEORIGIN`).
+  - **X-Content-Type-Options:** Prevent MIME sniffing (`X-Content-Type-Options: nosniff`).
 
 ## 4. Advanced Security Features
 ### 4.1 SSRF Protection Gate (3-Tier)
