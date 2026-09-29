@@ -25,5 +25,5 @@ USER appuser
 # Expose API port
 EXPOSE 8000
 
-# Run migrations, seed admin (idempotent — skips if user exists), then start API
-CMD ["sh", "-c", "alembic upgrade head && python -m app.seed_admin; uvicorn app.main:app --host 0.0.0.0 --port 8000"]
+# Start API server using the dynamically assigned port from Render
+CMD ["sh", "-c", "exec uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
