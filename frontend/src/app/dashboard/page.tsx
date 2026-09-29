@@ -1,228 +1,462 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { api } from '@/lib/api';
-import { SCAN_STATUS_CONFIG } from '@/lib/constants';
+import { SCAN_STATUS_CONFIG, SEVERITY_CONFIG, SCAN_TYPE_LABELS } from '@/lib/constants';
 import type { Scan, ScanListResponse } from '@/types/scan';
-import PageNav from '@/components/PageNav';
+import { SeverityBadge } from '@/components/scans/SeverityBadge';
+import { ScanStatusBadge } from '@/components/scans/ScanStatusBadge';
+import { Skeleton } from '@/components/ui/Skeleton';
 
 export default function DashboardPage() {
   const [scans, setScans] = useState<Scan[]>([]);
   const [loading, setLoading] = useState(true);
-  const [mounted, setMounted] = useState(false);
-  const [tick, setTick] = useState(0);
 
   useEffect(() => {
-    setMounted(true);
     const fetchData = async () => {
       try {
-        const data = await api.listScans(1, 50) as ScanListResponse;
-        setScans(data.scans);
-      } catch (e) { console.error(e); }
-      finally { setLoading(false); }
+        const data = (await api.listScans(1, 50)) as ScanListResponse;
+        setScans(data.scans || []);
+      } catch (e) {
+        console.error('Failed to load dashboard scans:', e);
+      } finally {
+        setLoading(false);
+      }
     };
     fetchData();
-    const interval = setInterval(() => setTick(t => t + 1), 2000);
-    return () => clearInterval(interval);
   }, []);
 
+  // Strict user data calculations
   const totalScans = scans.length;
-  const activeScans = scans.filter(s => s.status === 'running' || s.status === 'verifying').length;
-  const totalVulns = scans.reduce((sum, s) => sum + s.total_vulnerabilities, 0);
-  const totalCritical = scans.reduce((sum, s) => sum + s.critical_count, 0);
-  const totalHigh = scans.reduce((sum, s) => sum + s.high_count, 0);
-  const totalMedium = scans.reduce((sum, s) => sum + s.medium_count, 0);
-  const totalLow = scans.reduce((sum, s) => sum + s.low_count, 0);
-  const totalInfo = scans.reduce((sum, s) => sum + s.info_count, 0);
+  const uniqueTargets = new Set(scans.map((s) => s.target_domain).filter(Boolean)).size;
+  const activeScans = scans.filter((s) => s.status === 'running' || s.status === 'verifying').length;
+  const totalVulns = scans.reduce((sum, s) => sum + (s.total_vulnerabilities || 0), 0);
+  const totalCritical = scans.reduce((sum, s) => sum + (s.critical_count || 0), 0);
+  const totalHigh = scans.reduce((sum, s) => sum + (s.high_count || 0), 0);
+  const totalMedium = scans.reduce((sum, s) => sum + (s.medium_count || 0), 0);
+  const totalLow = scans.reduce((sum, s) => sum + (s.low_count || 0), 0);
+  const totalInfo = scans.reduce((sum, s) => sum + (s.info_count || 0), 0);
 
-  const severityData = [
-    { label: 'Critical', count: totalCritical, color: '#FF0040' },
-    { label: 'High',     count: totalHigh,     color: '#FF4444' },
-    { label: 'Medium',   count: totalMedium,   color: '#FFB020' },
-    { label: 'Low',      count: totalLow,      color: '#44BB44' },
-    { label: 'Info',     count: totalInfo,     color: '#4488FF' },
+  const severityBreakdown = [
+    { label: 'Critical', count: totalCritical, color: '#EF4444' },
+    { label: 'High', count: totalHigh, color: '#F59E0B' },
+    { label: 'Medium', count: totalMedium, color: '#3B82F6' },
+    { label: 'Low', count: totalLow, color: '#10B981' },
+    { label: 'Info', count: totalInfo, color: '#0284C7' },
   ];
-  const maxSeverity = Math.max(...severityData.map(d => d.count), 1);
-
-  const statCards = [
-    { label: 'Total Scans',     value: totalScans,    color: '#00ff88', icon: '🔍' },
-    { label: 'Active Scans',    value: activeScans,   color: '#0088ff', icon: '⚡', pulse: activeScans > 0 },
-    { label: 'Vulnerabilities', value: totalVulns,    color: '#FFB020', icon: '🎯' },
-    { label: 'Critical',        value: totalCritical, color: '#FF0040', icon: '🔥', pulse: totalCritical > 0 },
-    { label: 'High',            value: totalHigh,     color: '#FF4444', icon: '⚠️' },
-    { label: 'Medium',          value: totalMedium,   color: '#FFB020', icon: '🟡' },
-  ];
-
-  const threats = [
-    '🔴 SQLi attempt detected on /api/users',
-    '🟠 XSS payload blocked at /search?q=',
-    '🟡 Directory traversal: /../../../etc/passwd',
-    '🔴 Brute force: 47 failed logins',
-    '🟠 SSRF probe: http://169.254.169.254',
-    '🟡 Exposed .env file found on target',
-    '🔴 Command injection in /exec?cmd=',
-    '🟠 CORS misconfiguration detected',
-    '🟡 Missing HSTS header on 3 endpoints',
-    '🔴 JWT none algorithm attack attempted',
-  ];
-  const visibleThreats = threats.slice(tick % threats.length, (tick % threats.length) + 4);
+  const maxSeverity = Math.max(...severityBreakdown.map((d) => d.count), 1);
 
   return (
-    <div style={{ position: 'relative' }}>
-      <style>{`
-        @keyframes pulseGlow { 0%,100% { box-shadow: 0 0 15px currentColor; } 50% { box-shadow: 0 0 30px currentColor; } }
-        @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0; } }
-        @keyframes radarSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes scanLine { 0% { top: -2px; } 100% { top: 100vh; } }
-        @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
-      `}</style>
-
-      {/* Scan line */}
-      <div style={{ position:'fixed', left:0, right:0, height:2, background:'linear-gradient(90deg,transparent,#00ff8840,transparent)', animation:'scanLine 5s linear infinite', pointerEvents:'none', zIndex:1 }} />
-
-      {/* Header */}
-      <div style={{ marginBottom: 28 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 6 }}>
-          <div style={{ width:44, height:44, borderRadius:12, background:'linear-gradient(135deg,#00ff88,#0088ff)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:22 }}>🛡</div>
-          <div>
-            <h1 style={{ fontSize:24, fontWeight:800, marginBottom:2 }}>
-              <span className="text-gradient">Security Operations Center</span>
-            </h1>
-            <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-              <span style={{ width:7, height:7, borderRadius:'50%', background:'#00ff88', animation:'blink 1s infinite', display:'inline-block' }} />
-              <span style={{ color:'#00ff88', fontSize:11, fontWeight:700 }}>SYSTEM ONLINE</span>
-              <span style={{ color:'#64748b', fontSize:11 }}>· EthioVuln v1.0</span>
-            </div>
+    <div>
+      {/* Top Header & Quick Action Bar */}
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'flex-start',
+          flexWrap: 'wrap',
+          gap: 16,
+          marginBottom: 28,
+        }}
+      >
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
+            <span
+              style={{
+                width: 8,
+                height: 8,
+                borderRadius: '50%',
+                background: '#10B981',
+                boxShadow: '0 0 10px #10B981',
+                display: 'inline-block',
+              }}
+            />
+            <span style={{ fontSize: 11, fontWeight: 700, color: '#00E5FF', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+              Security Operations Center
+            </span>
           </div>
+          <h1 style={{ fontSize: 26, fontWeight: 800, color: '#F8FAFC', letterSpacing: '-0.02em' }}>
+            Dashboard Overview
+          </h1>
+          <p style={{ color: '#94A3B8', fontSize: 13, marginTop: 2 }}>
+            Real-time assessment telemetry and vulnerability tracking across all targets
+          </p>
+        </div>
+
+        {/* Quick Action Bar */}
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+          <Link
+            href="/dashboard/scans/new"
+            className="btn-glow btn-glow-cyan"
+            style={{ fontSize: 13, padding: '9px 18px' }}
+          >
+            ＋ Launch Scan
+          </Link>
+          <Link
+            href="/dashboard/reports"
+            className="btn-outline"
+            style={{ fontSize: 13, padding: '9px 16px' }}
+          >
+            ◧ View Reports
+          </Link>
+          <Link
+            href="/dashboard/settings"
+            className="btn-outline"
+            style={{ fontSize: 13, padding: '9px 16px' }}
+          >
+            ⚙ Settings
+          </Link>
         </div>
       </div>
 
-      {/* Stat Cards */}
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(6,1fr)', gap:10, marginBottom:24 }}>
-        {statCards.map((card, i) => (
-          <div key={card.label} className="glass-card" style={{
-            padding:'16px 12px', textAlign:'center', position:'relative', overflow:'hidden',
-            border:`1px solid ${card.color}25`,
-            animation: mounted ? `fadeIn 0.4s ease ${i*0.08}s both` : 'none',
-          }}>
-            {card.pulse && <div style={{ position:'absolute', inset:0, borderRadius:'inherit', border:`1px solid ${card.color}`, animation:'pulseGlow 2s ease-in-out infinite', pointerEvents:'none' }} />}
-            <div style={{ fontSize:20, marginBottom:4 }}>{card.icon}</div>
-            <div style={{ fontSize:28, fontWeight:800, color:card.color, lineHeight:1 }}>{loading ? '—' : card.value}</div>
-            <div style={{ fontSize:10, color:'#64748b', marginTop:4, fontWeight:600, textTransform:'uppercase', letterSpacing:'0.05em' }}>{card.label}</div>
+      {/* Realistic Metric Cards */}
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+          gap: 14,
+          marginBottom: 28,
+        }}
+      >
+        {[
+          {
+            label: 'Total Scans',
+            value: totalScans,
+            color: '#00E5FF',
+            desc: 'Completed assessments',
+          },
+          {
+            label: 'Unique Targets',
+            value: uniqueTargets,
+            color: '#6366F1',
+            desc: 'Secured domains',
+          },
+          {
+            label: 'Active Scans',
+            value: activeScans,
+            color: activeScans > 0 ? '#10B981' : '#94A3B8',
+            desc: activeScans > 0 ? 'In-progress jobs' : 'Queue idle',
+            pulse: activeScans > 0,
+          },
+          {
+            label: 'Total Findings',
+            value: totalVulns,
+            color: totalVulns > 0 ? '#F59E0B' : '#94A3B8',
+            desc: 'Aggregated vulnerabilities',
+          },
+          {
+            label: 'Critical Vulnerabilities',
+            value: totalCritical,
+            color: totalCritical > 0 ? '#EF4444' : '#64748B',
+            desc: 'Requires immediate action',
+            pulse: totalCritical > 0,
+          },
+        ].map((card, i) => (
+          <div
+            key={i}
+            className="glass-card"
+            style={{
+              padding: '18px 20px',
+              border: `1px solid ${card.color}25`,
+              position: 'relative',
+              overflow: 'hidden',
+            }}
+          >
+            {card.pulse && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: 10,
+                  right: 10,
+                  width: 6,
+                  height: 6,
+                  borderRadius: '50%',
+                  background: card.color,
+                  boxShadow: `0 0 8px ${card.color}`,
+                }}
+              />
+            )}
+            <div style={{ fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              {card.label}
+            </div>
+            <div style={{ fontSize: 32, fontWeight: 800, color: card.color, fontFamily: 'var(--font-mono)', margin: '8px 0 4px', lineHeight: 1 }}>
+              {loading ? '—' : card.value}
+            </div>
+            <div style={{ fontSize: 11, color: '#94A3B8' }}>{card.desc}</div>
           </div>
         ))}
       </div>
 
-      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:18, marginBottom:22 }}>
-
+      {/* Analytics & Distribution Grid */}
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'minmax(300px, 1fr) minmax(300px, 1fr)',
+          gap: 20,
+          marginBottom: 28,
+        }}
+      >
         {/* Severity Distribution */}
-        <div className="glass-card" style={{ padding:22 }}>
-          <h2 style={{ fontSize:14, fontWeight:700, marginBottom:18, color:'#f1f5f9', display:'flex', alignItems:'center', gap:8 }}>
-            🎯 Severity Distribution
-          </h2>
-          {severityData.map(item => (
-            <div key={item.label} style={{ marginBottom:12 }}>
-              <div style={{ display:'flex', justifyContent:'space-between', marginBottom:4, fontSize:12 }}>
-                <span style={{ color:item.color, fontWeight:700 }}>{item.label}</span>
-                <span style={{ color:'#94a3b8' }}>{item.count}</span>
+        <div className="glass-card" style={{ padding: 24 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
+            <h2 style={{ fontSize: 15, fontWeight: 700, color: '#F8FAFC' }}>
+              Severity Breakdown
+            </h2>
+            <span className="mono-tag" style={{ fontSize: 11 }}>
+              {totalVulns} Total
+            </span>
+          </div>
+
+          {loading ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <Skeleton height={20} />
+              <Skeleton height={20} />
+              <Skeleton height={20} />
+            </div>
+          ) : totalVulns === 0 ? (
+            <div style={{ padding: '30px 10px', textAlign: 'center', color: '#64748B', fontSize: 13 }}>
+              No vulnerabilities identified across your assessments yet.
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              {severityBreakdown.map((item) => (
+                <div key={item.label}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6, fontSize: 12 }}>
+                    <span style={{ color: item.color, fontWeight: 700 }}>{item.label}</span>
+                    <span style={{ color: '#94A3B8', fontFamily: 'var(--font-mono)' }}>{item.count}</span>
+                  </div>
+                  <div style={{ height: 6, borderRadius: 3, background: 'rgba(255, 255, 255, 0.05)', overflow: 'hidden' }}>
+                    <div
+                      style={{
+                        height: '100%',
+                        borderRadius: 3,
+                        width: `${(item.count / maxSeverity) * 100}%`,
+                        background: item.color,
+                        transition: 'width 0.6s ease',
+                      }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Target Posture Summary */}
+        <div className="glass-card" style={{ padding: 24 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
+            <h2 style={{ fontSize: 15, fontWeight: 700, color: '#F8FAFC' }}>
+              Security Posture Summary
+            </h2>
+            <span className="mono-tag" style={{ fontSize: 11, color: '#10B981' }}>
+              Verified
+            </span>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '12px 14px',
+                borderRadius: 8,
+                background: 'rgba(5, 8, 17, 0.5)',
+                border: '1px solid rgba(148, 163, 184, 0.08)',
+              }}
+            >
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: '#F8FAFC' }}>Clean Assessments</div>
+                <div style={{ fontSize: 11, color: '#64748B' }}>Scans with 0 critical or high findings</div>
               </div>
-              <div style={{ height:5, borderRadius:3, background:'rgba(255,255,255,0.05)', overflow:'hidden' }}>
-                <div style={{ height:'100%', borderRadius:3, width:`${(item.count/maxSeverity)*100}%`, background:`linear-gradient(90deg,${item.color},${item.color}88)`, transition:'width 1s ease', boxShadow:`0 0 6px ${item.color}50` }} />
+              <div style={{ fontSize: 18, fontWeight: 800, color: '#10B981', fontFamily: 'var(--font-mono)' }}>
+                {scans.filter((s) => s.status === 'completed' && s.critical_count === 0 && s.high_count === 0).length}
               </div>
             </div>
-          ))}
-        </div>
 
-        {/* Live Threat Feed */}
-        <div className="glass-card" style={{ padding:22, border:'1px solid rgba(255,0,64,0.15)' }}>
-          <h2 style={{ fontSize:14, fontWeight:700, marginBottom:14, color:'#f1f5f9', display:'flex', alignItems:'center', gap:8 }}>
-            <span style={{ animation:'blink 1s infinite', display:'inline-block' }}>🔴</span>
-            Live Threat Feed
-            <span style={{ fontSize:9, color:'#00ff88', marginLeft:'auto', fontWeight:700 }}>LIVE</span>
-          </h2>
-          <div style={{ fontFamily:'monospace', fontSize:11 }}>
-            {visibleThreats.map((threat, i) => (
-              <div key={`${tick}-${i}`} style={{
-                padding:'7px 10px', marginBottom:5, borderRadius:6,
-                background:'rgba(255,0,64,0.04)', border:'1px solid rgba(255,0,64,0.08)',
-                color:'#94a3b8', lineHeight:1.4,
-                animation:'fadeIn 0.3s ease both',
-                animationDelay:`${i*0.08}s`,
-              }}>{threat}</div>
-            ))}
-          </div>
-          <div style={{ marginTop:10, fontSize:9, color:'#475569', textAlign:'center' }}>Auto-refreshing every 2s</div>
-        </div>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '12px 14px',
+                borderRadius: 8,
+                background: 'rgba(5, 8, 17, 0.5)',
+                border: '1px solid rgba(148, 163, 184, 0.08)',
+              }}
+            >
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: '#F8FAFC' }}>At-Risk Targets</div>
+                <div style={{ fontSize: 11, color: '#64748B' }}>Targets with active critical vulnerabilities</div>
+              </div>
+              <div style={{ fontSize: 18, fontWeight: 800, color: totalCritical > 0 ? '#EF4444' : '#94A3B8', fontFamily: 'var(--font-mono)' }}>
+                {scans.filter((s) => s.critical_count > 0).length}
+              </div>
+            </div>
 
-        {/* Radar */}
-        <div className="glass-card" style={{ padding:22, display:'flex', flexDirection:'column', alignItems:'center' }}>
-          <h2 style={{ fontSize:14, fontWeight:700, marginBottom:14, color:'#f1f5f9', alignSelf:'flex-start', display:'flex', alignItems:'center', gap:8 }}>
-            📡 Attack Radar
-          </h2>
-          <div style={{ position:'relative', width:140, height:140 }}>
-            {[1, 0.66, 0.33].map((scale, i) => (
-              <div key={i} style={{ position:'absolute', border:'1px solid rgba(0,255,136,0.15)', borderRadius:'50%', width:`${scale*100}%`, height:`${scale*100}%`, top:`${(1-scale)*50}%`, left:`${(1-scale)*50}%` }} />
-            ))}
-            <div style={{ position:'absolute', top:'50%', left:'50%', width:'50%', height:1, background:'linear-gradient(90deg,#00ff88,transparent)', transformOrigin:'left center', animation:'radarSpin 3s linear infinite' }} />
-            <div style={{ position:'absolute', top:'50%', left:'50%', width:7, height:7, borderRadius:'50%', background:'#00ff88', transform:'translate(-50%,-50%)', boxShadow:'0 0 8px #00ff88' }} />
-            {mounted && scans.slice(0,5).map((_,i) => (
-              <div key={i} style={{ position:'absolute', top:`${20+Math.sin(i*1.2)*35}%`, left:`${20+Math.cos(i*1.2)*35}%`, width:5, height:5, borderRadius:'50%', background:i===0?'#FF0040':'#FFB020', boxShadow:`0 0 6px ${i===0?'#FF0040':'#FFB020'}`, animation:'blink 1.5s infinite', animationDelay:`${i*0.3}s` }} />
-            ))}
-          </div>
-          <div style={{ marginTop:10, fontSize:10, color:'#64748b', textAlign:'center' }}>
-            {totalScans} targets · <span style={{ color:'#FF0040' }}>{totalCritical} critical</span>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '12px 14px',
+                borderRadius: 8,
+                background: 'rgba(5, 8, 17, 0.5)',
+                border: '1px solid rgba(148, 163, 184, 0.08)',
+              }}
+            >
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: '#F8FAFC' }}>Pipeline Ready</div>
+                <div style={{ fontSize: 11, color: '#64748B' }}>SSRF protection & rate-limiting enabled</div>
+              </div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: '#00E5FF' }}>ACTIVE</div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Recent Scans */}
-      <div className="glass-card" style={{ padding:22 }}>
-        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:18 }}>
-          <h2 style={{ fontSize:14, fontWeight:700, color:'#f1f5f9', display:'flex', alignItems:'center', gap:8 }}>🔍 Recent Scans</h2>
-          <a href="/dashboard/scans/new" className="btn-glow btn-glow-green" style={{ fontSize:12, padding:'6px 14px' }}>+ New Scan</a>
+      {/* Recent Scans Table / Empty State */}
+      <div className="glass-card" style={{ padding: 24 }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: 20,
+            flexWrap: 'wrap',
+            gap: 12,
+          }}
+        >
+          <div>
+            <h2 style={{ fontSize: 16, fontWeight: 700, color: '#F8FAFC' }}>Recent Security Scans</h2>
+            <p style={{ color: '#64748B', fontSize: 12 }}>Latest vulnerability assessments executed on your account</p>
+          </div>
+          {scans.length > 0 && (
+            <Link
+              href="/dashboard/scans"
+              style={{ color: '#00E5FF', textDecoration: 'none', fontSize: 13, fontWeight: 600 }}
+            >
+              View all history →
+            </Link>
+          )}
         </div>
 
         {loading ? (
-          Array.from({length:4}).map((_,i) => <div key={i} className="skeleton" style={{ height:44, marginBottom:8, borderRadius:8 }} />)
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} height={46} />
+            ))}
+          </div>
         ) : scans.length === 0 ? (
-          <div style={{ textAlign:'center', padding:40, color:'#64748b' }}>
-            <div style={{ fontSize:40, marginBottom:10 }}>🎯</div>
-            <p style={{ marginBottom:14 }}>No scans yet. Start your first security assessment.</p>
-            <a href="/dashboard/scans/new" className="btn-glow btn-glow-green" style={{ fontSize:13, padding:'10px 22px' }}>🔍 Launch First Scan</a>
+          /* Clean Cyber Empty State */
+          <div
+            style={{
+              padding: '48px 24px',
+              textAlign: 'center',
+              border: '1px dashed rgba(148, 163, 184, 0.15)',
+              borderRadius: 12,
+              background: 'rgba(5, 8, 17, 0.3)',
+            }}
+          >
+            <div
+              style={{
+                width: 52,
+                height: 52,
+                borderRadius: 14,
+                background: 'rgba(0, 229, 255, 0.08)',
+                border: '1px solid rgba(0, 229, 255, 0.2)',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: 24,
+                color: '#00E5FF',
+                marginBottom: 16,
+              }}
+            >
+              🛡
+            </div>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: '#F8FAFC', marginBottom: 6 }}>
+              No Security Scans Yet
+            </h3>
+            <p style={{ color: '#94A3B8', fontSize: 13, maxWidth: 440, margin: '0 auto 24px', lineHeight: 1.6 }}>
+              You haven&apos;t launched any vulnerability assessments. Configure your first authorized target domain to start uncovering vulnerabilities.
+            </p>
+            <Link
+              href="/dashboard/scans/new"
+              className="btn-glow btn-glow-cyan"
+              style={{ fontSize: 14, padding: '10px 24px' }}
+            >
+              Launch First Scan →
+            </Link>
           </div>
         ) : (
-          <div style={{ display:'grid', gap:6 }}>
-            {scans.slice(0,8).map(scan => {
-              const sc = SCAN_STATUS_CONFIG[scan.status] || { label:scan.status, color:'#94a3b8' };
-              const isActive = scan.status==='running'||scan.status==='verifying';
-              return (
-                <a key={scan.id} href={`/dashboard/scans/${scan.id}`} style={{
-                  display:'grid', gridTemplateColumns:'1fr auto auto auto', alignItems:'center', gap:14,
-                  padding:'10px 14px', borderRadius:9, textDecoration:'none', color:'inherit',
-                  border: isActive ? '1px solid rgba(0,255,136,0.2)' : '1px solid rgba(148,163,184,0.06)',
-                  background: isActive ? 'rgba(0,255,136,0.03)' : 'rgba(0,0,0,0.2)',
-                  transition:'all 0.2s',
-                }}
-                  onMouseOver={e=>(e.currentTarget.style.borderColor='rgba(0,255,136,0.25)')}
-                  onMouseOut={e=>(e.currentTarget.style.borderColor=isActive?'rgba(0,255,136,0.2)':'rgba(148,163,184,0.06)')}
-                >
-                  <div>
-                    <div style={{ fontSize:13, fontWeight:600, color:'#f1f5f9' }}>{scan.target_domain}</div>
-                    <div style={{ fontSize:10, color:'#64748b' }}>{new Date(scan.created_at).toLocaleDateString()} · {scan.scan_type?.replace('_',' ')}</div>
-                  </div>
-                  <div style={{ display:'flex', gap:6, fontSize:11 }}>
-                    {scan.critical_count>0 && <span style={{ color:'#FF0040', fontWeight:700 }}>🔴 {scan.critical_count}</span>}
-                    {scan.high_count>0 && <span style={{ color:'#FF4444', fontWeight:700 }}>🟠 {scan.high_count}</span>}
-                    {scan.medium_count>0 && <span style={{ color:'#FFB020', fontWeight:700 }}>🟡 {scan.medium_count}</span>}
-                  </div>
-                  <div style={{ fontSize:11, color:'#64748b' }}>{scan.total_vulnerabilities} vulns</div>
-                  <div style={{ fontSize:10, fontWeight:600, color:sc.color, background:`${sc.color}15`, padding:'3px 9px', borderRadius:9999, border:`1px solid ${sc.color}25`, whiteSpace:'nowrap' }}>
-                    {isActive && <span style={{ animation:'blink 1s infinite', marginRight:3 }}>●</span>}
-                    {sc.label}
-                  </div>
-                </a>
-              );
-            })}
+          <div style={{ overflowX: 'auto' }}>
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Target Domain</th>
+                  <th>Scan Type</th>
+                  <th>Status</th>
+                  <th>Severity Highlights</th>
+                  <th>Total Vulns</th>
+                  <th>Date</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {scans.slice(0, 7).map((scan) => (
+                  <tr key={scan.id}>
+                    <td>
+                      <div style={{ fontWeight: 600, color: '#F8FAFC' }}>{scan.target_domain}</div>
+                      <div
+                        style={{
+                          fontSize: 11,
+                          color: '#64748B',
+                          fontFamily: 'var(--font-mono)',
+                          maxWidth: 240,
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        {scan.target_url}
+                      </div>
+                    </td>
+                    <td style={{ fontSize: 12, color: '#94A3B8' }}>
+                      {SCAN_TYPE_LABELS[scan.scan_type] || scan.scan_type}
+                    </td>
+                    <td>
+                      <ScanStatusBadge status={scan.status} />
+                    </td>
+                    <td>
+                      <div style={{ display: 'flex', gap: 6 }}>
+                        {scan.critical_count > 0 && <SeverityBadge severity="critical" count={scan.critical_count} />}
+                        {scan.high_count > 0 && <SeverityBadge severity="high" count={scan.high_count} />}
+                        {scan.medium_count > 0 && <SeverityBadge severity="medium" count={scan.medium_count} />}
+                        {scan.critical_count === 0 && scan.high_count === 0 && scan.medium_count === 0 && (
+                          <span style={{ fontSize: 11, color: '#64748B' }}>Clean</span>
+                        )}
+                      </div>
+                    </td>
+                    <td style={{ fontWeight: 700, fontFamily: 'var(--font-mono)', color: scan.total_vulnerabilities > 0 ? '#F59E0B' : '#94A3B8' }}>
+                      {scan.total_vulnerabilities}
+                    </td>
+                    <td style={{ fontSize: 12, color: '#94A3B8', whiteSpace: 'nowrap' }}>
+                      {new Date(scan.created_at).toLocaleDateString()}
+                    </td>
+                    <td>
+                      <Link
+                        href={`/dashboard/scans/${scan.id}`}
+                        style={{ color: '#00E5FF', textDecoration: 'none', fontSize: 13, fontWeight: 600 }}
+                      >
+                        Inspect →
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
       </div>

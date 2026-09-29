@@ -1,30 +1,15 @@
-// EthioVuln — Full Settings Page
-
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { settingsApi } from '@/lib/settingsApi';
 import { api } from '@/lib/api';
+import { Card } from '@/components/ui/Card';
+import { Alert } from '@/components/ui/Alert';
+import { SectionHeader } from '@/components/layout/SectionHeader';
+import { PageNav } from '@/components/navigation/PageNav';
 
-// ─── Reusable components ──────────────────────────────────────────────────────
-
-const Card = ({ children, danger = false }: { children: React.ReactNode; danger?: boolean }) => (
-  <div style={{
-    background: 'rgba(17,24,39,0.8)',
-    border: `1px solid ${danger ? 'rgba(255,0,64,0.25)' : 'rgba(148,163,184,0.1)'}`,
-    borderRadius: 16,
-    padding: 28,
-    marginBottom: 20,
-  }}>{children}</div>
-);
-
-const SectionHeader = ({ icon, title, subtitle }: { icon: string; title: string; subtitle: string }) => (
-  <div style={{ marginBottom: 20 }}>
-    <h2 style={{ fontSize: 15, fontWeight: 700, color: '#f1f5f9', marginBottom: 4 }}>{icon} {title}</h2>
-    <p style={{ fontSize: 12, color: '#64748b' }}>{subtitle}</p>
-  </div>
-);
+// ─── Local Helper Components ──────────────────────────────────────────────────
 
 const Field = ({ label, children }: { label: string; children: React.ReactNode }) => (
   <div style={{ marginBottom: 14 }}>
@@ -49,17 +34,6 @@ const Toggle = ({ checked, onChange, label }: { checked: boolean; onChange: (v: 
         transition: 'left 0.2s', left: checked ? 23 : 3,
       }} />
     </div>
-  </div>
-);
-
-const Alert = ({ type, msg }: { type: 'success' | 'error'; msg: string }) => (
-  <div style={{
-    background: type === 'success' ? 'rgba(0,255,136,0.08)' : 'rgba(255,0,64,0.08)',
-    border: `1px solid ${type === 'success' ? 'rgba(0,255,136,0.3)' : 'rgba(255,0,64,0.3)'}`,
-    borderRadius: 10, padding: '10px 16px', marginBottom: 16,
-    color: type === 'success' ? '#00ff88' : '#ff4444', fontSize: 13,
-  }}>
-    {type === 'success' ? '✓ ' : '✗ '}{msg}
   </div>
 );
 
@@ -244,6 +218,8 @@ export default function SettingsPage() {
 
   return (
     <div>
+      <PageNav backHref="/dashboard" backLabel="Overview" title="Settings" />
+
       {/* Header */}
       <div style={{ marginBottom: 24 }}>
         <h1 style={{ fontSize: 24, fontWeight: 700, color: '#f1f5f9', marginBottom: 4 }}>⚙️ Settings</h1>
@@ -447,7 +423,7 @@ export default function SettingsPage() {
             </Field>
             <div style={{ marginTop: 8, padding: '10px 14px', background: 'rgba(255,255,255,0.03)', borderRadius: 10, border: '1px solid rgba(148,163,184,0.08)' }}>
               <div style={{ fontSize: 11, color: '#64748b', marginBottom: 2 }}>Report Format</div>
-              <div style={{ fontSize: 13, color: '#f1f5f9' }}>PDF (WeasyPrint)</div>
+              <div style={{ fontSize: 13, color: '#f1f5f9' }}>PDF (ReportLab)</div>
             </div>
             <button onClick={savePrefs} className="btn-glow btn-glow-green" disabled={prefsLoading} style={{ width: '100%', marginTop: 16, fontSize: 14 }}>
               {prefsLoading ? 'Saving...' : '💾 Save Report Settings'}

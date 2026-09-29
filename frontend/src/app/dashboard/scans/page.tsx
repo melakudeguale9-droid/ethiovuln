@@ -1,12 +1,13 @@
 // EthioVuln — Scan History Page
-
 'use client';
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { api } from '@/lib/api';
-import { SCAN_STATUS_CONFIG, SCAN_TYPE_LABELS } from '@/lib/constants';
 import type { Scan, ScanListResponse } from '@/types/scan';
+import { PageNav } from '@/components/navigation/PageNav';
+import { ScanRow } from '@/components/scans/ScanRow';
+import { Skeleton } from '@/components/ui/Skeleton';
 
 export default function ScansPage() {
   const [scans, setScans] = useState<Scan[]>([]);
@@ -19,11 +20,14 @@ export default function ScansPage() {
     const fetchScans = async () => {
       setLoading(true);
       try {
-        const data = await api.listScans(page, pageSize) as ScanListResponse;
+        const data = (await api.listScans(page, pageSize)) as ScanListResponse;
         setScans(data.scans);
         setTotal(data.total);
-      } catch (e) { console.error(e); }
-      finally { setLoading(false); }
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
     };
     fetchScans();
   }, [page]);
@@ -32,6 +36,14 @@ export default function ScansPage() {
 
   return (
     <div>
+      <PageNav
+        backHref="/dashboard"
+        backLabel="Overview"
+        title="Scans"
+        nextHref="/dashboard/scans/new"
+        nextLabel="New Scan"
+      />
+
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
         <div>
           <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 4 }}>
@@ -63,7 +75,9 @@ export default function ScansPage() {
               Array.from({ length: 5 }).map((_, i) => (
                 <tr key={i}>
                   {Array.from({ length: 8 }).map((_, j) => (
-                    <td key={j}><div className="skeleton" style={{ height: 20 }} /></td>
+                    <td key={j}>
+                      <Skeleton height={20} />
+                    </td>
                   ))}
                 </tr>
               ))
@@ -74,49 +88,7 @@ export default function ScansPage() {
                 </td>
               </tr>
             ) : (
-              scans.map(scan => {
-                const statusCfg = SCAN_STATUS_CONFIG[scan.status] || { label: scan.status, color: '#94a3b8' };
-                return (
-                  <tr key={scan.id}>
-                    <td>
-                      <div style={{ fontWeight: 500, color: '#f1f5f9' }}>{scan.target_domain}</div>
-                      <div style={{ fontSize: 11, color: '#64748b', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {scan.target_url}
-                      </div>
-                    </td>
-                    <td style={{ color: '#94a3b8', fontSize: 12 }}>
-                      {SCAN_TYPE_LABELS[scan.scan_type] || scan.scan_type}
-                    </td>
-                    <td>
-                      <span style={{
-                        fontSize: 11, fontWeight: 600, color: statusCfg.color,
-                        background: `${statusCfg.color}15`, padding: '3px 10px',
-                        borderRadius: 9999, border: `1px solid ${statusCfg.color}30`,
-                        display: 'inline-flex', alignItems: 'center', gap: 6,
-                      }}>
-                        {scan.status === 'running' && <span className="pulse-dot" style={{ width: 6, height: 6 }} />}
-                        {statusCfg.label}
-                      </span>
-                    </td>
-                    <td style={{ fontWeight: 600 }}>{scan.total_vulnerabilities}</td>
-                    <td style={{ color: scan.critical_count > 0 ? '#ff0040' : '#64748b', fontWeight: 600 }}>
-                      {scan.critical_count}
-                    </td>
-                    <td style={{ color: scan.high_count > 0 ? '#ff4444' : '#64748b', fontWeight: 600 }}>
-                      {scan.high_count}
-                    </td>
-                    <td style={{ color: '#94a3b8', fontSize: 13 }}>
-                      {new Date(scan.created_at).toLocaleDateString()}
-                    </td>
-                    <td>
-                      <Link href={`/dashboard/scans/${scan.id}`}
-                        style={{ color: '#00ff88', textDecoration: 'none', fontSize: 13, fontWeight: 500 }}>
-                        View →
-                      </Link>
-                    </td>
-                  </tr>
-                );
-              })
+              scans.map((scan) => <ScanRow key={scan.id} scan={scan} />)
             )}
           </tbody>
         </table>
@@ -125,15 +97,23 @@ export default function ScansPage() {
       {/* Pagination */}
       {totalPages > 1 && (
         <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginTop: 24 }}>
-          <button className="btn-outline" disabled={page <= 1}
-            onClick={() => setPage(p => p - 1)} style={{ padding: '8px 16px', fontSize: 13 }}>
+          <button
+            className="btn-outline"
+            disabled={page <= 1}
+            onClick={() => setPage((p) => p - 1)}
+            style={{ padding: '8px 16px', fontSize: 13 }}
+          >
             ← Previous
           </button>
-          <span style={{ display: 'flex', alignItems: 'center', color: '#94a3b8', fontSize: 14 }}>
+          <span style={{ display: 'flex', alignItems: 'center', padding: '0 12px', fontSize: 13, color: '#94a3b8' }}>
             Page {page} of {totalPages}
           </span>
-          <button className="btn-outline" disabled={page >= totalPages}
-            onClick={() => setPage(p => p + 1)} style={{ padding: '8px 16px', fontSize: 13 }}>
+          <button
+            className="btn-outline"
+            disabled={page >= totalPages}
+            onClick={() => setPage((p) => p + 1)}
+            style={{ padding: '8px 16px', fontSize: 13 }}
+          >
             Next →
           </button>
         </div>

@@ -57,7 +57,7 @@ dump.rdb
 
 # ─── Reports / Generated files ───────────────────────────────────────────────
 *.pdf
-reports/
+/reports/
 
 # ─── Setup/debug scripts ─────────────────────────────────────────────────────
 check_env*.sh

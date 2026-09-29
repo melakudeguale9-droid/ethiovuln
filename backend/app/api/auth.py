@@ -78,12 +78,19 @@ async def login(request: Request, data: UserLogin, db: AsyncSession = Depends(ge
     ip = request.client.host if request.client else None
     ua = request.headers.get("user-agent", "")
 
-    if not user or not verify_password(data.password, user.hashed_password):
+    if not user:
+        # Prevent user enumeration timing attacks
+        hash_password(data.password)
+        is_valid_password = False
+    else:
+        is_valid_password = verify_password(data.password, user.hashed_password)
+
+    if not is_valid_password:
         # Record failed login
         if user:
             from app.models.settings import LoginHistory
             db.add(LoginHistory(user_id=user.id, ip_address=ip, user_agent=ua, success=False))
-            await db.flush()
+            await db.commit()
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password",

@@ -1,6 +1,21 @@
+# ─── EthioVuln — Render Infrastructure Blueprint ──────────────────────────────
+# Specification: Render Infrastructure-as-Code Blueprint (render.yaml)
+#
+# Free Tier Architecture:
+# - ethiovuln-backend: Free Web Service (FastAPI REST API, Auth, Telemetry, DB Migrations)
+# - ethiovuln-frontend: Free Web Service (Next.js 16 Static/SSR Dashboard)
+# - ethiovuln-redis: Free Key-Value Store (Redis Caching & Message Queue)
+# - ethiovuln-db: Free Managed PostgreSQL Database
+#
+# Operational Boundary Notice:
+# Celery worker processes (type: worker) and OWASP ZAP daemons are omitted on the
+# Render Free Tier because background workers require a paid tier plan. Scans are
+# persisted safely in PostgreSQL and queued in Redis. For active concurrent engine
+# scanning, deploy via docker-compose locally or upgrade Render to add a Worker service.
+
 services:
 
-  # ─── FastAPI Backend ───────────────────────────────────────────────────────
+  # ─── FastAPI Backend Web Service ──────────────────────────────────────────
   - type: web
     name: ethiovuln-backend
     runtime: python
@@ -47,7 +62,7 @@ services:
       - key: PYTHON_VERSION
         value: "3.11.0"
 
-  # ─── Next.js Frontend ─────────────────────────────────────────────────────
+  # ─── Next.js Frontend Web Service ─────────────────────────────────────────
   - type: web
     name: ethiovuln-frontend
     runtime: node
@@ -68,17 +83,19 @@ services:
       - key: NODE_ENV
         value: production
 
+  # ─── Redis (Key-Value Service) ────────────────────────────────────────────
+  # Under Render Blueprint schema, keyvalue services MUST be defined under services:
+  - type: keyvalue
+    name: ethiovuln-redis
+    region: oregon
+    plan: free
+    ipAllowList: []
+
 # ─── PostgreSQL Database ───────────────────────────────────────────────────
+# Under Render Blueprint schema, databases: section exclusively accepts PostgreSQL
 databases:
   - name: ethiovuln-db
     region: oregon
     plan: free
     databaseName: dast_db
     user: dast
-
-# ─── Redis (Key Value) ────────────────────────────────────────────────────
-  - type: keyvalue
-    name: ethiovuln-redis
-    region: oregon
-    plan: free
-    ipAllowList: []
