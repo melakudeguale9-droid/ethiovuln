@@ -5,7 +5,7 @@ EthioVuln — Scan API Routes
 import uuid
 from datetime import datetime, timezone
 from urllib.parse import urlparse
-from fastapi import APIRouter, Depends, HTTPException, Request, status, Query
+from fastapi import APIRouter, Depends, HTTPException, Request, status, Query, BackgroundTasks
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -28,11 +28,16 @@ router = APIRouter(prefix="/api/scans", tags=["Scans"])
 limiter = Limiter(key_func=get_remote_address)
 
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 @router.post("", response_model=ScanResponse, status_code=201)
 @limiter.limit("10/minute")
 async def create_scan(
     request: Request,
     data: ScanCreate,
+    background_tasks: BackgroundTasks,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
@@ -77,16 +82,40 @@ async def create_scan(
     # Dispatch Celery task — commit first so worker can read the scan from DB
     try:
         from app.workers.tasks import run_scan_task
+        from app.workers.celery_app import celery_app
 
         scan.status = ScanStatus.VERIFYING
         await db.commit()
         await db.refresh(scan)
 
-        task = run_scan_task.apply_async(args=[str(scan.id)], queue='default')
-        scan.celery_task_id = task.id
+        # Check if Celery workers are alive
+        try:
+            workers = celery_app.control.ping(timeout=0.5)
+        except Exception as e:
+            logger.warning(f"Could not ping Celery (Redis might be down): {e}")
+            workers = None
+            
+        if workers:
+            try:
+                task = run_scan_task.apply_async(args=[str(scan.id)], queue='default')
+                scan.celery_task_id = task.id
+                logger.info(f"Queued scan {scan.id} via Celery")
+                queued = True
+            except Exception as e:
+                logger.warning(f"Failed to queue via Celery: {e}")
+                queued = False
+        else:
+            queued = False
+
+        if not queued:
+            logger.warning("Falling back to FastAPI BackgroundTasks.")
+            background_tasks.add_task(run_scan_task, str(scan.id))
+            scan.celery_task_id = f"bg_{uuid.uuid4()}"
+
         await db.commit()
         await db.refresh(scan)
     except Exception as e:
+        logger.error(f"Failed to queue scan: {e}")
         scan.status = ScanStatus.FAILED
         scan.error_message = f"Failed to queue scan: {str(e)}"
         await db.commit()
