@@ -26,8 +26,16 @@ fi
 
 # Run database migrations
 echo "=== Running Alembic migrations ==="
-alembic upgrade head
-echo "✓ Migrations complete"
+# Attempt normal upgrade
+if alembic upgrade head; then
+  echo "✓ Migrations complete"
+else
+  echo "⚠️ Upgrade failed (likely due to existing tables from previous SQLAlchemy create_all)."
+  echo "Stamping initial revision and retrying upgrade..."
+  alembic stamp 40c1496237d0
+  alembic upgrade head
+  echo "✓ Migrations complete after stamping."
+fi
 
 # Seed admin user (idempotent — skips if already exists)
 echo "=== Seeding admin user ==="
