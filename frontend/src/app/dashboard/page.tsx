@@ -20,6 +20,7 @@ export default function DashboardPage() {
         setScans(data.scans || []);
       } catch (e) {
         console.error('Failed to load dashboard scans:', e);
+        setScans([]); // Ensure fallback to prevent crashes
       } finally {
         setLoading(false);
       }

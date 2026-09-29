@@ -50,8 +50,12 @@ export function Navbar() {
         </span>
       </Link>
 
-      <nav style={{ display: 'flex', gap: 28, alignItems: 'center' }}>
-        {PUBLIC_NAV_ITEMS.map((item) => {
+      <nav style={{ display: 'flex', gap: 32, alignItems: 'center' }}>
+        {[
+          { label: 'Home', href: '/' },
+          { label: 'Scan', href: '/dashboard/scans/new' },
+          { label: 'About', href: '/about' }
+        ].map((item) => {
           const isActive = pathname === item.href;
           return (
             <Link
@@ -62,13 +66,20 @@ export function Navbar() {
                 textDecoration: 'none',
                 fontSize: 14,
                 fontWeight: isActive ? 600 : 500,
-                transition: 'color 0.2s',
+                transition: 'color 0.2s, text-shadow 0.2s',
+                textShadow: isActive ? '0 0 10px rgba(0, 229, 255, 0.4)' : 'none',
               }}
               onMouseOver={(e) => {
-                if (!isActive) e.currentTarget.style.color = '#00E5FF';
+                if (!isActive) {
+                  e.currentTarget.style.color = '#F8FAFC';
+                  e.currentTarget.style.textShadow = '0 0 8px rgba(255, 255, 255, 0.2)';
+                }
               }}
               onMouseOut={(e) => {
-                if (!isActive) e.currentTarget.style.color = '#94A3B8';
+                if (!isActive) {
+                  e.currentTarget.style.color = '#94A3B8';
+                  e.currentTarget.style.textShadow = 'none';
+                }
               }}
             >
               {item.label}
@@ -78,7 +89,7 @@ export function Navbar() {
         <Link
           href="/login"
           className="btn-glow btn-glow-cyan"
-          style={{ padding: '8px 20px', fontSize: 13, textDecoration: 'none' }}
+          style={{ padding: '8px 24px', fontSize: 13, textDecoration: 'none', fontWeight: 600, marginLeft: 8 }}
         >
           Sign In
         </Link>

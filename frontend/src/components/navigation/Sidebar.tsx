@@ -45,29 +45,31 @@ export function Sidebar({ user, collapsed, onToggleCollapse, onLogout }: Sidebar
           gap: 12,
         }}
       >
-        <div
-          style={{
-            width: 36,
-            height: 36,
-            borderRadius: 10,
-            background: 'linear-gradient(135deg, #00E5FF, #6366F1)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 18,
-            fontWeight: 800,
-            color: '#070B14',
-            flexShrink: 0,
-            boxShadow: '0 0 16px rgba(0, 229, 255, 0.25)',
-          }}
-        >
-          E
-        </div>
-        {!collapsed && (
-          <span style={{ fontWeight: 800, fontSize: 16, letterSpacing: '-0.02em', color: '#F8FAFC' }}>
-            Ethio<span style={{ color: '#00E5FF' }}>Vuln</span>
-          </span>
-        )}
+        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none' }}>
+          <div
+            style={{
+              width: 36,
+              height: 36,
+              borderRadius: 10,
+              background: 'linear-gradient(135deg, #00E5FF, #6366F1)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: 18,
+              fontWeight: 800,
+              color: '#070B14',
+              flexShrink: 0,
+              boxShadow: '0 0 16px rgba(0, 229, 255, 0.25)',
+            }}
+          >
+            E
+          </div>
+          {!collapsed && (
+            <span style={{ fontWeight: 800, fontSize: 16, letterSpacing: '-0.02em', color: '#F8FAFC' }}>
+              Ethio<span style={{ color: '#00E5FF' }}>Vuln</span>
+            </span>
+          )}
+        </Link>
       </div>
 
       {/* Nav Links */}
@@ -111,12 +113,13 @@ export function Sidebar({ user, collapsed, onToggleCollapse, onLogout }: Sidebar
       {/* User Info & Controls */}
       <div
         style={{
-          padding: collapsed ? '16px 8px' : '16px',
+          padding: '16px',
           borderTop: '1px solid rgba(148, 163, 184, 0.1)',
+          background: 'rgba(7, 11, 20, 0.4)',
         }}
       >
         {!collapsed && (
-          <div style={{ marginBottom: 12 }}>
+          <div style={{ marginBottom: 16 }}>
             <div style={{ fontSize: 13, fontWeight: 600, color: '#F8FAFC', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {user.full_name || user.username}
             </div>
@@ -130,9 +133,14 @@ export function Sidebar({ user, collapsed, onToggleCollapse, onLogout }: Sidebar
             onClick={onToggleCollapse}
             className="btn-outline"
             style={{
-              padding: '6px 10px',
-              fontSize: 12,
+              padding: '8px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: 14,
               flex: collapsed ? 1 : 'none',
+              borderRadius: 8,
+              border: '1px solid rgba(148, 163, 184, 0.2)',
             }}
             title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           >
@@ -143,14 +151,20 @@ export function Sidebar({ user, collapsed, onToggleCollapse, onLogout }: Sidebar
               onClick={onLogout}
               className="btn-outline"
               style={{
-                padding: '6px 10px',
+                padding: '8px 12px',
                 fontSize: 12,
+                fontWeight: 600,
                 color: '#EF4444',
                 borderColor: 'rgba(239, 68, 68, 0.3)',
+                background: 'rgba(239, 68, 68, 0.05)',
+                borderRadius: 8,
                 flex: 1,
+                transition: 'all 0.2s',
               }}
+              onMouseOver={(e) => { e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)'; }}
+              onMouseOut={(e) => { e.currentTarget.style.background = 'rgba(239, 68, 68, 0.05)'; }}
             >
-              Logout
+              Sign Out
             </button>
           )}
         </div>

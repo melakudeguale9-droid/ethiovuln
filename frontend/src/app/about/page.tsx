@@ -171,8 +171,10 @@ export default function AboutPage() {
               }} />
             </div>
             <div>
-              <h2 style={{ fontSize: 'clamp(28px, 4vw, 36px)', fontWeight: 800, marginBottom: 8, color: '#f1f5f9' }}>
-                 Melaku Deguale | <span className="text-gradient">Professional Bio</span>
+              <h2 style={{ fontSize: 'clamp(28px, 4vw, 36px)', fontWeight: 800, marginBottom: 8, color: '#f1f5f9', display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+                 <span>Melaku Deguale</span>
+                 <span style={{ color: 'rgba(148, 163, 184, 0.3)', fontWeight: 300, fontSize: '0.9em' }}>|</span>
+                 <span style={{ background: 'linear-gradient(135deg, #00E5FF, #6366F1)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Professional Bio</span>
               </h2>
               <p style={{ fontSize: 18, color: '#00ff88', fontWeight: 600, marginBottom: 4 }}>Ethical Hacker & Security Researcher</p>
               <p style={{ fontSize: 16, color: '#94a3b8' }}>Certified Security Researcher & Consultant</p>

@@ -74,6 +74,8 @@ export const metadata: Metadata = {
   },
 };
 
+import { SpotlightBackground } from '@/components/ui/SpotlightBackground';
+
 export default function RootLayout({
   children,
 }: {
@@ -83,6 +85,7 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
       <body className="antialiased" suppressHydrationWarning>
         <div className="animated-bg" />
+        <SpotlightBackground />
         <div style={{ position: 'relative', zIndex: 1 }}>
           {children}
         </div>

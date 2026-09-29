@@ -121,11 +121,17 @@ async def list_scans(
     result = await db.execute(query)
     scans = result.scalars().all()
 
+    total_pages = (total + page_size - 1) // page_size if page_size > 0 else 0
+
     return ScanListResponse(
+        items=scans,
+        total_items=total,
+        total_pages=total_pages,
+        page=page,
+        limit=page_size,
         scans=scans,
         total=total,
-        page=page,
-        page_size=page_size,
+        page_size=page_size
     )
 
 
