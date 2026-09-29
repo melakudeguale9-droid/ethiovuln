@@ -43,14 +43,17 @@ async def lifespan(app: FastAPI):
         logger.error(f"✗ Configuration validation failed: {e}")
 
     # Initialize database tables
-    if settings.DEBUG:
-        try:
-            await init_db()
-            logger.info("✓ Database tables initialized successfully (DEBUG mode)")
-        except Exception as e:
-            logger.error(f"✗ Database initialization failed: {e}")
-    else:
-        logger.info("✓ Skipping automatic table creation (using Alembic in production)")
+    try:
+        from app.database import init_db
+        # Import models so they register with Base.metadata before create_all
+        import app.models.user
+        import app.models.scan
+        import app.models.vulnerability
+        
+        await init_db()
+        logger.info("✓ Database tables verified/created successfully.")
+    except Exception as e:
+        logger.error(f"✗ Error during init_db: {e}")
 
     # Verify Redis connectivity
     try:
