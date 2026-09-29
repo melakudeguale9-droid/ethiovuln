@@ -10,6 +10,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Set working directory
 WORKDIR /app
+ENV PYTHONPATH=/app
 
 # Install Python dependencies first (layer cache)
 COPY requirements.txt .
