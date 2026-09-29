@@ -69,7 +69,7 @@ services:
     region: oregon
     plan: free
     rootDir: frontend
-    buildCommand: npm ci && npm run build
+    buildCommand: npm install --include=dev && npm run build
     startCommand: npm run start
     envVars:
       - key: NODE_VERSION
