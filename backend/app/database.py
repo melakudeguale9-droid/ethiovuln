@@ -24,9 +24,11 @@ elif _db_url.startswith("postgresql://") and "+asyncpg" not in _db_url:
 engine = create_async_engine(
     _db_url,
     echo=settings.DEBUG,
-    pool_size=5,
-    max_overflow=10,
+    pool_size=10,
+    max_overflow=20,
     pool_pre_ping=True,
+    pool_recycle=1800,  # Recycle connections every 30 minutes
+    pool_timeout=30,    # Timeout if no connection is available
 )
 
 async_session_factory = async_sessionmaker(
