@@ -20,7 +20,7 @@ export function Sidebar({ user, collapsed, onToggleCollapse, onLogout }: Sidebar
   return (
     <aside
       style={{
-        width: collapsed ? 68 : 240,
+        width: collapsed ? 68 : 240, maxWidth: '80vw',
         background: 'rgba(13, 21, 39, 0.95)',
         borderRight: '1px solid rgba(148, 163, 184, 0.1)',
         display: 'flex',
