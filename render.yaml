@@ -44,9 +44,9 @@ services:
       - key: JWT_ALGORITHM
         value: HS256
       - key: ACCESS_TOKEN_EXPIRE_MINUTES
-        value: "1440"
+        value: "20000"
       - key: REFRESH_TOKEN_EXPIRE_DAYS
-        value: "7"
+        value: "90"
       - key: APP_NAME
         value: EthioVuln
       - key: FRONTEND_URL

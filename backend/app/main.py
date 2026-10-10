@@ -17,7 +17,11 @@ from app.database import init_db
 settings = get_settings()
 
 # ─── Rate Limiter ─────────────────────────────────────────────────────────────
-limiter = Limiter(key_func=get_remote_address, default_limits=["200/minute"])
+limiter = Limiter(
+    key_func=get_remote_address,
+    default_limits=["200/minute"],
+    storage_uri=settings.REDIS_URL,
+)
 
 # Configure logging
 logging.basicConfig(
@@ -91,12 +95,12 @@ app.add_middleware(SlowAPIMiddleware)
 # ─── CORS Middleware ─────────────────────────────────────────────────────────
 import os as _os
 
-_FRONTEND_URL = _os.getenv("FRONTEND_URL", "https://ethiovuln-1.onrender.com")
+_FRONTEND_URL = _os.getenv("FRONTEND_URL", "https://ethiovuln.onrender.com")
 
 _ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:8000",
-    "https://ethiovuln-1.onrender.com",
+    "https://ethiovuln.onrender.com",
     _FRONTEND_URL,
 ]
 
@@ -169,3 +173,11 @@ async def root():
         "docs": "/api/docs",
         "health": "/api/health",
     }
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    # Logs the error without killing the server process
+    return JSONResponse(
+        status_code=500,
+        content={"message": "An internal server error occurred."}
+    )    
