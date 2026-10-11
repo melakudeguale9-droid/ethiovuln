@@ -181,6 +181,8 @@ def make_finding(
         "cwe_id": cwe_id,
         "cwe_name": cwe_info.get("name", ""),
         "url": url,
+        "target_url": url,
+        "affected_parameter": param,
         "evidence": evidence,
         "request_data": req,
         "response_data": resp[:600] if resp else "",
