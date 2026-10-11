@@ -389,34 +389,59 @@ export default function ScanDetailPage() {
               filteredVulns.map((vuln: Vulnerability, i: number) => {
                 const sevCfg = SEVERITY_CONFIG[vuln.severity as Severity] || SEVERITY_CONFIG.info;
                 const isExpanded = expandedVuln === `${i}`;
+                const param = extractParameter(vuln);
+                const payload = extractPayload(vuln);
+                const targetUrl = vuln.target_url || vuln.url;
 
                 return (
                   <div
-                    key={i}
+                    key={vuln.id || i}
                     style={{
                       borderRadius: 10,
-                      border: isExpanded ? `1px solid ${sevCfg.color}50` : '1px solid rgba(148, 163, 184, 0.1)',
-                      background: 'rgba(5, 8, 17, 0.4)',
+                      border: isExpanded ? `1px solid ${sevCfg.color}60` : '1px solid rgba(148, 163, 184, 0.12)',
+                      borderLeft: `4px solid ${sevCfg.color}`,
+                      background: isExpanded ? 'rgba(8, 14, 28, 0.75)' : 'rgba(5, 8, 17, 0.45)',
                       overflow: 'hidden',
-                      transition: 'all 0.2s',
+                      transition: 'all 0.25s ease-out',
+                      boxShadow: isExpanded ? `0 4px 20px -2px ${sevCfg.color}15` : 'none',
                     }}
                   >
                     {/* Header Row */}
                     <div
                       onClick={() => setExpandedVuln(isExpanded ? null : `${i}`)}
                       style={{
-                        padding: '12px 16px',
+                        padding: '14px 18px',
                         cursor: 'pointer',
                         display: 'flex',
                         justifyContent: 'space-between',
                         alignItems: 'center',
-                        gap: 12,
+                        gap: 14,
+                        userSelect: 'none',
                       }}
                     >
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 13, fontWeight: 700, color: '#F8FAFC', marginBottom: 3 }}>
-                          {vuln.title}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 4 }}>
+                          <span style={{ fontSize: 13, fontWeight: 700, color: '#F8FAFC' }}>
+                            {vuln.title}
+                          </span>
+                          {param && (
+                            <span
+                              style={{
+                                fontSize: 10,
+                                fontWeight: 600,
+                                color: '#00E5FF',
+                                background: 'rgba(0, 229, 255, 0.1)',
+                                border: '1px solid rgba(0, 229, 255, 0.3)',
+                                padding: '1px 7px',
+                                borderRadius: 4,
+                                fontFamily: 'var(--font-mono)',
+                              }}
+                            >
+                              param: {param}
+                            </span>
+                          )}
                         </div>
+
                         <div
                           style={{
                             fontSize: 11,
@@ -425,12 +450,18 @@ export default function ScanDetailPage() {
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
                             whiteSpace: 'nowrap',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 6,
                           }}
                         >
-                          <span style={{ color: '#94A3B8' }}>{vuln.source?.toUpperCase()}</span> · {vuln.url}
+                          <span style={{ color: '#94A3B8', fontWeight: 600 }}>{vuln.source?.toUpperCase()}</span>
+                          <span>·</span>
+                          <span style={{ color: '#CBD5E1' }}>{targetUrl}</span>
                         </div>
                       </div>
 
+                      {/* Right-hand badges & toggle */}
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
                         <span className={`badge badge-${vuln.severity}`}>{sevCfg.label}</span>
                         <span
@@ -439,101 +470,256 @@ export default function ScanDetailPage() {
                             fontWeight: 800,
                             color: sevCfg.color,
                             fontFamily: 'var(--font-mono)',
+                            background: `${sevCfg.color}12`,
+                            padding: '3px 8px',
+                            borderRadius: 6,
+                            border: `1px solid ${sevCfg.color}30`,
                           }}
                         >
                           {formatCvssScore(vuln.cvss_score || 0)}
                         </span>
-                        <span style={{ color: '#64748B', fontSize: 11 }}>
-                          {isExpanded ? '▲' : '▼'}
+                        {vuln.cwe_id && (
+                          <span
+                            style={{
+                              fontSize: 11,
+                              fontWeight: 700,
+                              color: '#94A3B8',
+                              background: 'rgba(148, 163, 184, 0.1)',
+                              padding: '3px 7px',
+                              borderRadius: 6,
+                              fontFamily: 'var(--font-mono)',
+                            }}
+                          >
+                            {vuln.cwe_id}
+                          </span>
+                        )}
+                        <span
+                          style={{
+                            color: isExpanded ? '#00E5FF' : '#64748B',
+                            fontSize: 11,
+                            fontWeight: 700,
+                            padding: '2px 6px',
+                          }}
+                        >
+                          {isExpanded ? '▲ Hide' : '▼ View'}
                         </span>
                       </div>
                     </div>
 
-                    {/* Accordion Expansion Details */}
+                    {/* Accordion Expansion Body */}
                     {isExpanded && (
                       <div
                         style={{
-                          padding: '14px 16px',
-                          borderTop: '1px solid rgba(148, 163, 184, 0.08)',
-                          background: 'rgba(0, 0, 0, 0.25)',
+                          padding: '16px 20px',
+                          borderTop: '1px solid rgba(148, 163, 184, 0.1)',
+                          background: 'rgba(0, 0, 0, 0.35)',
                           fontSize: 12,
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: 16,
                         }}
                       >
+                        {/* 1. Vulnerable Endpoint & Affected Parameter Box */}
+                        <div
+                          style={{
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+                            gap: 12,
+                            padding: 12,
+                            borderRadius: 8,
+                            background: 'rgba(15, 23, 42, 0.6)',
+                            border: '1px solid rgba(148, 163, 184, 0.12)',
+                          }}
+                        >
+                          <div>
+                            <div style={{ fontSize: 10, fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase', marginBottom: 4 }}>
+                              Vulnerable Endpoint
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                              <span
+                                style={{
+                                  fontSize: 11,
+                                  color: '#38BDF8',
+                                  fontFamily: 'var(--font-mono)',
+                                  wordBreak: 'break-all',
+                                }}
+                              >
+                                {targetUrl}
+                              </span>
+                              <button
+                                onClick={() => copyToClipboard(targetUrl, `url-${i}`)}
+                                style={{
+                                  background: 'rgba(56, 189, 248, 0.1)',
+                                  border: '1px solid rgba(56, 189, 248, 0.3)',
+                                  color: '#38BDF8',
+                                  fontSize: 10,
+                                  borderRadius: 4,
+                                  padding: '2px 6px',
+                                  cursor: 'pointer',
+                                  flexShrink: 0,
+                                }}
+                              >
+                                {copiedField === `url-${i}` ? '✓ Copied' : 'Copy'}
+                              </button>
+                            </div>
+                          </div>
+
+                          <div>
+                            <div style={{ fontSize: 10, fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase', marginBottom: 4 }}>
+                              Affected Parameter / Header
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                              <span
+                                style={{
+                                  fontSize: 11,
+                                  fontWeight: 700,
+                                  color: param ? '#F59E0B' : '#94A3B8',
+                                  fontFamily: 'var(--font-mono)',
+                                  background: param ? 'rgba(245, 158, 11, 0.1)' : 'rgba(148, 163, 184, 0.08)',
+                                  border: param ? '1px solid rgba(245, 158, 11, 0.3)' : '1px solid rgba(148, 163, 184, 0.15)',
+                                  padding: '2px 8px',
+                                  borderRadius: 4,
+                                }}
+                              >
+                                {param || 'HTTP Request Body / URI Context'}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* 2. Technical Classification & Severity Breakdown */}
+                        <div
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            flexWrap: 'wrap',
+                            gap: 16,
+                            padding: '10px 14px',
+                            background: 'rgba(5, 8, 17, 0.5)',
+                            borderRadius: 8,
+                            border: '1px solid rgba(148, 163, 184, 0.08)',
+                          }}
+                        >
+                          <div>
+                            <span style={{ fontSize: 10, color: '#64748B', textTransform: 'uppercase', fontWeight: 700, marginRight: 6 }}>
+                              Severity:
+                            </span>
+                            <span style={{ fontWeight: 800, color: sevCfg.color, textTransform: 'uppercase' }}>
+                              {vuln.severity} ({formatCvssScore(vuln.cvss_score || 0)})
+                            </span>
+                          </div>
+
+                          {vuln.cwe_id && (
+                            <div>
+                              <span style={{ fontSize: 10, color: '#64748B', textTransform: 'uppercase', fontWeight: 700, marginRight: 6 }}>
+                                CWE ID:
+                              </span>
+                              <a
+                                href={getCweUrl(vuln.cwe_id)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{ color: '#00E5FF', textDecoration: 'none', fontWeight: 700 }}
+                              >
+                                {vuln.cwe_id} {vuln.cwe_name ? `(${vuln.cwe_name})` : ''} ↗
+                              </a>
+                            </div>
+                          )}
+
+                          {vuln.cvss_vector && (
+                            <div style={{ flex: 1, minWidth: 200 }}>
+                              <span style={{ fontSize: 10, color: '#64748B', textTransform: 'uppercase', fontWeight: 700, marginRight: 6 }}>
+                                CVSS Vector:
+                              </span>
+                              <code style={{ fontSize: 10, color: '#94A3B8', fontFamily: 'var(--font-mono)' }}>
+                                {vuln.cvss_vector}
+                              </code>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* 3. Detailed Vulnerability Explanation */}
                         {vuln.description && (
-                          <div style={{ marginBottom: 12 }}>
+                          <div>
                             <div style={{ fontSize: 11, fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase', marginBottom: 4 }}>
-                              Description
+                              Detailed Vulnerability Explanation
                             </div>
-                            <p style={{ color: '#F1F5F9', lineHeight: 1.6 }}>{vuln.description}</p>
+                            <p style={{ color: '#F1F5F9', lineHeight: 1.6, margin: 0 }}>
+                              {vuln.description}
+                            </p>
                           </div>
                         )}
 
-                        {vuln.cwe_id && (
-                          <div style={{ marginBottom: 10 }}>
-                            <div style={{ fontSize: 11, fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase', marginBottom: 2 }}>
-                              Classification
-                            </div>
-                            <a
-                              href={getCweUrl(vuln.cwe_id)}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              style={{ color: '#00E5FF', textDecoration: 'none', fontWeight: 600 }}
-                            >
-                              {vuln.cwe_id} — {vuln.cwe_name}
-                            </a>
-                          </div>
-                        )}
-
-                        {vuln.cvss_vector && (
-                          <div style={{ marginBottom: 10 }}>
-                            <div style={{ fontSize: 11, fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase', marginBottom: 2 }}>
-                              CVSS Vector
-                            </div>
-                            <code style={{ fontSize: 11, color: '#64748B', fontFamily: 'var(--font-mono)' }}>
-                              {vuln.cvss_vector}
-                            </code>
-                          </div>
-                        )}
-
-                        {vuln.evidence && (
-                          <div style={{ marginBottom: 12 }}>
-                            <div style={{ fontSize: 11, fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase', marginBottom: 4 }}>
-                              Reproduction Evidence
+                        {/* 4. Verification Evidence & Proof of Concept */}
+                        {(vuln.evidence || vuln.request_data || payload) && (
+                          <div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                              <span style={{ fontSize: 11, fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase' }}>
+                                Non-Malicious Verification Evidence & Trigger Context
+                              </span>
+                              {vuln.evidence && (
+                                <button
+                                  onClick={() => copyToClipboard(vuln.evidence || '', `ev-${i}`)}
+                                  style={{
+                                    background: 'none',
+                                    border: 'none',
+                                    color: '#00E5FF',
+                                    fontSize: 11,
+                                    cursor: 'pointer',
+                                    padding: 0,
+                                  }}
+                                >
+                                  {copiedField === `ev-${i}` ? '✓ Copied' : 'Copy Evidence'}
+                                </button>
+                              )}
                             </div>
                             <div
                               style={{
-                                background: '#050811',
-                                border: '1px solid rgba(148, 163, 184, 0.1)',
+                                background: '#020617',
+                                border: '1px solid rgba(148, 163, 184, 0.12)',
                                 color: '#10B981',
-                                padding: 10,
+                                padding: 12,
                                 borderRadius: 6,
                                 fontSize: 11,
                                 fontFamily: 'var(--font-mono)',
-                                maxHeight: 120,
+                                maxHeight: 150,
                                 overflowY: 'auto',
+                                whiteSpace: 'pre-wrap',
                                 wordBreak: 'break-all',
                               }}
                             >
-                              {vuln.evidence}
+                              {vuln.evidence || vuln.request_data}
                             </div>
                           </div>
                         )}
 
+                        {/* 5. Recommended Developer Fix & Remediation */}
                         {vuln.remediation && (
                           <div
                             style={{
-                              padding: 12,
-                              borderRadius: 6,
-                              background: 'rgba(16, 185, 129, 0.05)',
-                              borderLeft: '3px solid #10B981',
+                              padding: 14,
+                              borderRadius: 8,
+                              background: 'rgba(16, 185, 129, 0.06)',
+                              border: '1px solid rgba(16, 185, 129, 0.25)',
+                              borderLeft: '4px solid #10B981',
                             }}
                           >
-                            <div style={{ fontSize: 11, fontWeight: 700, color: '#10B981', textTransform: 'uppercase', marginBottom: 4 }}>
-                              Recommended Remediation
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                              <span style={{ fontSize: 13 }}>🛡️</span>
+                              <span style={{ fontSize: 11, fontWeight: 700, color: '#10B981', textTransform: 'uppercase' }}>
+                                Recommended Developer Remediation & Secure Coding Guidance
+                              </span>
                             </div>
-                            <pre style={{ whiteSpace: 'pre-wrap', color: '#94A3B8', fontSize: 11, fontFamily: 'inherit', margin: 0 }}>
+                            <div
+                              style={{
+                                color: '#CBD5E1',
+                                fontSize: 11,
+                                lineHeight: 1.6,
+                                whiteSpace: 'pre-wrap',
+                                fontFamily: 'inherit',
+                              }}
+                            >
                               {vuln.remediation}
-                            </pre>
+                            </div>
                           </div>
                         )}
                       </div>
