@@ -48,8 +48,9 @@ export default function ScanDetailPage() {
     }
   }, [ws.logs, autoScroll]);
 
-  const progress = scan?.progress || ws.progress || 0;
-  const status = scan?.status || ws.status || 'pending';
+  const status = (scan?.status || ws.status || 'pending').toLowerCase();
+  const isCompleted = status === 'completed';
+  const progress = isCompleted ? 100 : (ws.progress > 0 ? ws.progress : (scan?.progress ?? 0));
   const statusConfig = SCAN_STATUS_CONFIG[status] || { label: status, color: '#94A3B8' };
   const isRunning = status === 'running' || status === 'verifying' || status === 'pending';
 
@@ -180,7 +181,7 @@ export default function ScanDetailPage() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ fontSize: 13, fontWeight: 600, color: '#94A3B8' }}>Current Stage:</span>
             <span style={{ fontSize: 13, fontWeight: 700, color: '#00E5FF', fontFamily: 'var(--font-mono)' }}>
-              {ws.stage || (isRunning ? 'Initializing Engine Execution' : 'Assessment Completed')}
+              {isCompleted ? 'Assessment Completed' : (ws.stage || (isRunning ? 'Initializing Engine Execution' : 'Assessment Completed'))}
             </span>
           </div>
           <span style={{ fontSize: 14, fontWeight: 800, color: '#F8FAFC', fontFamily: 'var(--font-mono)' }}>
@@ -188,7 +189,10 @@ export default function ScanDetailPage() {
           </span>
         </div>
         <div className="progress-bar-track" style={{ height: 8 }}>
-          <div className="progress-bar-fill" style={{ width: `${progress}%` }} />
+          <div
+            className="progress-bar-fill transition-all duration-500 ease-out"
+            style={{ width: `${progress}%`, transition: 'width 500ms cubic-bezier(0.4, 0, 0.2, 1)' }}
+          />
         </div>
       </div>
 

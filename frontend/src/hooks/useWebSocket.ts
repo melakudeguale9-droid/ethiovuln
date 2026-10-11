@@ -84,6 +84,8 @@ export function useWebSocket(scanId: string | null) {
               setState(prev => ({
                 ...prev,
                 status: msg.data.status,
+                progress: msg.data.status?.toLowerCase() === 'completed' ? 100 : prev.progress,
+                stage: msg.data.status?.toLowerCase() === 'completed' ? 'Assessment Completed' : prev.stage,
               }));
               break;
 

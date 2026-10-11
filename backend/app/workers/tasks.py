@@ -142,15 +142,45 @@ def run_scan_task(self, scan_id: str):
             scan_type = scan.scan_type
         sync_engine.dispose()
 
-        # Update status to running
+        # Calculate total checks dynamically based on configured scan engines
+        total_steps = 0
+        if scan_type in (ScanType.FULL, ScanType.NUCLEI_ONLY, ScanType.NUCLEI_ZAP):
+            total_steps += 1  # Nuclei scanner module
+        if scan_type in (ScanType.FULL, ScanType.ZAP_ONLY, ScanType.NUCLEI_ZAP):
+            total_steps += 1  # OWASP ZAP spider and active scanner module
+        if scan_type in (ScanType.FULL, ScanType.FUZZ_ONLY):
+            total_steps += 11  # 10 specialized vulnerability checks + 1 directory fuzzing check
+
+        total_steps = max(total_steps, 1)
+        current_step = 0
+
+        def advance_step(stage_message: str):
+            """Record a completed check and calculate progress dynamically."""
+            nonlocal current_step
+            current_step += 1
+            progress = int((current_step / total_steps) * 100)
+            # Cap intermediate progress at 99 so 100 is reserved exclusively for COMPLETED status
+            progress = min(progress, 99)
+            publish_progress(scan_id, progress, stage_message)
+            update_scan_in_db(scan_id, progress=progress, status=ScanStatus.RUNNING)
+            logger.info(f"Scan {scan_id} progress: {progress}% ({current_step}/{total_steps} checks) - {stage_message}")
+            return progress
+
+        def set_stage(stage_message: str):
+            """Update the current active stage without advancing step count."""
+            progress = int((current_step / total_steps) * 100)
+            progress = min(progress, 99)
+            publish_progress(scan_id, progress, stage_message)
+
+        # Update status to running with dynamic initial progress = 0
         update_scan_in_db(
             scan_id,
             status=ScanStatus.RUNNING,
-            progress=5,
+            progress=0,
             started_at=datetime.now(timezone.utc),
         )
         publish_update(scan_id, "status", {"status": "running"})
-        publish_log(scan_id, f"Scan started for target: {target_url}")
+        publish_log(scan_id, f"Scan started for target: {target_url} (Total planned checks: {total_steps})")
         publish_progress(scan_id, 0, "Initializing scan engines")
 
         all_findings = []
@@ -158,7 +188,7 @@ def run_scan_task(self, scan_id: str):
         # ─── Phase 1: Nuclei Scan ─────────────────────────────
         if scan_type in (ScanType.FULL, ScanType.NUCLEI_ONLY, ScanType.NUCLEI_ZAP):
             publish_log(scan_id, "Starting Nuclei template-based scan...")
-            publish_progress(scan_id, 5, "Running Nuclei scanner")
+            set_stage("Running Nuclei scanner")
 
             try:
                 from app.workers.nuclei_engine import nuclei_engine
@@ -178,7 +208,7 @@ def run_scan_task(self, scan_id: str):
                 publish_log(scan_id, f"Nuclei scan error: {str(e)}", "error")
                 logger.error(f"Nuclei error for scan {scan_id}: {e}")
 
-            publish_progress(scan_id, 35, "Nuclei scan complete")
+            advance_step("Nuclei scan complete")
 
         # ─── Phase 2: ZAP Spider + Active Scan ────────────────
         if scan_type in (ScanType.FULL, ScanType.ZAP_ONLY, ScanType.NUCLEI_ZAP):
@@ -197,16 +227,14 @@ def run_scan_task(self, scan_id: str):
 
             if not zap_available:
                 publish_log(scan_id, "⚠ ZAP not available (Docker not running) — skipping ZAP phase", "warning")
-                publish_progress(scan_id, 70, "ZAP skipped")
+                advance_step("ZAP skipped (engine offline)")
             else:
                 publish_log(scan_id, "Starting OWASP ZAP spider and active scan...")
-                publish_progress(scan_id, 40, "Running OWASP ZAP")
+                set_stage("Running OWASP ZAP")
                 try:
                     from app.workers.zap_engine import zap_engine
 
                     def zap_progress(pct, msg):
-                        overall = 40 + int(pct * 0.3)
-                        publish_progress(scan_id, overall, msg)
                         publish_log(scan_id, f"[ZAP] {msg}")
 
                     zap_findings = zap_engine.run_full_scan(target_url, zap_progress)
@@ -220,27 +248,24 @@ def run_scan_task(self, scan_id: str):
                 except Exception as e:
                     publish_log(scan_id, f"ZAP scan error: {str(e)}", "error")
                     logger.error(f"ZAP error for scan {scan_id}: {e}")
-                publish_progress(scan_id, 70, "ZAP scan complete")
+                advance_step("ZAP scan complete")
 
         # ─── Phase 3: Custom Fuzzer ───────────────────────────
         if scan_type in (ScanType.FULL, ScanType.FUZZ_ONLY):
-            publish_log(scan_id, "Starting directory and sensitive file fuzzing...")
-            publish_progress(scan_id, 75, "Running directory fuzzer")
+            publish_log(scan_id, "Starting security vulnerability checks and directory fuzzing...")
+            set_stage("Running security fuzzer")
 
             try:
                 from app.workers.fuzzer import directory_fuzzer
 
-                def fuzz_progress(pct, msg):
-                    overall = 75 + int(pct * 0.2)  # Fuzzer progress mapped to 75-95%
-                    publish_progress(scan_id, overall, msg)
-                    publish_log(scan_id, f"[Fuzzer] {msg}")
-                    # Update DB every 5% so polling shows progress
-                    if pct % 5 == 0:
-                        update_scan_in_db(scan_id, progress=overall, status=ScanStatus.RUNNING)
+                def on_fuzzer_step_start(stage_prompt):
+                    set_stage(stage_prompt)
+                    publish_log(scan_id, f"[Fuzzer] {stage_prompt}")
 
-                fuzz_findings = directory_fuzzer.run_scan(target_url, progress_callback=fuzz_progress)
+                def on_fuzzer_step_complete(completed_msg, check_findings):
+                    advance_step(completed_msg)
 
-                for finding in fuzz_findings:
+                def on_fuzzer_finding(finding):
                     all_findings.append(finding)
                     save_vulnerability_to_db(scan_id, finding)
                     publish_vulnerability(scan_id, finding)
@@ -250,12 +275,17 @@ def run_scan_task(self, scan_id: str):
                         "warning" if finding["severity"] in ("critical", "high") else "info",
                     )
 
-                publish_log(scan_id, f"Fuzzer complete: {len(fuzz_findings)} findings")
+                directory_fuzzer.run_scan(
+                    target_url,
+                    on_step_start=on_fuzzer_step_start,
+                    on_step_complete=on_fuzzer_step_complete,
+                    on_finding=on_fuzzer_finding,
+                )
+
+                publish_log(scan_id, f"Fuzzer complete: {len([f for f in all_findings if f.get('source') == 'fuzzer'])} findings")
             except Exception as e:
                 publish_log(scan_id, f"Fuzzer error: {str(e)}", "error")
                 logger.error(f"Fuzzer error for scan {scan_id}: {e}")
-
-            publish_progress(scan_id, 95, "Fuzzer complete")
 
         # ─── Finalize ────────────────────────────────────────
         # Count severity totals
@@ -265,6 +295,7 @@ def run_scan_task(self, scan_id: str):
             if sev in severity_counts:
                 severity_counts[sev] += 1
 
+        # Explicitly update status to COMPLETED with progress = 100
         update_scan_in_db(
             scan_id,
             status=ScanStatus.COMPLETED,
@@ -278,7 +309,7 @@ def run_scan_task(self, scan_id: str):
             info_count=severity_counts["info"],
         )
 
-        publish_progress(scan_id, 100, "Scan complete")
+        publish_progress(scan_id, 100, "Assessment Completed")
         publish_log(
             scan_id,
             f"Scan completed! Found {len(all_findings)} total vulnerabilities: "
@@ -288,7 +319,7 @@ def run_scan_task(self, scan_id: str):
         )
         publish_update(scan_id, "status", {"status": "completed"})
 
-        logger.info(f"Scan {scan_id} completed with {len(all_findings)} findings")
+        logger.info(f"Scan {scan_id} completed with {len(all_findings)} findings and progress=100")
 
     except Exception as e:
         logger.error(f"Scan task {scan_id} failed: {e}")
@@ -297,7 +328,7 @@ def run_scan_task(self, scan_id: str):
 
         update_scan_in_db(
             scan_id,
-            status="failed",
+            status=ScanStatus.FAILED,
             error_message=str(e),
             completed_at=datetime.now(timezone.utc),
         )

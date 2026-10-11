@@ -621,74 +621,105 @@ class DirectoryFuzzer:
         return "Restrict access to this endpoint. Review web server configuration."
 
     # ── Main Run ──────────────────────────────────────────────────────────────
-    def run_scan(self, target, wordlist=None, progress_callback=None):
+    def run_scan(
+        self,
+        target,
+        wordlist=None,
+        progress_callback=None,
+        on_step_start=None,
+        on_step_complete=None,
+        on_finding=None,
+    ):
         self._stop_flag = False
         paths = wordlist or SENSITIVE_PATHS
-        total = len(paths)
+        total_paths = len(paths)
         findings = []
-        completed = 0
 
-        logger.info(f"Starting fuzzer with {self.threads} threads against {target} ({total} paths)")
+        logger.info(f"Starting fuzzer with {self.threads} threads against {target} ({total_paths} paths)")
 
-        def cb(pct, msg):
-            if progress_callback:
-                progress_callback(pct, msg)
+        fuzzer_checks = [
+            ("Checking security headers...", "Security headers", lambda: self._check_security_headers(target)),
+            ("Checking CORS configuration...", "CORS configuration", lambda: self._check_cors(target)),
+            ("Checking for Clickjacking...", "Clickjacking protection", lambda: self._check_clickjacking(target)),
+            ("Checking information disclosure...", "Information disclosure", lambda: self._check_info_disclosure(target)),
+            ("Testing for Reflected XSS...", "Reflected XSS", lambda: self._check_xss(target)),
+            ("Testing for SQL Injection...", "SQL Injection", lambda: self._check_sqli(target)),
+            ("Testing for SSTI...", "Server-Side Template Injection", lambda: self._check_ssti(target)),
+            ("Testing for Open Redirect...", "Open Redirect", lambda: self._check_open_redirect(target)),
+            ("Testing for LFI...", "Local File Inclusion", lambda: self._check_lfi(target)),
+            ("Testing for SSRF...", "Server-Side Request Forgery", lambda: self._check_ssrf(target)),
+        ]
+        total_steps = len(fuzzer_checks) + 1  # 10 vulnerability checks + 1 directory fuzzing check
+        current_step = 0
 
-        cb(2, "Checking security headers...")
-        header_findings = self._check_security_headers(target)
-        logger.info(f"Security headers check: {len(header_findings)} findings")
-        findings.extend(header_findings)
+        for stage_prompt, check_label, check_fn in fuzzer_checks:
+            if self._stop_flag:
+                break
 
-        cb(5, "Checking CORS configuration...")
-        cors_findings = self._check_cors(target)
-        logger.info(f"CORS check: {len(cors_findings)} findings")
-        findings.extend(cors_findings)
+            if on_step_start:
+                on_step_start(stage_prompt)
+            elif progress_callback:
+                progress = int((current_step / total_steps) * 100)
+                progress_callback(progress, stage_prompt)
 
-        cb(7, "Checking for Clickjacking...")
-        click_findings = self._check_clickjacking(target)
-        logger.info(f"Clickjacking check: {len(click_findings)} findings")
-        findings.extend(click_findings)
+            try:
+                check_findings = check_fn() or []
+            except Exception as e:
+                logger.error(f"Error in {check_label} check: {e}")
+                check_findings = []
 
-        cb(9, "Checking information disclosure...")
-        info_findings = self._check_info_disclosure(target)
-        logger.info(f"Info disclosure check: {len(info_findings)} findings")
-        findings.extend(info_findings)
+            for f in check_findings:
+                findings.append(f)
+                if on_finding:
+                    on_finding(f)
 
-        cb(12, "Testing for Reflected XSS...")
-        findings.extend(self._check_xss(target))
+            current_step += 1
+            progress = int((current_step / total_steps) * 100)
+            completed_msg = f"{check_label} check complete ({len(check_findings)} findings)"
 
-        cb(18, "Testing for SQL Injection...")
-        findings.extend(self._check_sqli(target))
+            if on_step_complete:
+                on_step_complete(completed_msg, check_findings)
+            elif progress_callback:
+                progress_callback(progress, completed_msg)
 
-        cb(22, "Testing for SSTI...")
-        findings.extend(self._check_ssti(target))
+        # Directory fuzzing step
+        if not self._stop_flag:
+            dir_stage_prompt = f"Directory fuzzing ({total_paths} paths)..."
+            if on_step_start:
+                on_step_start(dir_stage_prompt)
+            elif progress_callback:
+                progress = int((current_step / total_steps) * 100)
+                progress_callback(progress, dir_stage_prompt)
 
-        cb(25, "Testing for Open Redirect...")
-        findings.extend(self._check_open_redirect(target))
+            completed_paths = 0
+            with ThreadPoolExecutor(max_workers=self.threads) as executor:
+                futures = {executor.submit(self._check_path, target, path): path for path in paths}
+                for future in as_completed(futures):
+                    if self._stop_flag:
+                        executor.shutdown(wait=False, cancel_futures=True)
+                        break
+                    completed_paths += 1
+                    try:
+                        result = future.result()
+                    except Exception as e:
+                        logger.debug(f"Path fuzz error: {e}")
+                        result = None
 
-        cb(28, "Testing for LFI...")
-        findings.extend(self._check_lfi(target))
+                    if result:
+                        findings.append(result)
+                        if on_finding:
+                            on_finding(result)
 
-        cb(30, "Testing for SSRF...")
-        findings.extend(self._check_ssrf(target))
+            current_step += 1
+            progress = int((current_step / total_steps) * 100)
+            completed_msg = f"Directory fuzzing complete ({completed_paths}/{total_paths} paths checked)"
 
-        cb(33, f"Directory fuzzing ({total} paths)...")
-        with ThreadPoolExecutor(max_workers=self.threads) as executor:
-            futures = {executor.submit(self._check_path, target, path): path for path in paths}
-            for future in as_completed(futures):
-                if self._stop_flag:
-                    executor.shutdown(wait=False, cancel_futures=True)
-                    break
-                completed += 1
-                progress = 33 + int((completed / total) * 67)
-                result = future.result()
-                if result:
-                    findings.append(result)
-                    cb(progress, f"Found: {result['title']} ({len(findings)} total)")
-                elif completed % 20 == 0:
-                    cb(progress, f"Fuzzing: {completed}/{total} paths ({len(findings)} findings)")
+            if on_step_complete:
+                on_step_complete(completed_msg, [])
+            elif progress_callback:
+                progress_callback(progress, completed_msg)
 
-        logger.info(f"Fuzzer completed: {len(findings)} findings from {total} paths")
+        logger.info(f"Fuzzer completed: {len(findings)} findings from {total_paths} paths")
         return findings
 
 
