@@ -269,17 +269,18 @@ def run_scan_task(self, scan_id: str):
                     all_findings.append(finding)
                     save_vulnerability_to_db(scan_id, finding)
                     publish_vulnerability(scan_id, finding)
-                    publish_log(
-                        scan_id,
-                        f"[Fuzzer] Found: {finding['title']} ({finding['severity'].upper()})",
-                        "warning" if finding["severity"] in ("critical", "high") else "info",
-                    )
+
+                def on_fuzzer_log(msg, level="info"):
+                    if "[DETECTED]" in msg:
+                        level = "warning"
+                    publish_log(scan_id, msg, level)
 
                 directory_fuzzer.run_scan(
                     target_url,
                     on_step_start=on_fuzzer_step_start,
                     on_step_complete=on_fuzzer_step_complete,
                     on_finding=on_fuzzer_finding,
+                    on_log=on_fuzzer_log,
                 )
 
                 publish_log(scan_id, f"Fuzzer complete: {len([f for f in all_findings if f.get('source') == 'fuzzer'])} findings")
