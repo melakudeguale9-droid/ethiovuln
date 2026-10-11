@@ -20,7 +20,41 @@ export default function ScanDetailPage() {
   const [autoScroll, setAutoScroll] = useState(true);
   const [expandedVuln, setExpandedVuln] = useState<string | null>(null);
   const [selectedSeverity, setSelectedSeverity] = useState<Severity | 'all'>('all');
+  const [copiedField, setCopiedField] = useState<string | null>(null);
   const logContainerRef = useRef<HTMLDivElement>(null);
+
+  const copyToClipboard = (text: string, id: string) => {
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(text);
+      setCopiedField(id);
+      setTimeout(() => setCopiedField(null), 2000);
+    }
+  };
+
+  const extractParameter = (vuln: Vulnerability): string | null => {
+    if (vuln.affected_parameter) return vuln.affected_parameter;
+    if (vuln.request_data) {
+      const m = vuln.request_data.match(/Param(?:eter)?:\s*([^\r\n]+)/i);
+      if (m) return m[1].trim();
+    }
+    if (vuln.evidence) {
+      const m = vuln.evidence.match(/Affected Item:\s*([^\r\n|]+)/i);
+      if (m) return m[1].trim();
+    }
+    return null;
+  };
+
+  const extractPayload = (vuln: Vulnerability): string | null => {
+    if (vuln.request_data) {
+      const m = vuln.request_data.match(/Payload:\s*([^\r\n]+)/i);
+      if (m) return m[1].trim();
+    }
+    if (vuln.evidence) {
+      const m = vuln.evidence.match(/Tested Payload:\s*([^\r\n|]+)/i);
+      if (m) return m[1].trim();
+    }
+    return null;
+  };
 
   const ws = useWebSocket(scanId);
 
