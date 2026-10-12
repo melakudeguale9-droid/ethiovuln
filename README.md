@@ -5,10 +5,10 @@
 
 [![CI Status](https://img.shields.io/badge/build-passing-brightgreen.svg)]()
 [![Backend Tests](https://img.shields.io/badge/pytest-131%2F131%20passed-10B981.svg)]()
-[![Next.js](https://img.shields.io/badge/Next.js-16.2.3-00E5FF.svg)]()
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.115.6-009688.svg)]()
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791.svg)]()
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)]()
+[![Next.js](https://img.shields.io/badge/Next.js-16.2.3-00E5FF.svg)](https://nextjs.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.115.6-009688.svg)](https://fastapi.tiangolo.com/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791.svg)](https://www.postgresql.org/)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ---
 
@@ -105,18 +105,18 @@ Every assessment runs through a multi-tier SSRF validation gate, streams real-ti
 
 | Layer | Component | Version | Description |
 |---|---|---|---|
-| **Frontend Framework** | Next.js | 16.2.3 | Modern App Router, Server Components & Turbopack |
-| **Frontend Library** | React | 19.x | Component runtime with Hooks & Suspense |
-| **Frontend Language** | TypeScript | 5.x | End-to-end static typing and contract validation |
-| **Styling** | Vanilla CSS + Tailwind | 4.x | Design system tokens, glassmorphism, responsive grids |
-| **Backend Framework** | FastAPI | 0.115.6 | Asynchronous Python REST API with Pydantic v2 validation |
-| **ASGI Server** | Uvicorn | 0.34.0 | High-performance asynchronous server |
-| **Database** | PostgreSQL | 16 | Relational data store for scans, users, and findings |
-| **ORM & Migrations** | SQLAlchemy + Alembic | 2.0.36 / 1.14.0 | Asyncpg-powered asynchronous database management |
-| **Task Queue & Broker** | Celery + Redis | 5.4.0 / 7.2 | Distributed job execution and telemetry pub/sub |
-| **Template Scanner** | ProjectDiscovery Nuclei | v3.x | Community-curated vulnerability template matcher |
-| **Dynamic Scanner** | OWASP ZAP | 2.14+ | Spidering, crawling, and active web injection engine |
-| **PDF Generation** | ReportLab | 4.2.5 | Native Python PDF rendering with CVSS charts |
+| **Frontend Framework** | [Next.js](https://nextjs.org/) | 16.2.3 | Modern App Router, Server Components & Turbopack |
+| **Frontend Library** | [React](https://react.dev/) | 19.x | Component runtime with Hooks & Suspense |
+| **Frontend Language** | [TypeScript](https://www.typescriptlang.org/) | 5.x | End-to-end static typing and contract validation |
+| **Styling** | Vanilla CSS + [Tailwind CSS](https://tailwindcss.com/) | 4.x | Design system tokens, glassmorphism, responsive grids |
+| **Backend Framework** | [FastAPI](https://fastapi.tiangolo.com/) | 0.115.6 | Asynchronous Python REST API with Pydantic v2 validation |
+| **ASGI Server** | [Uvicorn](https://www.uvicorn.org/) | 0.34.0 | High-performance asynchronous server |
+| **Database** | [PostgreSQL](https://www.postgresql.org/) | 16 | Relational data store for scans, users, and findings |
+| **ORM & Migrations** | [SQLAlchemy](https://www.sqlalchemy.org/) + [Alembic](https://alembic.sqlalchemy.org/) | 2.0.36 / 1.14.0 | Asyncpg-powered asynchronous database management |
+| **Task Queue & Broker** | [Celery](https://docs.celeryq.dev/) + [Redis](https://redis.io/) | 5.4.0 / 7.2 | Distributed job execution and telemetry pub/sub |
+| **Template Scanner** | [ProjectDiscovery Nuclei](https://github.com/projectdiscovery/nuclei) | v3.x | Community-curated vulnerability template matcher |
+| **Dynamic Scanner** | [OWASP ZAP](https://www.zaproxy.org/) | 2.14+ | Spidering, crawling, and active web injection engine |
+| **PDF Generation** | [ReportLab](https://www.reportlab.com/) | 4.2.5 | Native Python PDF rendering with CVSS charts |
 
 ---
 
@@ -181,11 +181,11 @@ EthioVuln implements a secure authentication system engineered to eliminate comm
 
 EthioVuln avoids relying on a single scanning methodology by coordinating two industry-standard tools:
 
-### Nuclei Engine (ProjectDiscovery)
+### [Nuclei Engine (ProjectDiscovery)](https://github.com/projectdiscovery/nuclei)
 - Executes over 8,000+ community YAML templates covering CVEs, exposed panels, leaked API tokens, and critical misconfigurations.
 - High-speed async I/O scanning with low false-positive rates due to deterministic regex pattern matchers.
 
-### OWASP ZAP (Zed Attack Proxy)
+### [OWASP ZAP (Zed Attack Proxy)](https://www.zaproxy.org/)
 - Performs traditional and AJAX crawling to spider modern single-page applications and multi-page portals.
 - Injects active testing payloads for SQL Injection, Cross-Site Scripting (XSS), Path Traversal, and Remote Code Execution (RCE).
 
@@ -196,26 +196,26 @@ EthioVuln avoids relying on a single scanning methodology by coordinating two in
 ### Mandatory Vulnerability Detection (INSA Bootcamp Requirements)
 EthioVuln rigorously detects and reports on the four mandatory vulnerabilities:
 
-1. **SQL Injection (SQLi) - CWE-89**
-   - **Engine:** OWASP ZAP
+1. **SQL Injection (SQLi) - [CWE-89](https://cwe.mitre.org/data/definitions/89.html)**
+   - **Engine:** [OWASP ZAP](https://www.zaproxy.org/)
    - **Detection Mechanism:** Injects payloads (e.g., `' OR '1'='1`, time-based `WAITFOR`) to observe database errors or timing differences.
    - **CVSS v3.1 Range:** 7.2 - 10.0 (High - Critical)
    - **Remediation:** Parameterized queries, ORM usage, input sanitization.
 
-2. **Cross-Site Scripting (XSS) - CWE-79**
-   - **Engine:** OWASP ZAP & Nuclei
+2. **Cross-Site Scripting (XSS) - [CWE-79](https://cwe.mitre.org/data/definitions/79.html)**
+   - **Engine:** [OWASP ZAP](https://www.zaproxy.org/) & [Nuclei](https://github.com/projectdiscovery/nuclei)
    - **Detection Mechanism:** Injects benign JS (e.g., `"><script>alert(1)</script>`) and checks for unsanitized reflection or stored execution.
    - **CVSS v3.1 Range:** 5.4 - 8.2 (Medium - High)
    - **Remediation:** Context-aware output encoding, DOMPurify, Content Security Policy (CSP).
 
-3. **Cross-Site Request Forgery (CSRF) - CWE-352**
-   - **Engine:** OWASP ZAP
+3. **Cross-Site Request Forgery (CSRF) - [CWE-352](https://cwe.mitre.org/data/definitions/352.html)**
+   - **Engine:** [OWASP ZAP](https://www.zaproxy.org/)
    - **Detection Mechanism:** Identifies state-changing requests lacking or improperly validating anti-CSRF tokens.
    - **CVSS v3.1 Range:** 4.3 - 8.8 (Medium - High)
    - **Remediation:** Synchronizer Token Pattern, server-side validation, `SameSite` cookie attributes.
 
-4. **Missing Security Headers - CWE-1021 / CWE-693**
-   - **Engine:** Nuclei
+4. **Missing Security Headers - [CWE-1021](https://cwe.mitre.org/data/definitions/1021.html) / [CWE-693](https://cwe.mitre.org/data/definitions/693.html)**
+   - **Engine:** [Nuclei](https://github.com/projectdiscovery/nuclei)
    - **Detection Mechanism:** Passive analysis of HTTP responses for missing/weak `CSP`, `HSTS`, `X-Frame-Options`, and `X-Content-Type-Options`.
    - **CVSS v3.1 Range:** 2.6 - 5.3 (Low - Medium)
    - **Remediation:** Enforce `Strict-Transport-Security`, `Content-Security-Policy: default-src 'self'`, and anti-clickjacking headers.
@@ -255,8 +255,8 @@ To prevent EthioVuln from being weaponized to attack internal cloud infrastructu
 FastAPI automatically generates OpenAPI 3.0 schemas for all endpoints.
 
 > **Interactive API Documentation URL:**  
-> `http://127.0.0.1:8000/api/docs` *(Swagger UI)*  
-> `http://127.0.0.1:8000/api/redoc` *(ReDoc UI)*  
+> [`http://127.0.0.1:8000/api/docs`](http://127.0.0.1:8000/api/docs) *(Swagger UI)*  
+> [`http://127.0.0.1:8000/api/redoc`](http://127.0.0.1:8000/api/redoc) *(ReDoc UI)*  
 > *(Note: The documentation is mounted explicitly under `/api/docs`, not `/docs`)*
 
 ### Core Endpoints Overview
@@ -378,7 +378,7 @@ npm install
 npm run dev
 ```
 
-Visit `http://localhost:3000` in your browser.
+Visit [`http://localhost:3000`](http://localhost:3000) in your browser.
 
 ---
 
@@ -400,12 +400,12 @@ docker-compose up --build -d
 
 ### Container Port Mappings
 
-- **Next.js Frontend:** `http://localhost:3000`
-- **FastAPI Backend:** `http://localhost:8000`
-- **FastAPI Documentation:** `http://localhost:8000/api/docs`
-- **PostgreSQL Database:** `localhost:5433`
-- **Redis Server:** `localhost:6379`
-- **OWASP ZAP Daemon:** `localhost:8080`
+- **Next.js Frontend:** [`http://localhost:3000`](http://localhost:3000)
+- **FastAPI Backend:** [`http://localhost:8000`](http://localhost:8000)
+- **FastAPI Documentation:** [`http://localhost:8000/api/docs`](http://localhost:8000/api/docs)
+- **PostgreSQL Database:** [`http://localhost:5433`](http://localhost:5433) / [`http://localhost:5432`](http://localhost:5432)
+- **Redis Server:** [`http://localhost:6379`](http://localhost:6379)
+- **OWASP ZAP Daemon:** [`http://localhost:8080`](http://localhost:8080)
 
 To verify container health:
 ```bash
@@ -416,7 +416,7 @@ docker-compose ps
 
 ## 15. Environment Variables Reference
 
-A centralized template is provided in `.env.example`.
+A centralized template is provided in [`.env.example`](.env.example).
 
 | Variable | Description | Default / Example |
 |---|---|---|
@@ -427,10 +427,10 @@ A centralized template is provided in `.env.example`.
 | `JWT_ALGORITHM` | Algorithm used for token encoding | `HS256` |
 | `ACCESS_TOKEN_EXPIRE_MINUTES` | Access token lifespan | `1440` (24 hours) |
 | `REFRESH_TOKEN_EXPIRE_DAYS` | Refresh token lifespan | `7` (7 days) |
-| `ZAP_PROXY_URL` | URL to the OWASP ZAP daemon API | `http://localhost:8080` |
+| `ZAP_PROXY_URL` | URL to the OWASP ZAP daemon API | [`http://localhost:8080`](http://localhost:8080) |
 | `ZAP_API_KEY` | Authentication key for ZAP daemon | `changeme` |
 | `NUCLEI_PATH` | Path to Nuclei executable binary | `/usr/bin/nuclei` |
-| `NEXT_PUBLIC_API_URL` | Frontend API proxy endpoint | `http://localhost:8000` (or empty for reverse proxy) |
+| `NEXT_PUBLIC_API_URL` | Frontend API proxy endpoint | [`http://localhost:8000`](http://localhost:8000) (or empty for reverse proxy) |
 | `NEXT_PUBLIC_WS_URL` | Frontend WebSocket endpoint | `ws://localhost:8000` |
 
 ---
@@ -473,7 +473,7 @@ gunicorn app.main:app -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000
 
 ## 18. Render Deployment Guide
 
-EthioVuln includes a Blueprint configuration (`render.yaml`) for deploying to [Render](https://render.com).
+EthioVuln includes a Blueprint configuration ([`render.yaml`](render.yaml)) for deploying to [Render](https://render.com).
 
 ### Deployment Steps
 1. Fork or push this repository to your GitHub account.
@@ -552,7 +552,7 @@ EthioVuln is designed and engineered by **Melaku Deguale**.
 
 ## 24. License
 
-This project is licensed under the **MIT License**. See the `LICENSE` file for full terms and conditions.
+This project is licensed under the **MIT License**. See the [`LICENSE`](LICENSE) file for full terms and conditions.
 
 ```
 Copyright (c) 2026 Melaku Deguale
