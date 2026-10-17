@@ -1,0 +1,114 @@
+.profileHeader {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.avatarRing {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid rgba(0, 255, 136, 0.3);
+  box-shadow: 0 0 40px rgba(0, 255, 136, 0.15), 0 0 80px rgba(0, 136, 255, 0.08);
+  flex-shrink: 0;
+  position: relative;
+}
+
+.avatarImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.spinningBorder {
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  border-top-color: #00ff88;
+  border-right-color: #0088ff;
+  animation: aboutSpin 4s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes aboutSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.nameHeading {
+  font-size: clamp(28px, 4vw, 36px);
+  font-weight: 800;
+  margin-bottom: 8px;
+  color: #f1f5f9;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.separator {
+  color: rgba(148, 163, 184, 0.3);
+  font-weight: 300;
+  font-size: 0.9em;
+}
+
+.bioGradient {
+  background: linear-gradient(135deg, #00E5FF, #6366F1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.roleTitle {
+  font-size: 18px;
+  color: #00ff88;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.certTitle {
+  font-size: 16px;
+  color: #94a3b8;
+}
+
+.statusPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 4px 14px;
+  border-radius: 9999px;
+  background: rgba(0, 255, 136, 0.08);
+  border: 1px solid rgba(0, 255, 136, 0.2);
+}
+
+.pulseDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #00ff88;
+  animation: pulseDot 2s infinite;
+}
+
+@keyframes pulseDot {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(1.3);
+  }
+}
+
+.statusText {
+  font-size: 12px;
+  font-weight: 600;
+  color: #00ff88;
+}

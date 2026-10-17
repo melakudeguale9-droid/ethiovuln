@@ -1,0 +1,143 @@
+.sidebar {
+  max-width: 80vw;
+  background: rgba(13, 21, 39, 0.95);
+  border-right: 1px solid rgba(148, 163, 184, 0.1);
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 40;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.brandHeader {
+  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brandLink {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+
+.logoIcon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #00E5FF, #6366F1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 800;
+  color: #070B14;
+  flex-shrink: 0;
+  box-shadow: 0 0 16px rgba(0, 229, 255, 0.25);
+  transition: transform var(--transition-base);
+}
+
+.brandLink:hover .logoIcon {
+  transform: scale(1.05);
+}
+
+.brandText {
+  font-weight: 800;
+  font-size: 16px;
+  letter-spacing: -0.02em;
+  color: #F8FAFC;
+}
+
+.brandHighlight {
+  color: #00E5FF;
+}
+
+.nav {
+  flex: 1;
+  padding: 14px 10px;
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  margin-bottom: 4px;
+  text-decoration: none;
+  font-size: 14px;
+  transition: all var(--transition-fast);
+}
+
+.navLink:hover {
+  background: rgba(0, 229, 255, 0.05);
+  color: #F8FAFC;
+}
+
+.navLinkActive {
+  background: rgba(0, 229, 255, 0.08);
+  border: 1px solid rgba(0, 229, 255, 0.25);
+  color: #00E5FF;
+  font-weight: 600;
+}
+
+.userFooter {
+  padding: 16px;
+  border-top: 1px solid rgba(148, 163, 184, 0.1);
+  background: rgba(7, 11, 20, 0.4);
+}
+
+.userName {
+  font-size: 13px;
+  font-weight: 600;
+  color: #F8FAFC;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.userEmail {
+  font-size: 11px;
+  color: #64748B;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.controlsRow {
+  display: flex;
+  gap: 8px;
+}
+
+.toggleBtn {
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.logoutBtn {
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #EF4444;
+  border-color: rgba(239, 68, 68, 0.3);
+  background: rgba(239, 68, 68, 0.05);
+  border-radius: 8px;
+  flex: 1;
+  transition: background var(--transition-fast);
+}
+
+.logoutBtn:hover {
+  background: rgba(239, 68, 68, 0.12);
+}

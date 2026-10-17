@@ -1,0 +1,106 @@
+.section {
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(255, 0, 64, 0.1);
+}
+
+.lastSection {
+  padding-top: 16px;
+}
+
+.title {
+  font-size: 13px;
+  color: #f1f5f9;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.dangerTitle {
+  font-size: 13px;
+  color: #ff4444;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.desc {
+  font-size: 12px;
+  color: #64748b;
+  margin-bottom: 12px;
+}
+
+.exportBtn {
+  padding: 8px 18px;
+  background: rgba(0, 136, 255, 0.1);
+  border: 1px solid rgba(0, 136, 255, 0.3);
+  border-radius: 8px;
+  color: #0088ff;
+  font-size: 13px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all var(--transition-fast);
+}
+
+.exportBtn:hover {
+  background: rgba(0, 136, 255, 0.2);
+}
+
+.signOutBtn {
+  padding: 8px 18px;
+  background: rgba(148, 163, 184, 0.08);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 8px;
+  color: #94a3b8;
+  font-size: 13px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all var(--transition-fast);
+}
+
+.signOutBtn:hover {
+  background: rgba(148, 163, 184, 0.15);
+  color: #ffffff;
+}
+
+.dangerOutlineBtn {
+  padding: 8px 18px;
+  background: rgba(255, 0, 64, 0.08);
+  border: 1px solid rgba(255, 0, 64, 0.3);
+  border-radius: 8px;
+  color: #ff4444;
+  font-size: 13px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all var(--transition-fast);
+}
+
+.dangerOutlineBtn:hover {
+  background: rgba(255, 0, 64, 0.16);
+}
+
+.dangerSolidBtn {
+  padding: 6px 14px;
+  background: #ff0040;
+  border: none;
+  border-radius: 6px;
+  color: #ffffff;
+  font-size: 12px;
+  cursor: pointer;
+  font-weight: 700;
+  transition: all var(--transition-fast);
+}
+
+.cancelBtn {
+  padding: 6px 14px;
+  background: rgba(148, 163, 184, 0.1);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 6px;
+  color: #94a3b8;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.confirmRow {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}

@@ -1,0 +1,117 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.newKeyBox {
+  background: rgba(0, 255, 136, 0.06);
+  border: 1px solid rgba(0, 255, 136, 0.3);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.newKeyWarning {
+  font-size: 12px;
+  color: #00ff88;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.keyCode {
+  font-size: 12px;
+  color: #f1f5f9;
+  word-break: break-all;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 8px 12px;
+  border-radius: 6px;
+  display: block;
+}
+
+.copyBtn {
+  margin-top: 10px;
+  padding: 6px 14px;
+  background: rgba(0, 255, 136, 0.15);
+  border: 1px solid rgba(0, 255, 136, 0.3);
+  border-radius: 6px;
+  color: #00ff88;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.copyBtn:hover {
+  background: rgba(0, 255, 136, 0.25);
+}
+
+.form {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.formInput {
+  flex: 1;
+}
+
+.generateBtn {
+  padding: 0 20px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.keyList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.keyItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(148, 163, 184, 0.08);
+}
+
+.keyName {
+  font-size: 13px;
+  color: #f1f5f9;
+  font-weight: 600;
+}
+
+.keyMeta {
+  font-size: 11px;
+  color: #64748b;
+}
+
+.revokeBtn {
+  padding: 5px 12px;
+  background: rgba(255, 0, 64, 0.08);
+  border: 1px solid rgba(255, 0, 64, 0.2);
+  border-radius: 6px;
+  color: #ff4444;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.revokeBtn:hover {
+  background: rgba(255, 0, 64, 0.15);
+}
+
+.platformGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.platformItem {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 10px;
+  padding: 10px 14px;
+  border: 1px solid rgba(148, 163, 184, 0.08);
+}

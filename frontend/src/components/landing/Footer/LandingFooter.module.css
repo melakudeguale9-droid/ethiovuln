@@ -1,0 +1,122 @@
+.footer {
+  border-top: 1px solid rgba(148, 163, 184, 0.1);
+  background: rgba(7, 11, 20, 0.95);
+  padding: 48px 48px 32px;
+}
+
+.container {
+  max-width: 1140px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 40px;
+  margin-bottom: 36px;
+}
+
+.brandCol {
+  max-width: 360px;
+}
+
+.brandRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.logoIcon {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #00E5FF, #6366F1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  color: #070B14;
+  font-size: 14px;
+}
+
+.brandName {
+  font-weight: 800;
+  font-size: 18px;
+  color: var(--text-primary);
+}
+
+.brandHighlight {
+  color: var(--accent-cyan);
+}
+
+.tagline {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.author {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.authorHighlight {
+  color: var(--text-primary);
+}
+
+.linksGroup {
+  display: flex;
+  gap: 48px;
+  flex-wrap: wrap;
+}
+
+.colTitle {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 14px;
+}
+
+.linksList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.link {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 13px;
+  transition: all var(--transition-fast);
+}
+
+.link:hover {
+  color: var(--accent-cyan);
+  transform: translateX(2px);
+}
+
+.bottomBar {
+  max-width: 1140px;
+  margin: 0 auto;
+  border-top: 1px solid rgba(148, 163, 184, 0.08);
+  padding-top: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.copyright {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.versionTag {
+  font-size: 12px;
+  color: var(--accent-cyan);
+  font-weight: 600;
+  font-family: var(--font-mono);
+}

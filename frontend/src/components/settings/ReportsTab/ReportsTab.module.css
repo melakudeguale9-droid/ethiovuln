@@ -1,0 +1,24 @@
+.formatBox {
+  margin-top: 8px;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.08);
+}
+
+.formatLabel {
+  font-size: 11px;
+  color: #64748b;
+  margin-bottom: 2px;
+}
+
+.formatValue {
+  font-size: 13px;
+  color: #f1f5f9;
+}
+
+.submitBtn {
+  width: 100%;
+  margin-top: 16px;
+  font-size: 14px;
+}

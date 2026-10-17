@@ -4,83 +4,34 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { PUBLIC_NAV_ITEMS } from '@/lib/constants';
+import styles from './Navbar.module.css';
 
 export function Navbar() {
   const pathname = usePathname();
 
+  const navItems = [
+    { label: 'Home', href: '/' },
+    { label: 'Scan', href: '/dashboard/scans/new' },
+    { label: 'About', href: '/about' },
+  ];
+
   return (
-    <header
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        padding: '16px 48px',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        zIndex: 100,
-        background: 'rgba(7, 11, 20, 0.85)',
-        backdropFilter: 'blur(16px)',
-        WebkitBackdropFilter: 'blur(16px)',
-        borderBottom: '1px solid rgba(148, 163, 184, 0.08)',
-      }}
-    >
-      <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none' }}>
-        <div
-          style={{
-            width: 34,
-            height: 34,
-            borderRadius: 10,
-            background: 'linear-gradient(135deg, #00E5FF, #6366F1)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontWeight: 800,
-            color: '#070B14',
-            fontSize: 16,
-            boxShadow: '0 0 16px rgba(0, 229, 255, 0.3)',
-          }}
-        >
-          E
-        </div>
-        <span style={{ fontWeight: 800, fontSize: 18, letterSpacing: '-0.02em', color: '#F8FAFC' }}>
-          Ethio<span style={{ color: '#00E5FF' }}>Vuln</span>
+    <header className={styles.header}>
+      <Link href="/" className={styles.brandLink}>
+        <div className={styles.logoIcon}>E</div>
+        <span className={styles.brandText}>
+          Ethio<span className={styles.brandHighlight}>Vuln</span>
         </span>
       </Link>
 
-      <nav style={{ display: 'flex', gap: 32, alignItems: 'center' }}>
-        {[
-          { label: 'Home', href: '/' },
-          { label: 'Scan', href: '/dashboard/scans/new' },
-          { label: 'About', href: '/about' }
-        ].map((item) => {
+      <nav className={styles.nav}>
+        {navItems.map((item) => {
           const isActive = pathname === item.href;
           return (
             <Link
               key={item.href}
               href={item.href}
-              style={{
-                color: isActive ? '#00E5FF' : '#94A3B8',
-                textDecoration: 'none',
-                fontSize: 14,
-                fontWeight: isActive ? 600 : 500,
-                transition: 'color 0.2s, text-shadow 0.2s',
-                textShadow: isActive ? '0 0 10px rgba(0, 229, 255, 0.4)' : 'none',
-              }}
-              onMouseOver={(e) => {
-                if (!isActive) {
-                  e.currentTarget.style.color = '#F8FAFC';
-                  e.currentTarget.style.textShadow = '0 0 8px rgba(255, 255, 255, 0.2)';
-                }
-              }}
-              onMouseOut={(e) => {
-                if (!isActive) {
-                  e.currentTarget.style.color = '#94A3B8';
-                  e.currentTarget.style.textShadow = 'none';
-                }
-              }}
+              className={`${styles.navLink} ${isActive ? styles.navLinkActive : ''}`}
             >
               {item.label}
             </Link>
@@ -88,8 +39,7 @@ export function Navbar() {
         })}
         <Link
           href="/login"
-          className="btn-glow btn-glow-cyan"
-          style={{ padding: '8px 24px', fontSize: 13, textDecoration: 'none', fontWeight: 600, marginLeft: 8 }}
+          className={`btn-glow btn-glow-cyan ${styles.signInBtn}`}
         >
           Sign In
         </Link>
@@ -97,5 +47,3 @@ export function Navbar() {
     </header>
   );
 }
-
-export default Navbar;

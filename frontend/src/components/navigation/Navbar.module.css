@@ -1,0 +1,85 @@
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 16px 48px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 100;
+  background: rgba(7, 11, 20, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.08);
+}
+
+.brandLink {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+
+.logoIcon {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #00E5FF, #6366F1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  color: #070B14;
+  font-size: 16px;
+  box-shadow: 0 0 16px rgba(0, 229, 255, 0.3);
+  transition: transform var(--transition-base);
+}
+
+.brandLink:hover .logoIcon {
+  transform: scale(1.05);
+}
+
+.brandText {
+  font-weight: 800;
+  font-size: 18px;
+  letter-spacing: -0.02em;
+  color: #F8FAFC;
+}
+
+.brandHighlight {
+  color: #00E5FF;
+}
+
+.nav {
+  display: flex;
+  gap: 32px;
+  align-items: center;
+}
+
+.navLink {
+  color: #94A3B8;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: color var(--transition-fast), text-shadow var(--transition-fast);
+}
+
+.navLink:hover {
+  color: #F8FAFC;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
+}
+
+.navLinkActive {
+  color: #00E5FF;
+  font-weight: 600;
+  text-shadow: 0 0 10px rgba(0, 229, 255, 0.4);
+}
+
+.signInBtn {
+  padding: 8px 24px;
+  font-size: 13px;
+  text-decoration: none;
+  font-weight: 600;
+  margin-left: 8px;
+}

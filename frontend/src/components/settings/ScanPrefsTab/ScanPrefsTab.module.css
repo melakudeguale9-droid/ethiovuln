@@ -1,0 +1,10 @@
+.submitBtn {
+  width: 100%;
+  margin-top: 16px;
+  font-size: 14px;
+}
+
+.rangeInput {
+  width: 100%;
+  accent-color: #00ff88;
+}

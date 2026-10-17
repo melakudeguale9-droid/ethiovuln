@@ -1,0 +1,52 @@
+.card {
+  padding: 20px 24px;
+  margin-bottom: 24px;
+}
+
+.stageRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.stageInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stageLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+.stageValue {
+  font-size: 13px;
+  font-weight: 700;
+  color: #00e5ff;
+  font-family: var(--font-mono);
+}
+
+.percentage {
+  font-size: 14px;
+  font-weight: 800;
+  color: #f8fafc;
+  font-family: var(--font-mono);
+}
+
+.track {
+  height: 8px;
+  width: 100%;
+  background: rgba(30, 41, 59, 0.6);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.fill {
+  height: 100%;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, #00e5ff, #6366f1);
+  transition: width 500ms cubic-bezier(0.4, 0, 0.2, 1);
+}

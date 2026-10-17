@@ -1,0 +1,142 @@
+.heroWrapper {
+  position: relative;
+  min-height: 340px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.bgImage {
+  position: absolute;
+  inset: 0;
+  background-image: url(/hero-bg.png);
+  background-size: cover;
+  background-position: center;
+  opacity: 0.35;
+  z-index: 0;
+}
+
+.gradientOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(10, 14, 26, 0.2) 0%, rgba(10, 14, 26, 0.7) 60%, #0a0e1a 100%);
+  z-index: 1;
+}
+
+.particlesContainer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.particle {
+  position: absolute;
+  border-radius: 50%;
+}
+
+.heroContent {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 60px 24px;
+  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.shieldContainer {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 20px;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 0 50px rgba(0, 255, 136, 0.2);
+  transition: transform var(--transition-base);
+}
+
+.shieldContainer:hover {
+  transform: scale(1.05);
+}
+
+.shieldImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.roleBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border-radius: 9999px;
+  border: 1px solid rgba(0, 255, 136, 0.3);
+  background: rgba(0, 255, 136, 0.05);
+  font-size: 12px;
+  font-weight: 600;
+  color: #00ff88;
+  margin-bottom: 16px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.pulseDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #00ff88;
+  animation: pulseDot 2s infinite;
+}
+
+@keyframes pulseDot {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(1.3);
+  }
+}
+
+.headline {
+  font-size: clamp(28px, 5vw, 48px);
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 8px;
+}
+
+.whiteGradient {
+  background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.cyanGradient {
+  background: linear-gradient(135deg, #00ff88 0%, #00d4ff 50%, #0088ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.subtitle {
+  font-size: 16px;
+  color: #94a3b8;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+@keyframes aboutFloat0 {
+  0%, 100% { transform: translateY(0px) translateX(0px); }
+  50% { transform: translateY(-25px) translateX(12px); }
+}
+
+@keyframes aboutFloat1 {
+  0%, 100% { transform: translateY(0px) translateX(0px); }
+  50% { transform: translateY(18px) translateX(-16px); }
+}
+
+@keyframes aboutFloat2 {
+  0%, 100% { transform: translateY(0px) translateX(0px); }
+  50% { transform: translateY(-12px) translateX(-8px); }
+}

@@ -1,0 +1,68 @@
+.section {
+  padding: 60px 24px 100px;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.panel {
+  padding: 56px 40px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(0, 229, 255, 0.05) 0%, rgba(99, 102, 241, 0.05) 100%);
+  border: 1px solid rgba(0, 229, 255, 0.25);
+  transition: all var(--transition-base);
+}
+
+.panel:hover {
+  border-color: rgba(0, 229, 255, 0.45);
+  box-shadow: 0 0 35px rgba(0, 229, 255, 0.12);
+}
+
+.title {
+  font-size: clamp(24px, 4vw, 36px);
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 14px;
+}
+
+.subtitle {
+  color: var(--text-secondary);
+  font-size: 16px;
+  max-width: 540px;
+  margin: 0 auto 32px;
+  line-height: 1.6;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.primaryBtn {
+  padding: 14px 36px;
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all var(--transition-base);
+}
+
+.primaryBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 25px rgba(0, 229, 255, 0.45);
+}
+
+.secondaryBtn {
+  padding: 14px 28px;
+  font-size: 15px;
+  text-decoration: none;
+  transition: all var(--transition-base);
+}
+
+.secondaryBtn:hover {
+  border-color: rgba(0, 229, 255, 0.4);
+  color: var(--accent-cyan);
+  transform: translateY(-2px);
+}

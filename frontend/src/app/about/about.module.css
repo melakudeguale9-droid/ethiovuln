@@ -1,0 +1,31 @@
+.pageContainer {
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.contentSection {
+  padding: 60px 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.profileCard {
+  padding: 60px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s;
+}
+
+.mainGrid {
+  display: grid;
+  grid-template-columns: minmax(300px, 2fr) minmax(280px, 1fr);
+  gap: 40px;
+  align-items: start;
+}
+
+@media (max-width: 768px) {
+  .mainGrid {
+    grid-template-columns: 1fr;
+  }
+}

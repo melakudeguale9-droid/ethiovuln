@@ -1,0 +1,64 @@
+.card {
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.titleGroup {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.liveTag {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-family: var(--font-mono);
+}
+
+.autoScrollLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-size: 11px;
+  color: #94a3b8;
+  user-select: none;
+}
+
+.checkbox {
+  accent-color: #00e5ff;
+}
+
+.logContainer {
+  height: 420px;
+  overflow-y: auto;
+}
+
+.emptyLogs {
+  color: #64748b;
+  text-align: center;
+  padding-top: 60px;
+  font-size: 12px;
+}
+
+.timestamp {
+  color: #475569;
+  margin-right: 8px;
+  user-select: none;
+}

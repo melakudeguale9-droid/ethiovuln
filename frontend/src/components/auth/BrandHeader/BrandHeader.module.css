@@ -1,0 +1,43 @@
+.container {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.logoLink {
+  text-decoration: none;
+  display: inline-block;
+}
+
+.logoBadge {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #00E5FF, #6366F1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 800;
+  color: #070B14;
+  margin-bottom: 16px;
+  box-shadow: 0 0 24px rgba(0, 229, 255, 0.3);
+  transition: all var(--transition-base);
+}
+
+.logoBadge:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 32px rgba(0, 229, 255, 0.45);
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 800;
+  color: #f8fafc;
+  margin-bottom: 4px;
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  color: #94a3b8;
+  font-size: 13px;
+}

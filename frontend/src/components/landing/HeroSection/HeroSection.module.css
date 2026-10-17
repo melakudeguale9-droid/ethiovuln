@@ -1,0 +1,132 @@
+.heroWrapper {
+  position: relative;
+  min-height: 92vh;
+  padding-top: 120px;
+  padding-bottom: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+.heroContainer {
+  max-width: 940px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 16px;
+  border-radius: 9999px;
+  border: 1px solid rgba(0, 229, 255, 0.25);
+  background: rgba(0, 229, 255, 0.04);
+  margin-bottom: 28px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent-cyan);
+  letter-spacing: 0.04em;
+  backdrop-filter: blur(8px);
+  transition: all var(--transition-base);
+}
+
+.statusBadge:hover {
+  border-color: rgba(0, 229, 255, 0.5);
+  box-shadow: 0 0 15px rgba(0, 229, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.pulseDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10B981;
+  box-shadow: 0 0 10px #10B981;
+  animation: pulseDot 2s infinite ease-in-out;
+}
+
+@keyframes pulseDot {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.4);
+    opacity: 0.7;
+  }
+}
+
+.divider {
+  color: rgba(148, 163, 184, 0.4);
+}
+
+.monoNote {
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.headline {
+  font-size: clamp(36px, 6vw, 68px);
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 24px;
+  letter-spacing: -0.03em;
+}
+
+.subheadline {
+  color: var(--text-primary);
+}
+
+.description {
+  font-size: clamp(16px, 2vw, 19px);
+  color: var(--text-secondary);
+  max-width: 700px;
+  margin: 0 auto 36px;
+  line-height: 1.6;
+}
+
+.highlight {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.ctaGroup {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 48px;
+}
+
+.primaryCta {
+  padding: 14px 34px;
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all var(--transition-base);
+}
+
+.primaryCta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 25px rgba(0, 229, 255, 0.45);
+}
+
+.secondaryCta {
+  padding: 14px 28px;
+  font-size: 15px;
+  text-decoration: none;
+  transition: all var(--transition-base);
+}
+
+.secondaryCta:hover {
+  border-color: rgba(0, 229, 255, 0.4);
+  color: var(--accent-cyan);
+  transform: translateY(-2px);
+}

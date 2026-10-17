@@ -1,0 +1,89 @@
+.card {
+  padding: 28px;
+}
+
+.headingWrapper {
+  margin-bottom: 18px;
+}
+
+.heading {
+  font-size: 16px;
+  font-weight: 700;
+  color: #f8fafc;
+  margin-bottom: 4px;
+}
+
+.subheading {
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+.profileList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.profileItem {
+  padding: 18px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.profileItem:hover {
+  transform: translateY(-1px);
+}
+
+.itemHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.radioRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.itemTitle {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.tagPill {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.itemDesc {
+  font-size: 13px;
+  color: #94a3b8;
+  line-height: 1.6;
+  margin-left: 24px;
+  margin-bottom: 12px;
+}
+
+.enginesRow {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-left: 24px;
+}
+
+.launchBtnWrapper {
+  margin-top: 24px;
+}
+
+.launchBtn {
+  width: 100%;
+  padding: 14px;
+  font-size: 15px;
+  font-weight: 700;
+}

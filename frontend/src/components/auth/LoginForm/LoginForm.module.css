@@ -1,0 +1,71 @@
+.card {
+  padding: 40px;
+  width: 100%;
+  max-width: 440px;
+  border: 1px solid rgba(148, 163, 184, 0.15);
+}
+
+.alertWrapper {
+  margin-bottom: 20px;
+}
+
+.fieldGroup {
+  margin-bottom: 18px;
+}
+
+.label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #f8fafc;
+  margin-bottom: 6px;
+}
+
+.passwordWrapper {
+  position: relative;
+}
+
+.passwordToggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--transition-fast);
+}
+
+.passwordToggle:hover {
+  color: #00e5ff;
+}
+
+.submitBtn {
+  width: 100%;
+  padding: 13px;
+  font-size: 14px;
+  font-weight: 700;
+  margin-top: 8px;
+}
+
+.footerRow {
+  margin-top: 24px;
+  text-align: center;
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+.registerLink {
+  color: #00e5ff;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.registerLink:hover {
+  text-decoration: underline;
+}
