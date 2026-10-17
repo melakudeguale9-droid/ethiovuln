@@ -1,0 +1,132 @@
+.card {
+  padding: 24px;
+  border-radius: 12px;
+  border: 1px solid rgba(244, 63, 94, 0.3);
+  background: rgba(13, 21, 39, 0.7);
+}
+
+.topBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.titleGroup {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.counter {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(244, 63, 94, 0.12);
+  color: #f43f5e;
+  border: 1px solid rgba(244, 63, 94, 0.25);
+  font-weight: 700;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.textBtn {
+  background: none;
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.textBtn:hover {
+  color: #f8fafc;
+  border-color: rgba(148, 163, 184, 0.35);
+}
+
+.optionsGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+@media (min-width: 640px) {
+  .optionsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.optionItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  background: rgba(5, 8, 17, 0.4);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  user-select: none;
+}
+
+.optionItem:hover {
+  border-color: rgba(244, 63, 94, 0.3);
+  transform: translateY(-1px);
+}
+
+.optionItemSelected {
+  border-color: rgba(244, 63, 94, 0.4);
+  background: rgba(244, 63, 94, 0.05);
+}
+
+.checkbox {
+  accent-color: #f43f5e;
+  margin-top: 3px;
+  cursor: pointer;
+}
+
+.optionContent {
+  flex: 1;
+}
+
+.optionHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 2px;
+}
+
+.optionCode {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: #f43f5e;
+}
+
+.optionTitle {
+  font-size: 12px;
+  font-weight: 600;
+  color: #f1f5f9;
+}
+
+.optionDesc {
+  font-size: 11px;
+  color: #64748b;
+  line-height: 1.4;
+}

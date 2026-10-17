@@ -1,28 +1,42 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
 import type { Scan } from '@/types/scan';
 import { PageNav } from '@/components/navigation/PageNav';
 import { Alert } from '@/components/ui/Alert';
+import { useScanConfigurator } from '@/hooks/useScanConfigurator';
 import {
   TargetInputCard,
-  ProfileSelector,
+  AssessmentModes,
+  ModuleTreeViewer,
+  CustomConfigurator,
   SsrfGateNotice,
   DisclaimerModal,
 } from '@/components/scans/new';
 
 export default function NewScanPage() {
-  const router = useRouter();
   const { user, refreshUser } = useAuth();
   const [targetUrl, setTargetUrl] = useState('');
-  const [scanType, setScanType] = useState('full');
   const [showDisclaimer, setShowDisclaimer] = useState(false);
   const [tosAccepted, setTosAccepted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const {
+    categories,
+    activeCategory,
+    selectedCategoryId,
+    setSelectedCategoryId,
+    customOptions,
+    selectedModules,
+    toggleModule,
+    selectAllModules,
+    deselectAllModules,
+    selectedModulesCount,
+    resolvedBackendEngine,
+  } = useScanConfigurator('full_enterprise');
 
   const handleStartScan = () => {
     if (!targetUrl.trim()) {
@@ -33,6 +47,11 @@ export default function NewScanPage() {
       setError('Target URL must start with http:// or https://');
       return;
     }
+    if (selectedCategoryId === 'custom_config' && selectedModulesCount === 0) {
+      setError('Please select at least one module from the custom configuration checklist');
+      return;
+    }
+
     setError('');
     setShowDisclaimer(true);
   };
@@ -49,7 +68,11 @@ export default function NewScanPage() {
         await api.acceptTos();
         await refreshUser();
       }
-      const scan = (await api.createScan(targetUrl, scanType, true)) as Scan;
+      const scan = (await api.createScan(
+        targetUrl,
+        resolvedBackendEngine,
+        true
+      )) as Scan;
       window.location.href = `/dashboard/scans/${scan.id}`;
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Failed to launch vulnerability scan');
@@ -77,7 +100,7 @@ export default function NewScanPage() {
           New Vulnerability Assessment
         </h1>
         <p style={{ color: '#94A3B8', fontSize: 13 }}>
-          Configure target parameters and choose an assessment profile for orchestrated security testing
+          Configure target parameters and select automated scanning scopes from the 8-tier assessment taxonomy
         </p>
       </div>
 
@@ -93,16 +116,50 @@ export default function NewScanPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
           {error && <Alert type="error">{error}</Alert>}
 
+          {/* 1. Target URL Input */}
           <TargetInputCard
             targetUrl={targetUrl}
             onChangeTargetUrl={setTargetUrl}
           />
 
-          <ProfileSelector
-            scanType={scanType}
-            onSelectScanType={setScanType}
-            onProceed={handleStartScan}
-          />
+          {/* 2. Assessment Modes (Categories 1 through 8) */}
+          <div className="glass-card" style={{ padding: 24 }}>
+            <AssessmentModes
+              categories={categories}
+              selectedCategoryId={selectedCategoryId}
+              onSelectCategory={setSelectedCategoryId}
+            />
+
+            {/* If Mode 8 (Custom Config) is chosen, display checklist */}
+            {selectedCategoryId === 'custom_config' ? (
+              <div style={{ marginTop: 20 }}>
+                <CustomConfigurator
+                  options={customOptions}
+                  selectedModules={selectedModules}
+                  onToggleModule={toggleModule}
+                  onSelectAll={selectAllModules}
+                  onDeselectAll={deselectAllModules}
+                  selectedCount={selectedModulesCount}
+                />
+              </div>
+            ) : (
+              /* If Modes 1 - 7 are chosen, display detailed inspection tree */
+              <div style={{ marginTop: 20 }}>
+                <ModuleTreeViewer category={activeCategory} />
+              </div>
+            )}
+
+            {/* Launch Assessment Action */}
+            <div style={{ marginTop: 24 }}>
+              <button
+                className="btn-glow btn-glow-cyan"
+                onClick={handleStartScan}
+                style={{ width: '100%', padding: '14px', fontSize: 15, fontWeight: 700 }}
+              >
+                Proceed to Launch {activeCategory.title} →
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* Right Column: SSRF Gate and Scope Notice */}
