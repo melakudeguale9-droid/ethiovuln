@@ -325,7 +325,120 @@ export const SCAN_TAXONOMY: AssessmentCategory[] = [
     tag: 'Granular',
     description: 'Customize specific checks and modules (8.1 through 8.14) to tailor testing to your scope.',
     backendEngine: 'nuclei_zap',
-    subCategories: [],
+    subCategories: [
+      {
+        id: 'custom_headers',
+        code: '8.1',
+        title: 'Missing Security Headers (8.1.1)',
+        checks: [
+          { id: 'custom_8_1_1', code: '8.1.1', name: 'Missing Security Headers Audit' },
+        ],
+      },
+      {
+        id: 'custom_exposure',
+        code: '8.2',
+        title: 'Sensitive Data Exposure (8.2.1)',
+        checks: [
+          { id: 'custom_8_2_1', code: '8.2.1', name: 'Sensitive Data Exposure Detection' },
+        ],
+      },
+      {
+        id: 'custom_owasp',
+        code: '8.3',
+        title: 'OWASP Top 10 Vulnerabilities (8.3.1)',
+        checks: [
+          { id: 'custom_8_3_1', code: '8.3.1', name: 'OWASP Top 10 Vulnerabilities Test Suite' },
+        ],
+      },
+      {
+        id: 'custom_cves',
+        code: '8.4',
+        title: 'Known CVEs (8.4.1)',
+        checks: [
+          { id: 'custom_8_4_1', code: '8.4.1', name: 'Known CVEs Fingerprint & Matcher' },
+        ],
+      },
+      {
+        id: 'custom_auth',
+        code: '8.5',
+        title: 'Authentication & Session Flaws (8.5.1)',
+        checks: [
+          { id: 'custom_8_5_1', code: '8.5.1', name: 'Authentication & Session Flaws Verification' },
+        ],
+      },
+      {
+        id: 'custom_cors',
+        code: '8.6',
+        title: 'Insecure CORS Policies (8.6.1)',
+        checks: [
+          { id: 'custom_8_6_1', code: '8.6.1', name: 'Insecure CORS Policy Audit' },
+        ],
+      },
+      {
+        id: 'custom_components',
+        code: '8.7',
+        title: 'Outdated & Vulnerable Components (8.7.1)',
+        checks: [
+          { id: 'custom_8_7_1', code: '8.7.1', name: 'Outdated & Vulnerable Components Check' },
+        ],
+      },
+      {
+        id: 'custom_ssrf_lfi',
+        code: '8.8',
+        title: 'SSRF, LFI & RFI (8.8.1)',
+        checks: [
+          { id: 'custom_8_8_1', code: '8.8.1', name: 'SSRF, LFI & RFI Server-Side Attacks' },
+        ],
+      },
+      {
+        id: 'custom_hidden_dirs',
+        code: '8.9',
+        title: 'Hidden Directories & Admin Panels (8.9.1)',
+        checks: [
+          { id: 'custom_8_9_1', code: '8.9.1', name: 'Hidden Directories & Admin Panels Discovery' },
+        ],
+      },
+      {
+        id: 'custom_api_top10',
+        code: '8.10',
+        title: 'OWASP API Top 10 Flaws (8.10.1)',
+        checks: [
+          { id: 'custom_8_10_1', code: '8.10.1', name: 'OWASP API Top 10 Flaws Audit' },
+        ],
+      },
+      {
+        id: 'custom_jwt',
+        code: '8.11',
+        title: 'JWT & Token Validation Weaknesses (8.11.1)',
+        checks: [
+          { id: 'custom_8_11_1', code: '8.11.1', name: 'JWT & Token Validation Security Check' },
+        ],
+      },
+      {
+        id: 'custom_sqli',
+        code: '8.12',
+        title: 'Advanced SQL & NoSQL Injection (8.12.1)',
+        checks: [
+          { id: 'custom_8_12_1', code: '8.12.1', name: 'Advanced SQL & NoSQL Injection Suite' },
+        ],
+      },
+      {
+        id: 'custom_xss',
+        code: '8.13',
+        title: 'Cross-Site Scripting (XSS) (8.13.1)',
+        checks: [
+          { id: 'custom_8_13_1', code: '8.13.1', name: 'Cross-Site Scripting (XSS) Probes' },
+        ],
+      },
+      {
+        id: 'custom_infra',
+        code: '8.14',
+        title: 'Docker & Infrastructure Misconfigurations (8.14.1)',
+        checks: [
+          { id: 'custom_8_14_1', code: '8.14.1', name: 'Docker & Infrastructure Misconfiguration Audit' },
+        ],
+      },
+    ],
   },
 ];
 
@@ -339,9 +452,9 @@ export const CUSTOM_CONFIG_OPTIONS: CustomModuleOption[] = [
   { id: 'mod_8_7', code: '8.7', title: 'Outdated & Vulnerable Components (8.7.1)', categoryNumber: 3, description: 'Client-side JS library versions & CMS version vulnerability analysis', defaultChecked: true },
   { id: 'mod_8_8', code: '8.8', title: 'SSRF, LFI & RFI (8.8.1)', categoryNumber: 3, description: 'Server-side request forgery, local & remote file inclusion fuzzing', defaultChecked: true },
   { id: 'mod_8_9', code: '8.9', title: 'Hidden Directories & Admin Panels (8.9.1)', categoryNumber: 3, description: 'Wordlist path brute-force and backup/env discovery', defaultChecked: true },
-  { id: 'mod_8_10', code: '8.10', title: 'OWASP API Top 10 Flaws (8.10.1)', categoryNumber: 4, description: 'BOLA, broken auth, resource consumption & API business logic testing', defaultChecked: false },
-  { id: 'mod_8_11', code: '8.11', title: 'JWT & Token Validation Weaknesses (8.11.1)', categoryNumber: 4, description: 'None algorithm abuse, weak HMAC secret brute-force & claims verification', defaultChecked: false },
+  { id: 'mod_8_10', code: '8.10', title: 'OWASP API Top 10 Flaws (8.10.1)', categoryNumber: 4, description: 'BOLA, broken auth, resource consumption & API business logic testing', defaultChecked: true },
+  { id: 'mod_8_11', code: '8.11', title: 'JWT & Token Validation Weaknesses (8.11.1)', categoryNumber: 4, description: 'None algorithm abuse, weak HMAC secret brute-force & claims verification', defaultChecked: true },
   { id: 'mod_8_12', code: '8.12', title: 'Advanced SQL & NoSQL Injection (8.12.1)', categoryNumber: 5, description: 'Boolean, time-based blind, union-based SQLi & NoSQL operators', defaultChecked: true },
   { id: 'mod_8_13', code: '8.13', title: 'Cross-Site Scripting (XSS) (8.13.1)', categoryNumber: 5, description: 'Stored, Reflected, and DOM-based injection vector checks', defaultChecked: true },
-  { id: 'mod_8_14', code: '8.14', title: 'Docker & Infrastructure Misconfigurations (8.14.1)', categoryNumber: 6, description: 'Privileged container checks, cloud storage ACLs & weak TLS ciphers', defaultChecked: false },
+  { id: 'mod_8_14', code: '8.14', title: 'Docker & Infrastructure Misconfigurations (8.14.1)', categoryNumber: 6, description: 'Privileged container checks, cloud storage ACLs & weak TLS ciphers', defaultChecked: true },
 ];
