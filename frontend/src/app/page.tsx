@@ -198,6 +198,9 @@ type ScanMode = 'light' | 'deep' | 'cli';
 export default function HomePage() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<ScanMode>('deep');
+  const [selectedVectorId, setSelectedVectorId] = useState<string>('full_enterprise');
+  const [isComparisonOpen, setIsComparisonOpen] = useState(false);
+  const [comparisonCategory, setComparisonCategory] = useState<string>('all');
   const [targetUrl, setTargetUrl] = useState('');
   const [urlError, setUrlError] = useState('');
   const [copied, setCopied] = useState(false);
@@ -206,7 +209,7 @@ export default function HomePage() {
   const currentEngine = ENGINES.find((e) => e.id === activeEngineId) || ENGINES[0];
 
   const cliCommand = `curl -sSL https://get.ethiovuln.io/cli | bash && ethiovuln scan ${targetUrl.trim() || 'https://example.com'
-    } --mode=${activeTab === 'cli' ? 'deep' : activeTab}`;
+    } --mode=${activeTab === 'cli' ? selectedVectorId : (activeTab === 'light' ? 'passive_scan' : selectedVectorId)}`;
 
   const handleCopyCli = () => {
     navigator.clipboard.writeText(cliCommand);
@@ -223,7 +226,8 @@ export default function HomePage() {
     }
     setUrlError('');
     const fullTarget = clean.startsWith('http') ? clean : `https://${clean}`;
-    router.push(`/dashboard/scans/new?target=${encodeURIComponent(fullTarget)}&mode=${activeTab}`);
+    const modeParam = activeTab === 'light' ? 'passive_scan' : selectedVectorId;
+    router.push(`/dashboard/scans/new?target=${encodeURIComponent(fullTarget)}&mode=${modeParam}`);
   };
 
   return (
@@ -327,7 +331,7 @@ export default function HomePage() {
               </div>
 
               {/* Mode Context Description */}
-              <div className="mb-5 px-3.5 py-2.5 rounded-lg bg-slate-900/60 border border-slate-800 flex items-center justify-between text-xs">
+              <div className="mb-4 px-3.5 py-2.5 rounded-lg bg-slate-900/60 border border-slate-800 flex items-center justify-between text-xs">
                 <span className="text-slate-300">
                   {activeTab === 'light' && 'Fast 60s surface scan · SSL/TLS, port discovery & security headers'}
                   {activeTab === 'deep' && 'Full dynamic penetration · Nuclei CVE rules, OWASP active spidering'}
@@ -336,6 +340,64 @@ export default function HomePage() {
                 <span className="font-mono text-[10px] text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20 uppercase whitespace-nowrap ml-2">
                   {activeTab === 'deep' ? 'Recommended' : activeTab}
                 </span>
+              </div>
+
+              {/* Enable Deep Scans / Light vs Deep Comparison Link (Matching Reference) */}
+              <button
+                type="button"
+                onClick={() => {
+                  setComparisonCategory(activeTab === 'light' ? 'passive_scan' : selectedVectorId);
+                  setIsComparisonOpen(true);
+                }}
+                className="w-full mb-4 px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-sky-500/10 via-cyan-500/10 to-blue-500/10 hover:from-sky-500/20 hover:to-blue-500/20 border border-cyan-500/30 text-cyan-300 text-xs font-semibold flex items-center justify-between transition-all group shadow-sm"
+              >
+                <span className="flex items-center gap-2">
+                  <span className="p-1 rounded bg-cyan-500/20 text-cyan-300">
+                    <ZapIcon className="w-3.5 h-3.5" />
+                  </span>
+                  <span>Enable Deep Scans: <strong>Light vs Deep comparison matrix</strong></span>
+                </span>
+                <span className="text-[11px] text-cyan-400 group-hover:translate-x-1 transition-transform flex items-center gap-1 font-bold">
+                  View All 8 Categories <span>→</span>
+                </span>
+              </button>
+
+              {/* Assessment Vector Selector (8 Taxonomy Categories) */}
+              <div className="mb-4">
+                <div className="flex items-center justify-between text-xs mb-1.5">
+                  <label className="text-slate-400 font-semibold uppercase tracking-wider text-[11px]">
+                    Assessment Vector (8 Core Categories)
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setComparisonCategory(selectedVectorId);
+                      setIsComparisonOpen(true);
+                    }}
+                    className="text-cyan-400 hover:underline text-[11px] font-mono cursor-pointer"
+                  >
+                    Compare Checks ↗
+                  </button>
+                </div>
+                <div className="relative">
+                  <select
+                    value={selectedVectorId}
+                    onChange={(e) => {
+                      setSelectedVectorId(e.target.value);
+                      if (activeTab === 'light') setActiveTab('deep');
+                    }}
+                    className="w-full py-2.5 px-3 bg-[#0A0E18] border border-slate-700/80 rounded-xl text-white text-xs font-semibold focus:outline-none focus:border-cyan-400 transition-colors cursor-pointer appearance-none pr-8"
+                  >
+                    {SCAN_TAXONOMY.map((cat) => (
+                      <option key={cat.id} value={cat.id} className="bg-slate-900 text-white py-1">
+                        0{cat.number}. {cat.title} ({cat.tag})
+                      </option>
+                    ))}
+                  </select>
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
+                    <ChevronDownIcon className="w-3.5 h-3.5" />
+                  </div>
+                </div>
               </div>
 
               {/* VIEW 1: Light & Deep Web Scan Form */}
@@ -592,6 +654,30 @@ export default function HomePage() {
             );
           })}
         </div>
+
+        {/* Capability Comparison Callout */}
+        <div className="mt-12 p-6 sm:p-8 rounded-2xl bg-gradient-to-r from-slate-900/90 via-sky-950/30 to-slate-900/90 border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+          <div className="space-y-1">
+            <h4 className="text-base sm:text-lg font-bold text-white flex items-center justify-center sm:justify-start gap-2">
+              <span>🛡️</span>
+              <span>Need a detailed capability breakdown for compliance or scoping?</span>
+            </h4>
+            <p className="text-xs sm:text-sm text-slate-400">
+              Explore the exact check-by-check breakdown between Light Scan surface audits and Deep Scan active exploit verification.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              setComparisonCategory('all');
+              setIsComparisonOpen(true);
+            }}
+            className="shrink-0 px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs sm:text-sm transition-all shadow-lg shadow-cyan-500/25 flex items-center gap-2"
+          >
+            Open Full Comparison Matrix
+            <ArrowRightIcon className="w-4 h-4" />
+          </button>
+        </div>
       </section>
 
       {/* ─── 4-Phase Assessment Workflow Grid ─────────────────────────────── */}
@@ -676,6 +762,17 @@ export default function HomePage() {
           </div>
         </div>
       </footer>
+
+      {/* ─── Scan Depth Comparison Matrix Modal ──────────────────────────── */}
+      <ScanComparisonModal
+        isOpen={isComparisonOpen}
+        onClose={() => setIsComparisonOpen(false)}
+        initialCategoryId={comparisonCategory}
+        onSelectMode={(modeId) => {
+          setSelectedVectorId(modeId);
+          setActiveTab('deep');
+        }}
+      />
     </div>
   );
 }
