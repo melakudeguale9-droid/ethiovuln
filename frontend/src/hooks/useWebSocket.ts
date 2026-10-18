@@ -6,11 +6,13 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { WS_BASE_URL } from '@/lib/constants';
 import type { Vulnerability } from '@/types/vulnerability';
 
-interface LogEntry {
+export interface LogEntry {
   message: string;
   level: 'info' | 'warning' | 'error';
   timestamp: string;
 }
+
+export type WebSocketLog = LogEntry;
 
 interface ScanWSState {
   connected: boolean;
