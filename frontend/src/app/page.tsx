@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation';
 import { SCAN_TAXONOMY } from '@/data/scanTaxonomy';
 import { Navbar } from '@/components/navigation/Navbar';
 import { ScanComparisonModal } from '@/components/scans/ScanComparisonModal';
+import { SampleReportSection } from '@/components/landing/SampleReportSection/SampleReportSection';
+import { CliScanSection } from '@/components/landing/CliScanSection/CliScanSection';
 
 /* ─── Inline Lightweight SVG Icons (Zero External Dependency) ──────────────── */
 function SpiderIcon({ className = 'w-9 h-9' }: { className?: string }) {
@@ -237,7 +239,7 @@ export default function HomePage() {
       <Navbar />
 
       {/* ─── Hero Section (Pentest-Tools 2-Column Style) ───────────────────── */}
-      <section className="relative pt-12 pb-20 px-4 sm:px-6 lg:px-10 xl:px-12 w-full max-w-[1560px] mx-auto overflow-hidden">
+      <section className="relative pt-28 sm:pt-36 lg:pt-44 pb-28 px-4 sm:px-6 lg:px-10 xl:px-12 w-full max-w-[1560px] mx-auto overflow-hidden">
         {/* Ambient Cyan Backdrop Glow */}
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-cyan-500/10 blur-[130px] rounded-full pointer-events-none" />
 
@@ -285,10 +287,10 @@ export default function HomePage() {
 
           {/* Right Column: Interactive Scan Card */}
           <div className="lg:col-span-6">
-            <div className="bg-[#111827]/95 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl relative">
+            <div className="bg-[#111827]/95 border border-slate-800 rounded-2xl p-7 sm:p-9 shadow-2xl backdrop-blur-xl relative">
 
               {/* Scan Mode Switcher (Matching Screenshot 1) */}
-              <div className="grid grid-cols-3 gap-2 bg-[#090D16] p-1.5 rounded-xl mb-6 border border-slate-800/80">
+              <div className="grid grid-cols-3 gap-2 bg-[#090D16] p-1.5 rounded-xl mb-6 sm:mb-8 border border-slate-800/80">
                 <button
                   type="button"
                   onClick={() => {
@@ -330,8 +332,8 @@ export default function HomePage() {
                 </button>
               </div>
 
-              {/* Mode Context Description */}
-              <div className="mb-4 px-3.5 py-2.5 rounded-lg bg-slate-900/60 border border-slate-800 flex items-center justify-between text-xs">
+              {/* Mode Context Description with Generous Spacing After */}
+              <div className="mb-6 sm:mb-8 px-4 py-3 rounded-xl bg-slate-900/70 border border-slate-800 flex items-center justify-between text-xs">
                 <span className="text-slate-300">
                   {activeTab === 'light' && 'Fast 60s surface scan · SSL/TLS, port discovery & security headers'}
                   {activeTab === 'deep' && 'Full dynamic penetration · Nuclei CVE rules, OWASP active spidering'}
@@ -342,100 +344,104 @@ export default function HomePage() {
                 </span>
               </div>
 
-              {/* Enable Deep Scans / Light vs Deep Comparison Link (Matching Reference) */}
-              <button
-                type="button"
-                onClick={() => {
-                  setComparisonCategory(activeTab === 'light' ? 'passive_scan' : selectedVectorId);
-                  setIsComparisonOpen(true);
-                }}
-                className="w-full mb-4 px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-sky-500/10 via-cyan-500/10 to-blue-500/10 hover:from-sky-500/20 hover:to-blue-500/20 border border-cyan-500/30 text-cyan-300 text-xs font-semibold flex items-center justify-between transition-all group shadow-sm"
-              >
-                <span className="flex items-center gap-2">
-                  <span className="p-1 rounded bg-cyan-500/20 text-cyan-300">
-                    <ZapIcon className="w-3.5 h-3.5" />
-                  </span>
-                  <span>Enable Deep Scans: <strong>Light vs Deep comparison matrix</strong></span>
-                </span>
-                <span className="text-[11px] text-cyan-400 group-hover:translate-x-1 transition-transform flex items-center gap-1 font-bold">
-                  View All 8 Categories <span>→</span>
-                </span>
-              </button>
-
-              {/* Assessment Vector Selector (8 Taxonomy Categories) */}
-              <div className="mb-4">
-                <div className="flex items-center justify-between text-xs mb-1.5">
-                  <label className="text-slate-400 font-semibold uppercase tracking-wider text-[11px]">
-                    Assessment Vector (8 Core Categories)
-                  </label>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setComparisonCategory(selectedVectorId);
-                      setIsComparisonOpen(true);
-                    }}
-                    className="text-cyan-400 hover:underline text-[11px] font-mono cursor-pointer"
-                  >
-                    Compare Checks ↗
-                  </button>
-                </div>
-                <div className="relative">
-                  <select
-                    value={selectedVectorId}
-                    onChange={(e) => {
-                      setSelectedVectorId(e.target.value);
-                      if (activeTab === 'light') setActiveTab('deep');
-                    }}
-                    className="w-full py-2.5 px-3 bg-[#0A0E18] border border-slate-700/80 rounded-xl text-white text-xs font-semibold focus:outline-none focus:border-cyan-400 transition-colors cursor-pointer appearance-none pr-8"
-                  >
-                    {SCAN_TAXONOMY.map((cat) => (
-                      <option key={cat.id} value={cat.id} className="bg-slate-900 text-white py-1">
-                        0{cat.number}. {cat.title} ({cat.tag})
-                      </option>
-                    ))}
-                  </select>
-                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
-                    <ChevronDownIcon className="w-3.5 h-3.5" />
-                  </div>
-                </div>
-              </div>
-
               {/* VIEW 1: Light & Deep Web Scan Form */}
               {activeTab !== 'cli' ? (
-                <form onSubmit={handleLaunchScan} className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-2">
-                      Target URL or IP Address
-                    </label>
-                    <div className="relative">
-                      <span className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-500">
-                        <SearchIcon className="w-5 h-5" />
+                <div className="space-y-6">
+                  {/* Enable Deep Scans / Light vs Deep Comparison Link (Context-Aware for Deep Scan) */}
+                  {activeTab === 'deep' && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setComparisonCategory(selectedVectorId);
+                        setIsComparisonOpen(true);
+                      }}
+                      className="w-full px-4 py-3 rounded-xl bg-gradient-to-r from-sky-500/10 via-cyan-500/10 to-blue-500/10 hover:from-sky-500/20 hover:to-blue-500/20 border border-cyan-500/30 text-cyan-300 text-xs font-semibold flex items-center justify-between transition-all group shadow-sm"
+                    >
+                      <span className="flex items-center gap-2.5">
+                        <span className="p-1.5 rounded-lg bg-cyan-500/20 text-cyan-300">
+                          <ZapIcon className="w-3.5 h-3.5" />
+                        </span>
+                        <span>Enable Deep Scans: <strong>Light vs Deep comparison matrix</strong></span>
                       </span>
-                      <input
-                        type="text"
-                        value={targetUrl}
-                        onChange={(e) => {
-                          setTargetUrl(e.target.value);
-                          if (urlError) setUrlError('');
+                      <span className="text-[11px] text-cyan-400 group-hover:translate-x-1 transition-transform flex items-center gap-1 font-bold">
+                        View All 8 Categories <span>→</span>
+                      </span>
+                    </button>
+                  )}
+
+                  {/* Assessment Vector Selector (8 Taxonomy Categories) */}
+                  <div>
+                    <div className="flex items-center justify-between text-xs mb-2">
+                      <label className="text-slate-400 font-semibold uppercase tracking-wider text-[11px]">
+                        Assessment Vector (8 Core Categories)
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setComparisonCategory(selectedVectorId);
+                          setIsComparisonOpen(true);
                         }}
-                        placeholder="https://example.com"
-                        className={`w-full pl-12 pr-4 py-4 bg-[#0B0F19] border rounded-xl text-white placeholder-slate-500 focus:outline-none transition-all ${urlError
-                            ? 'border-red-500/80 focus:ring-1 focus:ring-red-500'
-                            : 'border-slate-700 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500'
-                          }`}
-                      />
+                        className="text-cyan-400 hover:underline text-[11px] font-mono cursor-pointer"
+                      >
+                        Compare Checks ↗
+                      </button>
                     </div>
-                    {urlError && <p className="text-xs text-red-400 mt-1.5">{urlError}</p>}
+                    <div className="relative">
+                      <select
+                        value={selectedVectorId}
+                        onChange={(e) => {
+                          setSelectedVectorId(e.target.value);
+                          if (activeTab === 'light') setActiveTab('deep');
+                        }}
+                        className="w-full py-3 px-3.5 bg-[#0A0E18] border border-slate-700/80 rounded-xl text-white text-xs font-semibold focus:outline-none focus:border-cyan-400 transition-colors cursor-pointer appearance-none pr-8"
+                      >
+                        {SCAN_TAXONOMY.map((cat) => (
+                          <option key={cat.id} value={cat.id} className="bg-slate-900 text-white py-1">
+                            0{cat.number}. {cat.title} ({cat.tag})
+                          </option>
+                        ))}
+                      </select>
+                      <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
+                        <ChevronDownIcon className="w-3.5 h-3.5" />
+                      </div>
+                    </div>
                   </div>
 
-                  <button
-                    type="submit"
-                    className="w-full py-4 bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-slate-950 font-extrabold rounded-xl transition-all shadow-lg shadow-cyan-500/25 flex items-center justify-center gap-2 transform hover:scale-[1.01]"
-                  >
-                    <ZapIcon className="w-5 h-5" />
-                    Launch Vulnerability Scan
-                  </button>
-                </form>
+                  <form onSubmit={handleLaunchScan} className="space-y-5">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-300 mb-2">
+                        Target URL or IP Address
+                      </label>
+                      <div className="relative">
+                        <span className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-500">
+                          <SearchIcon className="w-5 h-5" />
+                        </span>
+                        <input
+                          type="text"
+                          value={targetUrl}
+                          onChange={(e) => {
+                            setTargetUrl(e.target.value);
+                            if (urlError) setUrlError('');
+                          }}
+                          placeholder="https://example.com"
+                          className={`w-full pl-12 pr-4 py-4 bg-[#0B0F19] border rounded-xl text-white placeholder-slate-500 focus:outline-none transition-all ${urlError
+                              ? 'border-red-500/80 focus:ring-1 focus:ring-red-500'
+                              : 'border-slate-700 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500'
+                            }`}
+                        />
+                      </div>
+                      {urlError && <p className="text-xs text-red-400 mt-1.5">{urlError}</p>}
+                    </div>
+
+                    <button
+                      type="submit"
+                      className="w-full py-4 bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-slate-950 font-extrabold rounded-xl transition-all shadow-lg shadow-cyan-500/25 flex items-center justify-center gap-2 transform hover:scale-[1.01]"
+                    >
+                      <ZapIcon className="w-5 h-5" />
+                      Launch Vulnerability Scan
+                    </button>
+                  </form>
+                </div>
               ) : (
                 /* VIEW 2: CLI Terminal Snippet */
                 <div className="space-y-4">
@@ -518,6 +524,9 @@ export default function HomePage() {
           ))}
         </div>
       </section>
+
+      {/* ─── Documented Evidence & Sample Report Preview (Pentest-Tools Style) ── */}
+      <SampleReportSection />
 
       {/* ─── Interactive Multi-Engine Scanning Pipeline ─────────────────────── */}
       <section id="engines" className="py-20 px-4 sm:px-6 lg:px-10 xl:px-12 w-full max-w-[1560px] mx-auto border-t border-slate-800/60">
@@ -679,6 +688,14 @@ export default function HomePage() {
           </button>
         </div>
       </section>
+
+      {/* ─── Command Line Interface (Pentest-Tools Style CLI Scan) ─────────── */}
+      <CliScanSection
+        onOpenComparisonModal={() => {
+          setComparisonCategory('all');
+          setIsComparisonOpen(true);
+        }}
+      />
 
       {/* ─── 4-Phase Assessment Workflow Grid ─────────────────────────────── */}
       <section className="py-20 px-4 sm:px-6 lg:px-10 xl:px-12 w-full max-w-[1560px] mx-auto border-t border-slate-800/60">
