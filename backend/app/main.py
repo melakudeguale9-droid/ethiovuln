@@ -17,11 +17,24 @@ from app.database import init_db
 settings = get_settings()
 
 # ─── Rate Limiter ─────────────────────────────────────────────────────────────
-limiter = Limiter(
-    key_func=get_remote_address,
-    default_limits=["200/minute"],
-    storage_uri=settings.REDIS_URL,
-)
+def _create_limiter():
+    try:
+        import redis
+        r = redis.from_url(settings.REDIS_URL, socket_timeout=1)
+        r.ping()
+        return Limiter(
+            key_func=get_remote_address,
+            default_limits=["200/minute"],
+            storage_uri=settings.REDIS_URL,
+        )
+    except Exception:
+        return Limiter(
+            key_func=get_remote_address,
+            default_limits=["200/minute"],
+            storage_uri="memory://",
+        )
+
+limiter = _create_limiter()
 
 # Configure logging
 logging.basicConfig(
@@ -174,10 +187,19 @@ async def root():
         "health": "/api/health",
     }
 
+from fastapi import HTTPException
+from starlette.exceptions import HTTPException as StarletteHTTPException
+
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
-    # Logs the error without killing the server process
+    if isinstance(exc, (HTTPException, StarletteHTTPException)):
+        return JSONResponse(
+            status_code=exc.status_code,
+            content={"detail": exc.detail, "message": str(exc.detail)}
+        )
+    logger.exception(f"Unhandled error on {request.method} {request.url}: {exc}")
+    detail_msg = str(exc) if settings.DEBUG else "An internal server error occurred."
     return JSONResponse(
         status_code=500,
-        content={"message": "An internal server error occurred."}
+        content={"detail": detail_msg, "message": detail_msg}
     )    

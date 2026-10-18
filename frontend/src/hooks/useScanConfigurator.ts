@@ -1,6 +1,4 @@
-'use client';
-
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import {
   SCAN_TAXONOMY,
   CUSTOM_CONFIG_OPTIONS,
@@ -10,6 +8,13 @@ import {
 
 export function useScanConfigurator(initialCategoryId: string = 'full_enterprise') {
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>(initialCategoryId);
+
+  useEffect(() => {
+    if (initialCategoryId) {
+      setSelectedCategoryId(initialCategoryId);
+    }
+  }, [initialCategoryId]);
+
   const [selectedModules, setSelectedModules] = useState<Record<string, boolean>>(() => {
     const initial: Record<string, boolean> = {};
     CUSTOM_CONFIG_OPTIONS.forEach((opt) => {

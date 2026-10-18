@@ -35,17 +35,17 @@ export function HeroSection({ children }: HeroSectionProps) {
         {/* Action CTAs */}
         <div className={styles.ctaGroup}>
           <Link
-            href="/register"
+            href="/dashboard/scans/new"
             className={`btn-glow btn-glow-cyan ${styles.primaryCta}`}
           >
             Start Security Assessment →
           </Link>
-          <Link
-            href="/about"
+          <a
+            href="#features"
             className={`btn-outline ${styles.secondaryCta}`}
           >
-            Platform Architecture & Bio
-          </Link>
+            Explore Features
+          </a>
         </div>
 
         {/* Telemetry Metric Badges or children */}

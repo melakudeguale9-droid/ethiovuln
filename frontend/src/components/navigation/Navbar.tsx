@@ -11,16 +11,16 @@ export function Navbar() {
 
   const navItems = [
     { label: 'Home', href: '/' },
-    { label: 'Scan', href: '/dashboard/scans/new' },
+    { label: 'Scan Dashboard', href: '/dashboard/scans/new' },
     { label: 'About', href: '/about' },
   ];
 
   return (
     <header className={styles.header}>
       <Link href="/" className={styles.brandLink}>
-        <div className={styles.logoIcon}>E</div>
+        <div className={styles.logoIcon}>🛡️</div>
         <span className={styles.brandText}>
-          Ethio<span className={styles.brandHighlight}>Vuln</span>
+          Enterprise <span className={styles.brandHighlight}>Security Suite</span>
         </span>
       </Link>
 

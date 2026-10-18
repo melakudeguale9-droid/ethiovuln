@@ -11,10 +11,10 @@ export function BrandHeader({ titlePrefix, subtitle }: BrandHeaderProps) {
   return (
     <div className={styles.container}>
       <Link href="/" className={styles.logoLink}>
-        <div className={styles.logoBadge}>E</div>
+        <div className={styles.logoBadge}>🛡️</div>
       </Link>
       <h1 className={styles.title}>
-        {titlePrefix} <span className="text-gradient">EthioVuln</span>
+        {titlePrefix} <span className="text-gradient">Enterprise Security Suite</span>
       </h1>
       <p className={styles.subtitle}>{subtitle}</p>
     </div>

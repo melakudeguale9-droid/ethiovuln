@@ -18,10 +18,10 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: 'EthioVuln — Automated Web Vulnerability Assessment',
-    template: '%s | EthioVuln',
+    default: 'Enterprise Security Suite — Cyber Security Scanner Web Application',
+    template: '%s | Enterprise Security Suite',
   },
-  description: 'EthioVuln is an automated web vulnerability assessment platform integrating Nuclei, OWASP ZAP, and a custom fuzzing engine. Real-time scanning, CVSS scoring, and PDF reports.',
+  description: 'Enterprise Security Suite (EthioVuln) is an automated web vulnerability assessment platform integrating Nuclei, OWASP ZAP, and custom fuzzing engines with real-time telemetry and PDF reporting.',
   keywords: ['EthioVuln', 'DAST', 'vulnerability scanner', 'penetration testing', 'Nuclei', 'OWASP ZAP', 'security testing', 'Ethiopia', 'web security'],
   authors: [{ name: 'Melaku Deguale', url: 'https://github.com/melakudeguale9-droid' }],
   creator: 'Melaku Deguale',

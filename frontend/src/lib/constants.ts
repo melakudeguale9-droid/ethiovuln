@@ -1,7 +1,7 @@
 // EthioVuln — Central Application Constants
 
-export const APP_NAME = 'EthioVuln';
-export const APP_TAGLINE = 'Automated Web Vulnerability Assessment Platform';
+export const APP_NAME = 'Enterprise Security Suite';
+export const APP_TAGLINE = 'Professional Cyber Security Scanner & Vulnerability Assessment Platform';
 export const APP_VERSION = '1.0.0';
 
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? '';

@@ -5,6 +5,7 @@ import { Navbar } from '@/components/navigation/Navbar';
 import {
   HeroSection,
   MetricsGrid,
+  FeatureGrid,
   EngineShowcase,
   WorkflowSection,
   CtaSection,
@@ -21,6 +22,9 @@ export default function LandingPage() {
       <HeroSection>
         <MetricsGrid />
       </HeroSection>
+
+      {/* ─── 8-Tier Core Scanning Capabilities Overview ───── */}
+      <FeatureGrid />
 
       {/* ─── Engine Telemetry Pipeline Showcase ──────────── */}
       <EngineShowcase />

@@ -1,0 +1,142 @@
+.section {
+  padding: 80px 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 54px;
+}
+
+.badge {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent-cyan, #00F0FF);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 10px;
+}
+
+.title {
+  font-size: clamp(28px, 4vw, 42px);
+  font-weight: 800;
+  color: #F9FAFB;
+  margin-bottom: 12px;
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  color: #9CA3AF;
+  font-size: 16px;
+  max-width: 620px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+  gap: 20px;
+}
+
+.card {
+  padding: 26px 22px;
+  border-radius: 14px;
+  background: rgba(17, 24, 39, 0.8);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid #1F2937;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 300ms ease-in-out;
+}
+
+.card:hover {
+  transform: scale(1.02);
+  border-color: #00F0FF;
+  background: rgba(17, 24, 39, 0.95);
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+}
+
+.cardTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.iconWrapper {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  transition: transform 300ms ease-in-out;
+}
+
+.card:hover .iconWrapper {
+  transform: scale(1.08);
+}
+
+.tierTag {
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--font-mono, monospace);
+  padding: 3px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.05em;
+}
+
+.cardTitle {
+  font-size: 17px;
+  font-weight: 700;
+  color: #F9FAFB;
+  margin-bottom: 10px;
+  transition: color 300ms ease-in-out;
+}
+
+.card:hover .cardTitle {
+  color: #00F0FF;
+}
+
+.cardDesc {
+  font-size: 13px;
+  color: #9CA3AF;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  flex: 1;
+}
+
+.cardFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid rgba(31, 41, 55, 0.8);
+  padding-top: 14px;
+}
+
+.checksCount {
+  font-size: 12px;
+  color: #9CA3AF;
+  font-weight: 500;
+}
+
+.arrowLink {
+  font-size: 12px;
+  font-weight: 600;
+  color: #00F0FF;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: transform 300ms ease-in-out;
+}
+
+.card:hover .arrowLink {
+  transform: translateX(4px);
+}

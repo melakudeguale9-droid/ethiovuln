@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { api } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
 import type { Scan } from '@/types/scan';
@@ -16,7 +17,10 @@ import {
   DisclaimerModal,
 } from '@/components/scans/new';
 
-export default function NewScanPage() {
+function NewScanContent() {
+  const searchParams = useSearchParams();
+  const initialMode = searchParams.get('mode') || 'full_enterprise';
+
   const { user, refreshUser } = useAuth();
   const [targetUrl, setTargetUrl] = useState('');
   const [showDisclaimer, setShowDisclaimer] = useState(false);
@@ -36,7 +40,7 @@ export default function NewScanPage() {
     deselectAllModules,
     selectedModulesCount,
     resolvedBackendEngine,
-  } = useScanConfigurator('full_enterprise');
+  } = useScanConfigurator(initialMode);
 
   const handleStartScan = () => {
     if (!targetUrl.trim()) {
@@ -179,3 +183,18 @@ export default function NewScanPage() {
     </div>
   );
 }
+
+export default function NewScanPage() {
+  return (
+    <Suspense
+      fallback={
+        <div style={{ padding: '40px 20px', color: '#94A3B8', textAlign: 'center' }}>
+          Loading Assessment Configurator...
+        </div>
+      }
+    >
+      <NewScanContent />
+    </Suspense>
+  );
+}
+

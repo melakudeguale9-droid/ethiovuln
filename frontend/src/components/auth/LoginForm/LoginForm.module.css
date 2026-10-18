@@ -2,7 +2,17 @@
   padding: 40px;
   width: 100%;
   max-width: 440px;
-  border: 1px solid rgba(148, 163, 184, 0.15);
+  border-radius: 16px;
+  background: rgba(17, 24, 39, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid #1F2937;
+  transition: all 300ms ease-in-out;
+}
+
+.card:hover {
+  border-color: #00F0FF;
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.25);
 }
 
 .alertWrapper {

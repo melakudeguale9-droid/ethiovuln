@@ -69,7 +69,8 @@ class ApiClient {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.detail || `API Error: ${response.status}`);
+      const message = errorData.detail || errorData.message || (typeof errorData === 'string' ? errorData : `API Error: ${response.status}`);
+      throw new Error(message);
     }
 
     // Handle PDF/binary responses

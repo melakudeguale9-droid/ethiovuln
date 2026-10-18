@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Navbar } from '@/components/navigation/Navbar';
 import {
   AboutHero,
+  ProjectOverview,
   DeveloperProfile,
   TechnicalExpertise,
   SocialConnect,
@@ -25,8 +26,10 @@ export default function AboutPage() {
       {/* ─── Hero Banner with Shield Glow & Particles ─── */}
       <AboutHero />
 
-      {/* ─── Researcher Profile & Expertise Section ──── */}
+      {/* ─── Platform Blueprint, Mission & Technical Docs ──── */}
       <section className={styles.contentSection}>
+        <ProjectOverview />
+
         <div
           className={`glass-card ${styles.profileCard}`}
           style={{

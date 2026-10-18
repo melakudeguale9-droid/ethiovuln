@@ -33,10 +33,10 @@ export function Sidebar({ user, collapsed, onToggleCollapse, onLogout }: Sidebar
         }}
       >
         <Link href="/" className={styles.brandLink}>
-          <div className={styles.logoIcon}>E</div>
+          <div className={styles.logoIcon}>🛡️</div>
           {!collapsed && (
             <span className={styles.brandText}>
-              Ethio<span className={styles.brandHighlight}>Vuln</span>
+              Enterprise <span className={styles.brandHighlight}>Security</span>
             </span>
           )}
         </Link>

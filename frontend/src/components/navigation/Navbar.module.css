@@ -8,10 +8,10 @@
   justify-content: space-between;
   align-items: center;
   z-index: 100;
-  background: rgba(7, 11, 20, 0.85);
+  background: rgba(11, 15, 25, 0.85);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(148, 163, 184, 0.08);
+  border-bottom: 1px solid #1F2937;
 }
 
 .brandLink {
@@ -22,64 +22,76 @@
 }
 
 .logoIcon {
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   border-radius: 10px;
-  background: linear-gradient(135deg, #00E5FF, #6366F1);
+  background: rgba(0, 240, 255, 0.12);
+  border: 1px solid rgba(0, 240, 255, 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 800;
-  color: #070B14;
-  font-size: 16px;
-  box-shadow: 0 0 16px rgba(0, 229, 255, 0.3);
-  transition: transform var(--transition-base);
+  font-size: 18px;
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.25);
+  transition: transform 300ms ease-in-out;
 }
 
 .brandLink:hover .logoIcon {
-  transform: scale(1.05);
+  transform: scale(1.08);
 }
 
 .brandText {
   font-weight: 800;
   font-size: 18px;
   letter-spacing: -0.02em;
-  color: #F8FAFC;
+  color: #F9FAFB;
 }
 
 .brandHighlight {
-  color: #00E5FF;
+  color: #00F0FF;
 }
 
 .nav {
   display: flex;
-  gap: 32px;
+  gap: 28px;
   align-items: center;
 }
 
 .navLink {
-  color: #94A3B8;
+  color: #9CA3AF;
   text-decoration: none;
   font-size: 14px;
   font-weight: 500;
-  transition: color var(--transition-fast), text-shadow var(--transition-fast);
+  transition: all 300ms ease-in-out;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid transparent;
 }
 
 .navLink:hover {
-  color: #F8FAFC;
-  text-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
+  color: #00F0FF;
+  border-color: rgba(0, 240, 255, 0.25);
+  background: rgba(0, 240, 255, 0.05);
+  text-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
 }
 
 .navLinkActive {
-  color: #00E5FF;
+  color: #00F0FF;
   font-weight: 600;
-  text-shadow: 0 0 10px rgba(0, 229, 255, 0.4);
+  border-color: rgba(0, 240, 255, 0.35);
+  background: rgba(0, 240, 255, 0.08);
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
 }
 
 .signInBtn {
-  padding: 8px 24px;
+  padding: 9px 24px;
   font-size: 13px;
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 700;
   margin-left: 8px;
+  transition: all 300ms ease-in-out;
+}
+
+.signInBtn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.45);
 }
