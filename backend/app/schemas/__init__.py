@@ -9,6 +9,9 @@ from app.schemas.user import (
     TokenResponse,
     TokenRefresh,
     AcceptTosRequest,
+    ChangePasswordRequest,
+    ForgotPasswordRequest,
+    ResetPasswordRequest,
 )
 from app.schemas.scan import (
     ScanCreate,
@@ -21,6 +24,15 @@ from app.schemas.vulnerability import (
     VulnerabilityCreate,
     VulnerabilitySummary,
 )
+from app.schemas.settings import (
+    ProfileResponse,
+    ProfileUpdate,
+    PreferencesUpdate,
+    ApiKeyCreate,
+    ApiKeyResponse,
+    SubscriptionResponse,
+    SubscriptionUpgradeRequest,
+)
 
 __all__ = [
     "UserCreate",
@@ -29,6 +41,9 @@ __all__ = [
     "TokenResponse",
     "TokenRefresh",
     "AcceptTosRequest",
+    "ChangePasswordRequest",
+    "ForgotPasswordRequest",
+    "ResetPasswordRequest",
     "ScanCreate",
     "ScanResponse",
     "ScanListResponse",
@@ -36,4 +51,10 @@ __all__ = [
     "VulnerabilityResponse",
     "VulnerabilityCreate",
     "VulnerabilitySummary",
+    "ProfileResponse",
+    "ProfileUpdate",
+    "PreferencesUpdate",
+    "ApiKeyCreate",
+    "ApiKeyResponse",
 ]
+

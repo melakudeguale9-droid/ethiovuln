@@ -1,0 +1,305 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  width: 100%;
+}
+
+.currentPlanCard {
+  background: #111827;
+  border: 1px solid #1E293B;
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.currentPlanCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #00F0FF, #3B82F6, transparent);
+}
+
+.planInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.planLabel {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  color: #94A3B8;
+}
+
+.planNameRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.planName {
+  font-size: 22px;
+  font-weight: 800;
+  color: #FFFFFF;
+}
+
+.badgeExpired {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #EF4444;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.badgeActive {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: #10B981;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.badgeTrial {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0, 240, 255, 0.12);
+  border: 1px solid rgba(0, 240, 255, 0.35);
+  color: #00F0FF;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.planSubtext {
+  font-size: 13px;
+  color: #94A3B8;
+  max-width: 500px;
+}
+
+.billingToggleWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin: 8px 0;
+}
+
+.toggleLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: #94A3B8;
+  cursor: pointer;
+  transition: color 200ms ease;
+}
+
+.toggleLabelActive {
+  color: #00F0FF;
+}
+
+.toggleSwitch {
+  width: 48px;
+  height: 26px;
+  background: #1E293B;
+  border-radius: 13px;
+  padding: 3px;
+  cursor: pointer;
+  border: 1px solid #334155;
+  display: flex;
+  align-items: center;
+  transition: all 200ms ease;
+}
+
+.toggleThumb {
+  width: 20px;
+  height: 20px;
+  background: #00F0FF;
+  border-radius: 50%;
+  transition: transform 200ms ease;
+}
+
+.discountPill {
+  background: rgba(0, 240, 255, 0.15);
+  color: #00F0FF;
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.tierCard {
+  background: #111827;
+  border: 1px solid #1E293B;
+  border-radius: 16px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 300ms ease;
+  position: relative;
+}
+
+.tierCard:hover {
+  border-color: #00F0FF;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px -10px rgba(0, 240, 255, 0.2);
+}
+
+.tierCardPopular {
+  border-color: #00F0FF;
+  background: linear-gradient(180deg, #162032 0%, #111827 100%);
+  box-shadow: 0 0 25px rgba(0, 240, 255, 0.15);
+}
+
+.popularBadge {
+  position: absolute;
+  top: -12px;
+  right: 24px;
+  background: linear-gradient(90deg, #00F0FF, #3B82F6);
+  color: #090D16;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 3px 12px;
+  border-radius: 12px;
+}
+
+.cardHeader {
+  margin-bottom: 20px;
+}
+
+.tierTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin-bottom: 4px;
+}
+
+.tierDescription {
+  font-size: 13px;
+  color: #94A3B8;
+  line-height: 1.5;
+}
+
+.pricingRow {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin: 18px 0;
+}
+
+.priceAmount {
+  font-size: 32px;
+  font-weight: 800;
+  color: #FFFFFF;
+}
+
+.pricePeriod {
+  font-size: 13px;
+  color: #64748B;
+}
+
+.featureList {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 28px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.featureItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+  color: #E2E8F0;
+  line-height: 1.4;
+}
+
+.checkIcon {
+  color: #00F0FF;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.actionBtn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all 200ms ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.actionBtnPrimary {
+  background: #00F0FF;
+  color: #0B132B;
+}
+
+.actionBtnPrimary:hover {
+  background: #38BDF8;
+  box-shadow: 0 0 16px rgba(0, 240, 255, 0.4);
+}
+
+.actionBtnSecondary {
+  background: #1E293B;
+  color: #F8FAFC;
+  border: 1px solid #334155;
+}
+
+.actionBtnSecondary:hover {
+  background: #334155;
+  border-color: #00F0FF;
+}
+
+.actionBtnActive {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10B981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  cursor: default;
+}

@@ -23,7 +23,7 @@ export function AttackVectors({
 
   return (
     <div className={styles.card}>
-      <h2 className={styles.title}>Top Vulnerability Classes (INSA Scope)</h2>
+      <h2 className={styles.title}>Top Vulnerability Classes</h2>
       <div className={styles.grid}>
         {vectors.map((vector) => (
           <div key={vector.label} className={styles.vectorItem}>

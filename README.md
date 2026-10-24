@@ -4,13 +4,17 @@
 > Enterprise-grade Dynamic Application Security Testing (DAST) engineered for automated web reconnaissance, vulnerability discovery, CVSS v3.1 scoring, and executive reporting.
 
 [![CI Status](https://img.shields.io/badge/build-passing-brightgreen.svg)]()
-[![Backend Tests](https://img.shields.io/badge/pytest-131%2F131%20passed-10B981.svg)]()
-[![Next.js](https://img.shields.io/badge/Next.js-16.2.3-00E5FF.svg)](https://nextjs.org/)
+[![Backend Tests](https://img.shields.io/badge/pytest-180%2F180%20passed-10B981.svg)]()
+[![Frontend Unit Tests](https://img.shields.io/badge/vitest%20RTL-13%2F13%20passed-10B981.svg)]()
+[![Frontend E2E Tests](https://img.shields.io/badge/playwright-4%2F4%20passed-10B981.svg)]()
+[![Next.js](https://img.shields.io/badge/Next.js-15.1.0-00E5FF.svg)](https://nextjs.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115.6-009688.svg)](https://fastapi.tiangolo.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791.svg)](https://www.postgresql.org/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ---
+
+> 🚀 **Quick Start:** For a streamlined, step-by-step setup guide, see [**`QUICKSTART.md`**](QUICKSTART.md).
 
 ## Table of Contents
 
@@ -250,33 +254,59 @@ To prevent EthioVuln from being weaponized to attack internal cloud infrastructu
 
 ---
 
-## 9. REST API & Interactive Documentation
+## 9. REST API & Hardened Interactive Documentation
 
-FastAPI automatically generates OpenAPI 3.0 schemas for all endpoints.
+FastAPI generates standards-compliant OpenAPI 3.0 schemas for all system endpoints. EthioVuln implements security hardening across all documentation interfaces to avoid accidental exposure in production environments.
 
-> **Interactive API Documentation URL:**  
-> [`http://127.0.0.1:8000/api/docs`](http://127.0.0.1:8000/api/docs) *(Swagger UI)*  
-> [`http://127.0.0.1:8000/api/redoc`](http://127.0.0.1:8000/api/redoc) *(ReDoc UI)*  
-> *(Note: The documentation is mounted explicitly under `/api/docs`, not `/docs`)*
+> **Interactive Documentation Endpoints:**  
+> - **Swagger UI:** [`http://127.0.0.1:8000/api/docs`](http://127.0.0.1:8000/api/docs) — Interactive sandbox testing  
+> - **ReDoc UI:** [`http://127.0.0.1:8000/api/redoc`](http://127.0.0.1:8000/api/redoc) — Deep technical reference & schema browser  
+> - **OpenAPI Specification:** [`http://127.0.0.1:8000/api/openapi.json`](http://127.0.0.1:8000/api/openapi.json) — Machine-readable OpenAPI 3.0 spec  
+> *(Note: Mounted under `/api/docs` and `/api/redoc` rather than standard root paths)*
 
-### Core Endpoints Overview
+### 🔒 API Documentation Hardening Architecture
 
-| Method | Endpoint | Description | Auth Required |
-|---|---|---|---|
-| `POST` | `/api/auth/register` | Register a new user account | No |
-| `POST` | `/api/auth/login` | Authenticate and obtain JWT tokens | No |
-| `POST` | `/api/auth/refresh` | Refresh an expired access token | Refresh Token |
-| `GET` | `/api/auth/me` | Fetch authenticated user profile | Bearer Token |
-| `POST` | `/api/auth/accept-tos` | Record legal terms acceptance timestamp | Bearer Token |
-| `GET` | `/api/scans/` | Paginated scan history | Bearer Token |
-| `POST` | `/api/scans/` | Validate target and launch assessment | Bearer Token |
-| `GET` | `/api/scans/{id}` | Inspect scan status, counts, and findings | Bearer Token |
-| `POST` | `/api/scans/{id}/stop` | Abort an active assessment | Bearer Token |
-| `GET` | `/api/scans/{id}/report` | Compile and download executive PDF report | Bearer Token |
-| `GET` | `/api/apikeys/` | List user-scoped API keys | Bearer Token |
-| `POST` | `/api/apikeys/` | Generate a new SHA-256 hashed API key | Bearer Token |
-| `DELETE`| `/api/apikeys/{id}` | Revoke an active API key | Bearer Token |
-| `GET` | `/api/health` | Service health check | No |
+In adherence to the **OWASP API Security Top 10 (API8:2023 Security Misconfiguration)**, exposing API schemas and interactive test consoles in public production environments poses significant reconnaissance risks. EthioVuln hardens this via:
+
+1. **Environment-Controlled Docs Toggling:**
+   - Documentation is conditionally mounted using `ENABLE_API_DOCS: bool` in `app/config.py`.
+   - In production, setting `ENABLE_API_DOCS=false` cleanly disables `/api/docs`, `/api/redoc`, and `/api/openapi.json` (returns `404 Not Found`), denying attackers automated endpoint enumeration.
+
+2. **Swagger UI Parameter Hardening:**
+   - **`defaultModelsExpandDepth: -1`**: Hides data schema accordions by default, reducing client DOM overhead and mitigating schema scraping.
+   - **`persistAuthorization: true`**: Retains user Bearer JWT tokens in browser storage across page reloads during authorized development.
+   - **`displayRequestDuration: true`**: Computes request and response latency metrics directly in the Swagger UI.
+   - **`filter: true`**: Enables instant real-time search across routes and tags.
+   - **`syntaxHighlight.theme: "monokai"`**: Customized dark aesthetic aligned with EthioVuln platform styling.
+
+3. **Standardized Security Definitions (OpenAPI Components):**
+   - **`BearerAuth` (HTTP Bearer JWT):** Formats token authentication via `Authorization: Bearer <access_token>`.
+   - **`ApiKeyAuth` (API Key Header):** Supports automation tokens via `X-API-Key: ev_live_<token>`.
+   - **`OAuth2PasswordBearer`:** Integrated login flow for Swagger UI token acquisition at `/api/auth/login`.
+
+### Core Endpoints Matrix
+
+| Method | Endpoint | Category | Description | Auth Required |
+|---|---|---|---|---|
+| `POST` | `/api/auth/register` | Authentication | Register a new user account with bcrypt hash | No |
+| `POST` | `/api/auth/login` | Authentication | OAuth2 form authentication for JWT token pair | No |
+| `POST` | `/api/auth/refresh` | Authentication | Issue fresh access token using refresh token | Refresh Token |
+| `GET` | `/api/auth/me` | Authentication | Fetch profile and permissions of caller | Bearer Token |
+| `POST` | `/api/auth/accept-tos` | Authentication | Record legal Terms of Service acceptance | Bearer Token |
+| `GET` | `/api/scans/` | Scans | Paginated scan assessment history | Bearer Token |
+| `POST` | `/api/scans/` | Scans | SSRF-validated assessment dispatch | Bearer Token |
+| `GET` | `/api/scans/{id}` | Scans | Inspect scan status, progress, and finding counts | Bearer Token |
+| `POST` | `/api/scans/{id}/stop` | Scans | Cancel/abort an active running assessment | Bearer Token |
+| `GET` | `/api/scans/{id}/vulnerabilities` | Scans | Query discovered vulnerabilities with severity filters | Bearer Token |
+| `GET` | `/api/scans/{id}/report` | Reports | Generate and download executive PDF report | Bearer Token |
+| `GET` | `/api/apikeys/` | API Keys | List user-scoped API keys (max 5) | Bearer Token |
+| `POST` | `/api/apikeys/` | API Keys | Generate a new SHA-256 hashed CI/CD API key | Bearer Token |
+| `DELETE`| `/api/apikeys/{id}` | API Keys | Revoke an active automation API key | Bearer Token |
+| `GET` | `/api/ai/health` | AI Intelligence | Probe Gemini AI service connectivity & latency | Bearer Token |
+| `POST` | `/api/ai/analyze-finding` | AI Intelligence | Request AI analysis & remediation for finding | Bearer Token |
+| `GET` | `/api/settings/subscription`| Settings | Inspect trial period, plan limits, and days left | Bearer Token |
+| `GET` | `/api/health` | System | Health check verifying DB & service status | No |
+| `GET` | `/` | System | Service metadata and documentation links | No |
 
 ---
 
@@ -334,21 +364,37 @@ For automated security audits in CI/CD pipelines (GitHub Actions, GitLab CI), Et
 
 ---
 
-## 13. Local Development Setup
+## 13. Local Development Installation Guide
+
+EthioVuln is organized as a decoupled monorepo containing a **FastAPI backend** and a **Next.js 15 (React 19) frontend**.
 
 ### Prerequisites
-- Python 3.11+
-- Node.js 20+ & npm
-- PostgreSQL 16
-- Redis 7
+- **Python:** 3.11+ (Python 3.11 – 3.14 compatible)
+- **Node.js:** 20+ (Node 20, 22, or 24) & `npm`
+- **PostgreSQL:** 16 (running natively on port `5432` or via Docker on port `5433`)
+- **Redis:** 7+ (running on port `6379`)
+- **Nuclei:** ProjectDiscovery Nuclei (`/usr/bin/nuclei` or in system `$PATH`)
+- **Google Chrome / Chromium:** For automated Playwright E2E browser tests
 
-### Backend Setup
+---
 
+### Step 1: Database & Redis (Docker Quickstart)
+If you do not have native PostgreSQL and Redis instances running, launch them with Docker:
+```bash
+# Run PostgreSQL (port 5433) and Redis (port 6379)
+docker-compose up -d postgres redis
+```
+
+---
+
+### Step 2: Backend & Celery Worker Setup
+
+Open a terminal for the backend:
 ```bash
 # 1. Navigate to backend directory
 cd backend
 
-# 2. Create and activate a virtual environment
+# 2. Create and activate a dedicated virtual environment
 python3 -m venv venv
 source venv/bin/activate
 
@@ -357,99 +403,193 @@ pip install -r requirements.txt
 
 # 4. Copy and configure environment variables
 cp ../.env.example .env
+# Edit .env if using non-default credentials
 
-# 5. Run database migrations
+# 5. Run database migrations to initialize tables
 alembic upgrade head
 
-# 6. Start FastAPI development server
+# 6. Start the FastAPI development server (with hot reload)
 uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
+> The API server is now running at [`http://localhost:8000`](http://localhost:8000).  
+> Interactive Swagger UI: [`http://localhost:8000/api/docs`](http://localhost:8000/api/docs)  
+> Interactive ReDoc UI: [`http://localhost:8000/api/redoc`](http://localhost:8000/api/redoc)
 
-### Frontend Setup
+In a separate terminal, launch the Celery task worker to process scanning jobs:
+```bash
+cd backend
+source venv/bin/activate
+celery -A app.workers.celery_app worker --loglevel=info --pool=solo
+```
 
+---
+
+### Step 3: Frontend Setup (`npm run dev`)
+
+Open a third terminal for the Next.js frontend:
 ```bash
 # 1. Navigate to frontend directory
 cd frontend
 
-# 2. Install dependencies
-npm install
+# 2. Install dependencies (use --legacy-peer-deps for React 19 peer resolution)
+npm install --legacy-peer-deps
 
-# 3. Launch Next.js development server
+# 3. Launch Next.js Turbopack development server
 npm run dev
 ```
 
-Visit [`http://localhost:3000`](http://localhost:3000) in your browser.
+> The EthioVuln Cyber Dashboard is now live at [`http://localhost:3000`](http://localhost:3000).
 
 ---
 
-## 14. Docker Setup
+## 14. Docker Compose Setup
 
-To deploy the complete topology (PostgreSQL, Redis, OWASP ZAP, FastAPI, Next.js, and Celery Worker) locally:
+For single-command containerized deployment of the complete platform topology (PostgreSQL, Redis, OWASP ZAP, FastAPI Backend, Celery Worker, and Next.js Frontend):
 
 ```bash
-# Clone repository
+# 1. Clone repository
 git clone https://github.com/melakudeguale9-droid/ethiovuln.git
 cd ethiovuln
 
-# Copy environment template
+# 2. Copy environment template
 cp .env.example .env
 
-# Build and start all 5 containers
+# 3. Build and launch all 6 services in detached mode
 docker-compose up --build -d
 ```
 
-### Container Port Mappings
+### Container Topology & Port Mappings
 
-- **Next.js Frontend:** [`http://localhost:3000`](http://localhost:3000)
-- **FastAPI Backend:** [`http://localhost:8000`](http://localhost:8000)
-- **FastAPI Documentation:** [`http://localhost:8000/api/docs`](http://localhost:8000/api/docs)
-- **PostgreSQL Database:** [`http://localhost:5433`](http://localhost:5433) / [`http://localhost:5432`](http://localhost:5432)
-- **Redis Server:** [`http://localhost:6379`](http://localhost:6379)
-- **OWASP ZAP Daemon:** [`http://localhost:8080`](http://localhost:8080)
+| Container Name | Service | Host Port | Internal Port | Healthcheck |
+|---|---|---|---|---|
+| `dast_frontend` | Next.js 15 Web Dashboard | `3000` | `3000` | HTTP GET `/` |
+| `dast_backend` | FastAPI REST & WS Core | `8000` | `8000` | HTTP GET `/api/health` |
+| `dast_worker` | Celery Background Scanner | — | — | Process Supervision |
+| `dast_postgres` | PostgreSQL 16 Database | `5433` | `5432` | `pg_isready -U dast` |
+| `dast_redis` | Redis 7 Message Broker & Cache | `6379` | `6379` | `redis-cli ping` |
+| `dast_zap` | OWASP ZAP Daemon Engine | `8080` | `8080` | HTTP GET `/JSON/core/view/version` |
 
-To verify container health:
+### Docker Lifecycle Commands
+
 ```bash
+# Check status and health of all containers
 docker-compose ps
+
+# Stream unified logs across all services
+docker-compose logs -f
+
+# Stream logs for a specific service
+docker-compose logs -f backend
+docker-compose logs -f worker
+docker-compose logs -f frontend
+
+# Gracefully stop all containers
+docker-compose down
+
+# Stop and wipe persistent volume data (fresh reset)
+docker-compose down -v
 ```
 
 ---
 
 ## 15. Environment Variables Reference
 
-A centralized template is provided in [`.env.example`](.env.example).
+A centralized template is provided in [`.env.example`](.env.example). Copy this file to `.env` in the root and `backend/.env`.
 
 | Variable | Description | Default / Example |
 |---|---|---|
-| `DATABASE_URL` | Async PostgreSQL connection string | `postgresql+asyncpg://dast:dastpass@localhost:5433/dast_db` |
-| `DATABASE_URL_SYNC` | Synchronous PostgreSQL connection for Alembic | `postgresql://dast:dastpass@localhost:5433/dast_db` |
-| `REDIS_URL` | Redis connection URL | `redis://localhost:6379/0` |
-| `SECRET_KEY` | Cryptographic secret for JWT signing | `generate-a-secure-random-secret` |
-| `JWT_ALGORITHM` | Algorithm used for token encoding | `HS256` |
-| `ACCESS_TOKEN_EXPIRE_MINUTES` | Access token lifespan | `1440` (24 hours) |
-| `REFRESH_TOKEN_EXPIRE_DAYS` | Refresh token lifespan | `7` (7 days) |
-| `ZAP_PROXY_URL` | URL to the OWASP ZAP daemon API | [`http://localhost:8080`](http://localhost:8080) |
+| `ENVIRONMENT` | Deployment environment (`development`, `staging`, `production`) | `development` |
+| `DEBUG` | Enable debug logging & stack traces (False in production) | `True` |
+| `ENABLE_API_DOCS` | Toggle Swagger UI & ReDoc (set `false` in production for hardening) | `True` |
+| `DATABASE_URL` | Async PostgreSQL connection string (asyncpg) | `postgresql+asyncpg://dast:dast_secret@localhost:5433/dast_db` |
+| `DATABASE_URL_SYNC` | Synchronous PostgreSQL connection string (psycopg2/alembic) | `postgresql://dast:dast_secret@localhost:5433/dast_db` |
+| `REDIS_URL` | Redis URL for Celery message broker and caching | `redis://localhost:6379/0` |
+| `SECRET_KEY` | Cryptographic secret for signing JWT access and refresh tokens | `min-32-char-random-cryptographic-key` |
+| `JWT_ALGORITHM` | Algorithm used for JWT encoding | `HS256` |
+| `ACCESS_TOKEN_EXPIRE_MINUTES` | Access token lifespan in minutes | `1440` (24 hours) |
+| `REFRESH_TOKEN_EXPIRE_DAYS` | Refresh token lifespan in days | `7` (7 days) |
+| `ZAP_API_URL` | URL to the OWASP ZAP daemon API | `http://localhost:8080` |
 | `ZAP_API_KEY` | Authentication key for ZAP daemon | `changeme` |
 | `NUCLEI_PATH` | Path to Nuclei executable binary | `/usr/bin/nuclei` |
-| `NEXT_PUBLIC_API_URL` | Frontend API proxy endpoint | [`http://localhost:8000`](http://localhost:8000) (or empty for reverse proxy) |
-| `NEXT_PUBLIC_WS_URL` | Frontend WebSocket endpoint | `ws://localhost:8000` |
+| `GEMINI_API_KEY` | Google GenAI API key for AI threat intelligence | *(Optional)* `AIzaSy...` |
+| `GEMINI_MODEL` | Gemini AI model identifier | `gemini-3.5-flash-lite` |
+| `FUZZER_THREADS` | Concurrency worker count for directory fuzzing engine | `30` |
+| `FUZZER_TIMEOUT` | Request timeout for fuzzing probes in seconds | `5` |
+| `BACKEND_URL` | Base URL of FastAPI backend | `http://localhost:8000` |
+| `FRONTEND_URL` | Base URL of Next.js frontend | `http://localhost:3000` |
+| `NEXT_PUBLIC_WS_URL` | Frontend WebSocket endpoint reachable from browser | `ws://localhost:8000` |
 
 ---
 
-## 16. Testing Suite
+## 16. Comprehensive Testing Suite
 
-The repository contains an automated test suite verifying all critical paths, configuration defaults, token lifespans, CVSS algorithms, target validation, and API schemas.
+EthioVuln maintains rigorous test automation spanning backend unit & integration tests, SSRF protection gates, AI service probes, API documentation hardening, frontend React Testing Library unit tests, and Playwright E2E browser tests.
+
+### 1. Backend Testing (Pytest)
+
+The backend test suite contains **178 automated tests** covering:
+- **Authentication & RBAC:** Password hashing, timing-safe validation, JWT claims, refresh token rotation, failed-login transaction isolation.
+- **SSRF Protection Gate:** IP CIDRs, RFC 1918 subnets, cloud metadata (`169.254.169.254`), DNS rebinds.
+- **API Documentation Hardening:** Validating `/api/docs`, `/api/redoc`, OpenAPI security components (`BearerAuth`, `ApiKeyAuth`), and production 404 lockout.
+- **AI Service Probes:** Roundtrip Gemini API connectivity, latency benchmarks, fallback handling.
+- **Trial & Subscription Enforcement:** Trial expiration date math, 402 Payment Required gates.
 
 ```bash
-# Run backend pytest suite
-pytest backend/tests
+cd backend
+source venv/bin/activate
+pytest -v
+```
+> **Status:** `178 / 178 passed (100% pass rate)`
 
-# Run frontend Next.js production build verification
+---
+
+### 2. Frontend Unit Testing (React Testing Library & Vitest)
+
+Frontend component tests focus on real-time scan telemetry and finding interaction:
+- **`ConsoleStream` Component:** Real-time log streaming, log level styling (`[INFO]`, `[WARN]`, `[ERROR]`), timestamps, terminal badges, and auto-scroll checkbox toggling.
+- **`VulnerabilityAccordion` (Findings UI) Component:** Empty states, active `● LIVE STREAM` indicators, severity counters, accordion expansion (detailed definitions, impact analysis, remediation steps, and raw evidence inspection), and filter clearing.
+
+```bash
+cd frontend
+# Run single test pass
+npm run test
+
+# Run interactive watch mode
+npm run test:watch
+```
+> **Status:** `13 / 13 passed (100% pass rate)`
+
+---
+
+### 3. Frontend Integration & E2E Testing (Playwright)
+
+End-to-end browser integration tests validate real-world user interactions:
+- **2-Column Responsive Layout:** Verifies simultaneous rendering of Console Stream (5 cols) and Findings UI (7 cols).
+- **Accordion Expansion:** Clicks a detected finding and verifies the detailed remediation, threat score, and HTTP proof-of-concept DOM nodes expand.
+- **Severity Filtering:** Filters findings by severity pill and restores with "Clear Filter".
+- **Live Stream Controls:** Toggles auto-scroll checkbox in the terminal viewer.
+
+```bash
+cd frontend
+npm run test:e2e
+```
+> **Status:** `4 / 4 passed (100% pass rate)`
+
+---
+
+### 4. Full Quality Assurance Verification
+
+Run the entire suite of checks across typing, linting, unit tests, and builds:
+```bash
+# Frontend type check
+cd frontend && npm run test:typecheck
+
+# Frontend linting
+cd frontend && npm run lint
+
+# Frontend production build
 cd frontend && npm run build
 ```
-
-Expected result:
-- **Backend:** `131 passed` (100% pass rate)
-- **Frontend:** `12/12 routes compiled cleanly`
 
 ---
 
@@ -542,11 +682,10 @@ To maintain transparency regarding cloud hosting boundaries:
 
 EthioVuln is designed and engineered by **Melaku Deguale**.
 
-- **Developer:** Melaku Deguale (Ethical Hacker & Security Researcher)
+- **Developer:** Melaku Deguale (Cyber Security Student & Security Researcher)
 - **GitHub Repository:** [https://github.com/melakudeguale9-droid/ethiovuln](https://github.com/melakudeguale9-droid/ethiovuln)
 - **Telegram Channel:** [https://t.me/melakucyber](https://t.me/melakucyber)
 - **LinkedIn Profile:** [https://www.linkedin.com/in/melaku-deguale-7803ba416/](https://www.linkedin.com/in/melaku-deguale-7803ba416/)
-- **YouTube:** Channel configuration pending
 
 ---
 

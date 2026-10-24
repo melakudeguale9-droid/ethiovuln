@@ -36,10 +36,6 @@ export function CyberKeyIllustration({ className = '' }: { className?: string })
 
   return (
     <div className={`relative w-full max-w-[560px] mx-auto select-none ${className}`}>
-      
-      {/* Ambient background glow */}
-      <div className="absolute inset-0 bg-gradient-to-tr from-amber-500/10 via-rose-500/5 to-transparent rounded-3xl blur-2xl pointer-events-none" />
-
       {/* SVG Canvas */}
       <svg
         viewBox="0 0 520 420"

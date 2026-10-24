@@ -67,9 +67,32 @@ class ApiClient {
       throw new Error('Authentication failed');
     }
 
+    if (response.status === 402) {
+      const errorData = await response.json().catch(() => ({}));
+      const message =
+        errorData.detail ||
+        errorData.message ||
+        'Your 7-day free trial has expired. Please select a Monthly or Annual package to continue.';
+
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('trial_expired_toast', message);
+        if (!window.location.href.includes('/dashboard/settings?tab=billing')) {
+          window.location.href = '/dashboard/settings?tab=billing&trial_expired=true';
+        }
+      }
+      throw new Error(message);
+    }
+
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      const message = errorData.detail || errorData.message || (typeof errorData === 'string' ? errorData : `API Error: ${response.status}`);
+      let message = errorData.detail || errorData.message || (typeof errorData === 'string' ? errorData : null);
+      if (!message) {
+        if (response.status === 500 || response.status === 502 || response.status === 503 || response.status === 504) {
+          message = 'Backend API service is temporarily unreachable (HTTP 500). Please ensure the backend server is running.';
+        } else {
+          message = `API Error: ${response.status}`;
+        }
+      }
       throw new Error(message);
     }
 
@@ -155,6 +178,48 @@ class ApiClient {
     });
   }
 
+  async forgotPassword(email: string) {
+    return this.request<{ message: string; reset_token?: string }>(
+      '/api/auth/forgot-password',
+      {
+        method: 'POST',
+        body: JSON.stringify({ email }),
+      },
+      false
+    );
+  }
+
+  async resetPassword(token: string, newPassword: string) {
+    return this.request<{ message: string }>(
+      '/api/auth/reset-password',
+      {
+        method: 'POST',
+        body: JSON.stringify({ token, new_password: newPassword }),
+      },
+      false
+    );
+  }
+
+  async getSubscription() {
+    return this.request<{
+      subscription_tier: string;
+      trial_ends_at: string | null;
+      is_trial_expired: boolean;
+      days_remaining: number;
+      created_at: string | null;
+    }>('/api/settings/subscription');
+  }
+
+  async upgradeSubscription(tier: string) {
+    return this.request<{ message: string; subscription_tier: string }>(
+      '/api/settings/subscription/upgrade',
+      {
+        method: 'POST',
+        body: JSON.stringify({ tier }),
+      }
+    );
+  }
+
   logout() {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
@@ -198,6 +263,78 @@ class ApiClient {
   async downloadReport(scanId: string): Promise<Blob> {
     return this.request<Blob>(`/api/reports/${scanId}/pdf`);
   }
+
+  // ─── AI / Gemini Endpoints ────────────────────────────────
+  async getAiStatus(): Promise<GeminiStatusResponse> {
+    return this.request<GeminiStatusResponse>('/api/ai/status');
+  }
+
+  async pingGemini(): Promise<GeminiPingResponse> {
+    return this.request<GeminiPingResponse>('/api/ai/ping', {
+      method: 'POST',
+    });
+  }
+
+  async generateAiResponse(payload: GeminiGenerateRequest): Promise<GeminiGenerateResponse> {
+    return this.request<GeminiGenerateResponse>('/api/ai/generate', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  }
+
+  async chatWithAi(payload: GeminiChatRequest): Promise<GeminiChatResponse> {
+    return this.request<GeminiChatResponse>('/api/ai/chat', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  }
+}
+
+export interface GeminiStatusResponse {
+  configured: boolean;
+  model: string;
+}
+
+export interface GeminiPingResponse {
+  success: boolean;
+  configured: boolean;
+  message: string;
+  model: string;
+  latency_ms: number;
+}
+
+export interface GeminiGenerateRequest {
+  prompt: string;
+  system_instruction?: string;
+  context?: string;
+}
+
+export interface GeminiGenerateResponse {
+  success: boolean;
+  configured: boolean;
+  response: string;
+  model: string;
+  latency_ms: number;
+}
+
+export interface ChatMessage {
+  role: 'user' | 'model' | 'assistant';
+  content: string;
+}
+
+export interface GeminiChatRequest {
+  messages: ChatMessage[];
+  context?: string;
+  system_instruction?: string;
+}
+
+export interface GeminiChatResponse {
+  success: boolean;
+  configured: boolean;
+  role: string;
+  response: string;
+  model: string;
+  latency_ms: number;
 }
 
 export const api = new ApiClient();

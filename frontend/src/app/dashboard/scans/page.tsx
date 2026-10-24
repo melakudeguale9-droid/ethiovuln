@@ -35,16 +35,15 @@ export default function ScansPage() {
   const totalPages = Math.ceil(total / pageSize);
 
   return (
-    <div>
+    <div className="w-full max-w-full overflow-x-hidden min-w-0">
       <PageNav
         backHref="/dashboard"
         backLabel="Overview"
-        title="Scans"
         nextHref="/dashboard/scans/new"
         nextLabel="New Scan"
       />
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
         <div>
           <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 4 }}>
             <span className="text-gradient">Scan History</span>
@@ -57,7 +56,8 @@ export default function ScansPage() {
       </div>
 
       <div className="glass-card" style={{ overflow: 'hidden' }}>
-        <table className="data-table">
+        <div style={{ overflowX: 'auto', width: '100%' }}>
+          <table className="data-table">
           <thead>
             <tr>
               <th>Target</th>
@@ -92,6 +92,7 @@ export default function ScansPage() {
             )}
           </tbody>
         </table>
+        </div>
       </div>
 
       {/* Pagination */}

@@ -122,6 +122,7 @@ export function ApiKeysTab() {
             { label: 'Platform', value: 'EthioVuln' },
             { label: 'Version', value: 'v1.1.0' },
             { label: 'Scan Engines', value: 'Nuclei, ZAP, Fuzzer' },
+            { label: 'AI Intelligence', value: 'Google GenAI (Gemini 3.5 Flash-Lite)' },
             { label: 'API Docs', value: 'localhost:8000/api/docs' },
           ].map(({ label, value }) => (
             <div key={label} className={styles.platformItem}>

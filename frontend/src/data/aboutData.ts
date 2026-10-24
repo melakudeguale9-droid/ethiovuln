@@ -27,8 +27,8 @@ export const TECHNICAL_EXPERTISE: ExpertiseItem[] = [
     color: '#8b5cf6',
   },
   {
-    title: 'Modern Web Stack',
-    desc: 'Architecting secure, high-performance dashboards with Next.js, React, and TypeScript.',
+    title: 'Security Telemetry & UI',
+    desc: 'Engineering intuitive threat visualization interfaces, CVSS scoring dashboards, and live scanner consoles.',
     icon: '◧',
     color: '#00d4ff',
   },
@@ -36,10 +36,10 @@ export const TECHNICAL_EXPERTISE: ExpertiseItem[] = [
 
 export const DEVELOPER_BIO = {
   name: 'Melaku Deguale',
-  title: 'Ethical Hacker & Security Researcher',
-  subtitle: 'Certified Security Researcher & Consultant',
-  availabilityStatus: 'Available for Consultation',
-  bio: 'I am a professional Ethical Hacker and Software Developer specializing in offensive security and vulnerability research. My work focuses on identifying critical security flaws and building robust applications to mitigate digital threats. I am currently developing an automated Web Application Vulnerability Scanner designed to provide real-time security insights and protect web infrastructures from sophisticated attacks.',
+  title: 'Cyber Security Student ',
+  subtitle: 'INSA Cyber Talent Center Participant & Security Researcher',
+  availabilityStatus: 'Available for Security Research',
+  bio: 'I am a dedicated Cyber Security Student and Security Researcher specializing in offensive security, vulnerability assessment, and threat mitigation. My work focuses on identifying critical security flaws and architecting robust defense mechanisms to protect digital assets. As the creator of EthioVuln, I engineer automated web application vulnerability scanning solutions designed to provide real-time security insights and protect digital infrastructures.',
 };
 
 export interface TechDocSection {
@@ -50,10 +50,10 @@ export interface TechDocSection {
 }
 
 export const PROJECT_MISSION_DOCS = {
-  projectName: 'Enterprise Security Suite',
+  projectName: 'EthioVuln Security Suite',
   subtitle: 'Automated Cyber Security Assessment & Threat Intelligence Platform',
   description:
-    'Enterprise Security Suite is a modern, high-performance web vulnerability assessment and penetration testing suite built for enterprise environments. It unifies signature-based DAST matching (Nuclei), crawler-driven attack injection (OWASP ZAP), and concurrent endpoint reconnaissance into a single, coordinated scanning engine.',
+    'EthioVuln is a modern, high-performance web vulnerability assessment and penetration testing suite built for enterprise environments. It unifies signature-based DAST matching (Nuclei), crawler-driven attack injection (OWASP ZAP), and concurrent endpoint reconnaissance into a single, coordinated scanning engine.',
   mission:
     'To democratize proactive cybersecurity intelligence by delivering automated, transparent, and non-destructive vulnerability assessments that protect vital digital infrastructures before threat actors exploit them.',
   technicalDocs: [

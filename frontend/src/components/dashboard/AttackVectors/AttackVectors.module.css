@@ -1,18 +1,18 @@
 .card {
   border-radius: 16px;
-  border: 1px solid rgba(30, 41, 59, 0.8);
-  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid #1E293B;
+  background: #111827;
   padding: 20px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
   margin-bottom: 32px;
 }
 
 .title {
   color: #ffffff;
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 16px;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  margin-bottom: 18px;
 }
 
 .grid {
@@ -36,23 +36,24 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .vectorLabel {
-  font-size: 12px;
-  color: #94a3b8;
-  font-weight: 500;
+  font-size: 14px;
+  color: #cbd5e1;
+  font-weight: 600;
 }
 
 .vectorVal {
-  font-size: 12px;
-  color: #cbd5e1;
+  font-size: 14px;
+  color: #f1f5f9;
+  font-weight: 700;
   font-family: var(--font-mono);
 }
 
 .track {
-  height: 6px;
+  height: 8px;
   width: 100%;
   background: #1e293b;
   border-radius: 9999px;

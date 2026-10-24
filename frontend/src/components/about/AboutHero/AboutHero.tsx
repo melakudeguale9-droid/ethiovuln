@@ -54,7 +54,7 @@ export function AboutHero() {
 
         <div className={styles.roleBadge}>
           <span className={styles.pulseDot} />
-          About the Developer
+          About the Security Researcher
         </div>
 
         <h1 className={styles.headline}>

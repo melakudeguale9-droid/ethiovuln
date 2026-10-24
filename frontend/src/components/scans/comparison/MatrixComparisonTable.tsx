@@ -110,17 +110,16 @@ export function MatrixComparisonTable({ categories }: MatrixComparisonTableProps
                     <div className="flex flex-wrap items-center gap-3 pt-1">
                       {/* Severity Pill */}
                       <span
-                        className={`text-base font-semibold px-3 py-1 rounded-md border ${
-                          item.severity === 'Critical'
+                        className={`text-base font-semibold px-3 py-1 rounded-md border ${item.severity === 'Critical'
                             ? 'bg-rose-500/15 text-rose-400 border-rose-500/30'
                             : item.severity === 'High'
-                            ? 'bg-amber-500/15 text-amber-400 border-amber-500/30'
-                            : item.severity === 'Medium'
-                            ? 'bg-blue-500/15 text-blue-400 border-blue-500/30'
-                            : item.severity === 'Low'
-                            ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
-                            : 'bg-cyan-500/15 text-cyan-400 border-cyan-500/30'
-                        }`}
+                              ? 'bg-amber-500/15 text-amber-400 border-amber-500/30'
+                              : item.severity === 'Medium'
+                                ? 'bg-blue-500/15 text-blue-400 border-blue-500/30'
+                                : item.severity === 'Low'
+                                  ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
+                                  : 'bg-cyan-500/15 text-cyan-400 border-cyan-500/30'
+                          }`}
                       >
                         {item.severity}
                       </span>

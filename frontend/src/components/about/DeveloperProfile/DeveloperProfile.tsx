@@ -18,7 +18,7 @@ export function DeveloperProfile() {
         <h2 className={styles.nameHeading}>
           <span>{DEVELOPER_BIO.name}</span>
           <span className={styles.separator}>|</span>
-          <span className={styles.bioGradient}>Professional Bio</span>
+          <span className={styles.bioGradient}>Researcher Bio</span>
         </h2>
         <p className={styles.roleTitle}>{DEVELOPER_BIO.title}</p>
         <p className={styles.certTitle}>{DEVELOPER_BIO.subtitle}</p>

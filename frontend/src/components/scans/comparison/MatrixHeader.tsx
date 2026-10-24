@@ -25,7 +25,7 @@ export function MatrixHeader({ onClose }: MatrixHeaderProps) {
             </svg>
           </span>
 
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-100 tracking-tight">
+          <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-normal leading-relaxed">
             Enable Deep Scans: Light vs Deep comparison matrix
           </h2>
 

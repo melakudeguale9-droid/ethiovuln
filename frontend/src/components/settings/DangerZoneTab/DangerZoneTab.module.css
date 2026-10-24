@@ -1,106 +1,120 @@
+/* EthioVuln — Spacious, High-Contrast DangerZoneTab */
 .section {
-  padding: 16px 0;
-  border-bottom: 1px solid rgba(255, 0, 64, 0.1);
+  padding: 20px 0;
+  border-bottom: 1px solid rgba(255, 0, 64, 0.15);
 }
 
 .lastSection {
-  padding-top: 16px;
+  padding-top: 20px;
 }
 
 .title {
-  font-size: 13px;
-  color: #f1f5f9;
-  font-weight: 600;
-  margin-bottom: 4px;
+  font-size: 15px;
+  color: #F8FAFC;
+  font-weight: 700;
+  margin-bottom: 6px;
+  letter-spacing: normal;
 }
 
 .dangerTitle {
-  font-size: 13px;
-  color: #ff4444;
-  font-weight: 600;
-  margin-bottom: 4px;
+  font-size: 15px;
+  color: #EF4444;
+  font-weight: 700;
+  margin-bottom: 6px;
+  letter-spacing: normal;
 }
 
 .desc {
-  font-size: 12px;
-  color: #64748b;
-  margin-bottom: 12px;
+  font-size: 13.5px;
+  color: #94A3B8;
+  margin-bottom: 16px;
+  line-height: 1.6;
 }
 
 .exportBtn {
-  padding: 8px 18px;
-  background: rgba(0, 136, 255, 0.1);
-  border: 1px solid rgba(0, 136, 255, 0.3);
+  padding: 10px 20px;
+  background: rgba(0, 229, 255, 0.1);
+  border: 1px solid rgba(0, 229, 255, 0.35);
   border-radius: 8px;
-  color: #0088ff;
-  font-size: 13px;
+  color: #00E5FF;
+  font-size: 14px;
   cursor: pointer;
   font-weight: 600;
-  transition: all var(--transition-fast);
+  transition: all 0.2s;
 }
 
 .exportBtn:hover {
-  background: rgba(0, 136, 255, 0.2);
+  background: rgba(0, 229, 255, 0.2);
+  transform: translateY(-1px);
 }
 
 .signOutBtn {
-  padding: 8px 18px;
+  padding: 10px 20px;
   background: rgba(148, 163, 184, 0.08);
-  border: 1px solid rgba(148, 163, 184, 0.2);
+  border: 1px solid rgba(148, 163, 184, 0.25);
   border-radius: 8px;
-  color: #94a3b8;
-  font-size: 13px;
+  color: #CBD5E1;
+  font-size: 14px;
   cursor: pointer;
   font-weight: 600;
-  transition: all var(--transition-fast);
+  transition: all 0.2s;
 }
 
 .signOutBtn:hover {
-  background: rgba(148, 163, 184, 0.15);
-  color: #ffffff;
+  background: rgba(148, 163, 184, 0.18);
+  color: #FFFFFF;
 }
 
 .dangerOutlineBtn {
-  padding: 8px 18px;
-  background: rgba(255, 0, 64, 0.08);
-  border: 1px solid rgba(255, 0, 64, 0.3);
+  padding: 10px 20px;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.35);
   border-radius: 8px;
-  color: #ff4444;
-  font-size: 13px;
+  color: #EF4444;
+  font-size: 14px;
   cursor: pointer;
   font-weight: 600;
-  transition: all var(--transition-fast);
+  transition: all 0.2s;
 }
 
 .dangerOutlineBtn:hover {
-  background: rgba(255, 0, 64, 0.16);
+  background: rgba(239, 68, 68, 0.18);
 }
 
 .dangerSolidBtn {
-  padding: 6px 14px;
-  background: #ff0040;
+  padding: 8px 18px;
+  background: #EF4444;
   border: none;
-  border-radius: 6px;
-  color: #ffffff;
-  font-size: 12px;
+  border-radius: 8px;
+  color: #FFFFFF;
+  font-size: 13.5px;
   cursor: pointer;
   font-weight: 700;
-  transition: all var(--transition-fast);
+  transition: all 0.2s;
+}
+
+.dangerSolidBtn:hover {
+  background: #DC2626;
 }
 
 .cancelBtn {
-  padding: 6px 14px;
+  padding: 8px 18px;
   background: rgba(148, 163, 184, 0.1);
   border: 1px solid rgba(148, 163, 184, 0.2);
-  border-radius: 6px;
-  color: #94a3b8;
-  font-size: 12px;
+  border-radius: 8px;
+  color: #CBD5E1;
+  font-size: 13.5px;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: all 0.2s;
+}
+
+.cancelBtn:hover {
+  color: #FFFFFF;
+  background: rgba(148, 163, 184, 0.2);
 }
 
 .confirmRow {
   display: flex;
-  gap: 10px;
+  gap: 12px;
   align-items: center;
 }

@@ -42,9 +42,23 @@ export function useScanTelemetry(scanId: string) {
   const statusConfig = SCAN_STATUS_CONFIG[status] || { label: status, color: '#94A3B8' };
   const isRunning = status === 'running' || status === 'verifying' || status === 'pending';
 
-  const rawVulns: Vulnerability[] = ws.vulnerabilities.length > 0
-    ? ws.vulnerabilities
-    : (scan as any)?.vulnerabilities || [];
+  // Seamlessly merge REST scan vulnerabilities with real-time WebSocket vulnerability stream
+  const rawVulns: Vulnerability[] = (() => {
+    const list: Vulnerability[] = [...((scan as any)?.vulnerabilities || [])];
+    for (const incoming of ws.vulnerabilities) {
+      const exists = list.some(
+        (v) =>
+          (v.id && incoming.id && v.id === incoming.id) ||
+          (v.title === incoming.title &&
+            (v.url || v.target_url) === (incoming.url || incoming.target_url) &&
+            v.severity === incoming.severity)
+      );
+      if (!exists) {
+        list.push(incoming);
+      }
+    }
+    return list;
+  })();
 
   const groupedVulns: Record<Severity, Vulnerability[]> = {
     critical: rawVulns.filter((v) => v.severity === 'critical'),

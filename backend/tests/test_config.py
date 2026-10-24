@@ -22,11 +22,11 @@ class TestSettingsDefaults:
 
     def test_default_access_token_minutes(self):
         s = Settings()
-        assert s.ACCESS_TOKEN_EXPIRE_MINUTES == 129600  # 24 hours
+        assert s.ACCESS_TOKEN_EXPIRE_MINUTES == 1440  # 24 hours (1440 minutes)
 
     def test_default_refresh_token_days(self):
         s = Settings()
-        assert s.REFRESH_TOKEN_EXPIRE_DAYS == 90
+        assert s.REFRESH_TOKEN_EXPIRE_DAYS == 7
 
     def test_default_debug_true(self):
         s = Settings()

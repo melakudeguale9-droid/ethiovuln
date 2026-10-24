@@ -7,9 +7,10 @@ import styles from './ConsoleStream.module.css';
 export interface ConsoleStreamProps {
   logs: WebSocketLog[];
   connected: boolean;
+  status?: string;
 }
 
-export function ConsoleStream({ logs, connected }: ConsoleStreamProps) {
+export function ConsoleStream({ logs, connected, status }: ConsoleStreamProps) {
   const [autoScroll, setAutoScroll] = useState(true);
   const logContainerRef = useRef<HTMLDivElement>(null);
 
@@ -19,6 +20,9 @@ export function ConsoleStream({ logs, connected }: ConsoleStreamProps) {
     }
   }, [logs, autoScroll]);
 
+  const isCompleted = status?.toLowerCase() === 'completed';
+  const isRunning = status?.toLowerCase() === 'running' || status?.toLowerCase() === 'verifying';
+
   return (
     <div className={`glass-card ${styles.card}`}>
       <div className={styles.header}>
@@ -27,14 +31,20 @@ export function ConsoleStream({ logs, connected }: ConsoleStreamProps) {
           <span
             className={styles.liveTag}
             style={{
-              color: connected ? '#10B981' : '#64748B',
-              background: connected ? 'rgba(16, 185, 129, 0.1)' : 'rgba(100, 116, 139, 0.1)',
-              border: connected
+              color: isCompleted ? '#00e5ff' : connected ? '#10B981' : '#64748B',
+              background: isCompleted
+                ? 'rgba(0, 229, 255, 0.1)'
+                : connected
+                ? 'rgba(16, 185, 129, 0.1)'
+                : 'rgba(100, 116, 139, 0.1)',
+              border: isCompleted
+                ? '1px solid rgba(0, 229, 255, 0.3)'
+                : connected
                 ? '1px solid rgba(16, 185, 129, 0.25)'
                 : '1px solid rgba(100, 116, 139, 0.2)',
             }}
           >
-            {connected ? '● LIVE' : '○ IDLE'}
+            {isCompleted ? '✓ COMPLETED' : connected ? '● LIVE' : isRunning ? '⏳ QUEUED' : '○ IDLE'}
           </span>
         </div>
 
@@ -52,7 +62,9 @@ export function ConsoleStream({ logs, connected }: ConsoleStreamProps) {
 
       <div ref={logContainerRef} className={`log-stream ${styles.logContainer}`}>
         {logs.length === 0 ? (
-          <div className={styles.emptyLogs}>Waiting for engine logs...</div>
+          <div className={styles.emptyLogs}>
+            {isCompleted ? 'Assessment completed · Stream finished' : 'Waiting for engine logs...'}
+          </div>
         ) : (
           logs.map((log, i) => (
             <div key={i} className={`log-line log-${log.level}`} style={{ fontSize: 11 }}>
@@ -67,3 +79,5 @@ export function ConsoleStream({ logs, connected }: ConsoleStreamProps) {
     </div>
   );
 }
+
+export default ConsoleStream;

@@ -1,39 +1,49 @@
+/* EthioVuln — Spacious, High-Contrast SecurityTab */
 .wrapper {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 28px;
 }
 
 .submitBtn {
   width: 100%;
-  margin-top: 8px;
-  font-size: 14px;
+  margin-top: 16px;
+  padding: 12px 20px;
+  font-size: 14.5px;
+  font-weight: 600;
+  letter-spacing: normal;
 }
 
 .historyList {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
 .historyItem {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 14px;
+  padding: 14px 18px;
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(30, 41, 59, 0.4);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  font-size: 14px;
+  color: #E2E8F0;
 }
 
 .sessionGrid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
 }
 
 .sessionItem {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(30, 41, 59, 0.4);
   border-radius: 10px;
-  padding: 10px 14px;
-  border: 1px solid rgba(148, 163, 184, 0.08);
+  padding: 14px 18px;
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: #CBD5E1;
 }

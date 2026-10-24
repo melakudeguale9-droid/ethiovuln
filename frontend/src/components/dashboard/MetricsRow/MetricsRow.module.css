@@ -19,11 +19,10 @@
 
 .card {
   border-radius: 16px;
-  border: 1px solid rgba(30, 41, 59, 0.8);
-  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid #1E293B;
+  background: #111827;
   padding: 20px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
   position: relative;
   overflow: hidden;
   transition: all var(--transition-base);
@@ -35,41 +34,35 @@
 }
 
 .criticalCard {
-  border-color: rgba(136, 19, 55, 0.3);
+  border-color: #7F1D1D;
+  border-top: 3px solid #EF4444;
 }
 
 .criticalCard:hover {
-  border-color: rgba(239, 68, 68, 0.5);
+  border-color: #EF4444;
+  box-shadow: 0 4px 20px rgba(239, 68, 68, 0.2);
 }
 
 .glowBlob {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 96px;
-  height: 96px;
-  background: rgba(244, 63, 94, 0.1);
-  border-radius: 50%;
-  filter: blur(24px);
-  margin-right: -32px;
-  margin-top: -32px;
-  pointer-events: none;
+  display: none;
 }
 
 .label {
   color: #94a3b8;
-  font-size: 12px;
-  font-weight: 500;
+  font-size: 13.5px;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-bottom: 8px;
 }
 
 .value {
-  font-size: 24px;
-  font-weight: 700;
+  font-size: 36px;
+  font-weight: 800;
   color: #ffffff;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
+  line-height: 1.1;
+  font-family: var(--font-mono);
 }
 
 .criticalValue {
@@ -77,15 +70,16 @@
 }
 
 .subtext {
-  font-size: 12px;
-  color: #64748b;
+  font-size: 14px;
+  color: #94a3b8;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
 }
 
 .criticalSubtext {
-  color: rgba(251, 113, 133, 0.8);
+  color: #f87171;
+  font-weight: 600;
 }
 
 .pulseGreen {

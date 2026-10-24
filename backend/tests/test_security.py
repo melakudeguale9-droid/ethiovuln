@@ -88,6 +88,20 @@ class TestJWTTokens:
         assert payload["sub"] == user_id
         assert payload["email"] == "admin@ethiovuln.com"
         assert payload["type"] == "access"
+        assert payload.get("is_admin") is False
+
+    def test_create_access_token_with_is_admin(self):
+        """create_access_token should include is_admin claim in the decoded payload."""
+        from app.core.security import create_access_token, verify_access_token
+
+        user_id = str(uuid.uuid4())
+        token_default = create_access_token(user_id, "user@ethiovuln.com")
+        payload_default = verify_access_token(token_default)
+        assert payload_default["is_admin"] is False
+
+        token_admin = create_access_token(user_id, "admin@ethiovuln.com", is_admin=True)
+        payload_admin = verify_access_token(token_admin)
+        assert payload_admin["is_admin"] is True
 
     def test_verify_access_token_rejects_refresh(self):
         """verify_access_token should return None for a refresh token."""

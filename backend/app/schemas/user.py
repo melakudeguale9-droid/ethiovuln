@@ -12,6 +12,7 @@ class UserCreate(BaseModel):
     username: str = Field(..., min_length=3, max_length=100)
     password: str = Field(..., min_length=8, max_length=128)
     full_name: str | None = Field(None, max_length=255)
+    role: str = Field(default="Cyber Security Student", max_length=100)
 
 
 class UserLogin(BaseModel):
@@ -24,8 +25,11 @@ class UserResponse(BaseModel):
     email: str
     username: str
     full_name: str | None
-    is_active: bool
-    is_admin: bool
+    role: str = "Cyber Security Student"
+    subscription_tier: str = "Free"
+    trial_ends_at: datetime | None = None
+    is_active: bool = True
+    is_admin: bool = False
     tos_accepted_at: datetime | None
     created_at: datetime
 
@@ -45,3 +49,19 @@ class TokenRefresh(BaseModel):
 
 class AcceptTosRequest(BaseModel):
     accepted: bool = True
+
+
+class ChangePasswordRequest(BaseModel):
+    current_password: str
+    new_password: str
+
+
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr = Field(..., description="User's registered email address")
+
+
+class ResetPasswordRequest(BaseModel):
+    token: str = Field(..., description="Signed password reset token")
+    new_password: str = Field(..., min_length=8, max_length=128, description="New secure password")
+
+

@@ -2,114 +2,160 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .gateCard {
   padding: 24px;
   border: 1px solid rgba(0, 229, 255, 0.25);
   background: rgba(0, 229, 255, 0.03);
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .header {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 14px;
+  gap: 12px;
+  margin-bottom: 16px;
+  min-width: 0;
+  flex-wrap: wrap;
 }
 
 .shieldIcon {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
   background: rgba(0, 229, 255, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
-  color: #00e5ff;
+  flex-shrink: 0;
+  border: 1px solid rgba(0, 229, 255, 0.2);
 }
 
 .title {
-  font-size: 15px;
-  font-weight: 700;
+  font-size: 18px;
+  font-weight: 800;
   color: #f8fafc;
+  min-width: 0;
+  word-break: break-word;
 }
 
 .description {
-  font-size: 12px;
-  color: #94a3b8;
+  font-size: 14px;
+  color: #cbd5e1;
   line-height: 1.6;
-  margin-bottom: 16px;
+  margin-bottom: 18px;
+  min-width: 0;
+  word-break: break-word;
 }
 
 .gateList {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  font-size: 11px;
+  gap: 12px;
+  font-size: 13.5px;
+  min-width: 0;
 }
 
 .blockedItem {
-  padding: 8px 12px;
-  border-radius: 6px;
-  background: rgba(5, 8, 17, 0.5);
-  border: 1px solid rgba(148, 163, 184, 0.08);
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: rgba(5, 8, 17, 0.6);
+  border: 1px solid rgba(244, 63, 94, 0.2);
+  min-width: 0;
+  overflow: hidden;
 }
 
 .blockedTitle {
-  color: #ef4444;
-  font-weight: 700;
+  font-size: 14px;
+  color: #f43f5e;
+  font-weight: 800;
+  min-width: 0;
+  word-break: break-word;
 }
 
 .blockedDetail {
-  color: #64748b;
+  font-size: 13px;
+  color: #94a3b8;
   font-family: var(--font-mono);
-  margin-top: 2px;
+  margin-top: 4px;
+  line-height: 1.45;
+  min-width: 0;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .verifiedItem {
-  padding: 8px 12px;
-  border-radius: 6px;
-  background: rgba(16, 185, 129, 0.05);
-  border: 1px solid rgba(16, 185, 129, 0.2);
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: rgba(16, 185, 129, 0.06);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  min-width: 0;
+  overflow: hidden;
 }
 
 .verifiedTitle {
+  font-size: 14px;
   color: #10b981;
-  font-weight: 700;
+  font-weight: 800;
+  min-width: 0;
+  word-break: break-word;
 }
 
 .verifiedDetail {
-  color: #94a3b8;
-  margin-top: 2px;
+  font-size: 13px;
+  color: #cbd5e1;
+  margin-top: 4px;
+  line-height: 1.45;
+  min-width: 0;
+  word-break: break-word;
 }
 
 .classesCard {
-  padding: 22px;
+  padding: 24px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .classesTitle {
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 16.5px;
+  font-weight: 800;
   color: #f8fafc;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
+  min-width: 0;
+  word-break: break-word;
 }
 
 .classesList {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  font-size: 12px;
+  gap: 10px;
+  font-size: 13.5px;
+  min-width: 0;
 }
 
 .classItem {
   display: flex;
   align-items: center;
-  gap: 8px;
-  color: #94a3b8;
+  gap: 10px;
+  color: #cbd5e1;
+  font-weight: 500;
+  min-width: 0;
+  word-break: break-word;
 }
 
 .bullet {
   color: #00e5ff;
-  font-size: 10px;
+  font-size: 12px;
+  flex-shrink: 0;
 }

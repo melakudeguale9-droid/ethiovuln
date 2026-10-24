@@ -5,10 +5,8 @@
 .missionCard {
   padding: 32px 28px;
   border-radius: 14px;
-  background: rgba(17, 24, 39, 0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid #1F2937;
+  background: #111827;
+  border: 1px solid #1E293B;
   margin-bottom: 32px;
   transition: all 300ms ease-in-out;
 }
@@ -48,7 +46,7 @@
   font-weight: 800;
   color: #F9FAFB;
   margin-bottom: 12px;
-  letter-spacing: -0.02em;
+  letter-spacing: 0.01em;
 }
 
 .highlight {

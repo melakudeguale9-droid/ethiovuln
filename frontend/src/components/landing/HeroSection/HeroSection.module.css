@@ -32,7 +32,6 @@
   font-weight: 600;
   color: var(--accent-cyan);
   letter-spacing: 0.04em;
-  backdrop-filter: blur(8px);
   transition: all var(--transition-base);
 }
 
@@ -52,10 +51,13 @@
 }
 
 @keyframes pulseDot {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: scale(1);
     opacity: 1;
   }
+
   50% {
     transform: scale(1.4);
     opacity: 0.7;
@@ -75,9 +77,9 @@
 .headline {
   font-size: clamp(36px, 6vw, 68px);
   font-weight: 800;
-  line-height: 1.1;
+  line-height: 1.25;
   margin-bottom: 24px;
-  letter-spacing: -0.03em;
+  letter-spacing: 0.01em;
 }
 
 .subheadline {

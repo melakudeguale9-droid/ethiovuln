@@ -1,27 +1,20 @@
 // EthioVuln — Root Layout
 
 import type { Metadata } from 'next';
-import { Inter, JetBrains_Mono } from 'next/font/google';
+import Script from 'next/script';
 import './globals.css';
+import './ethiovuln-light-theme.css';
+import './ethiovuln-dark-theme.css';
+import { ThemeProvider } from '@/hooks/useTheme';
+import { PublicAiWidget } from '@/components/ai';
 
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
-  display: 'swap',
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ['latin'],
-  variable: '--font-jetbrains',
-  display: 'swap',
-});
 
 export const metadata: Metadata = {
   title: {
-    default: 'Enterprise Security Suite — Cyber Security Scanner Web Application',
-    template: '%s | Enterprise Security Suite',
+    default: 'EthioVuln — Automated Web Vulnerability Assessment Platform',
+    template: '%s | EthioVuln',
   },
-  description: 'Enterprise Security Suite (EthioVuln) is an automated web vulnerability assessment platform integrating Nuclei, OWASP ZAP, and custom fuzzing engines with real-time telemetry and PDF reporting.',
+  description: 'EthioVuln is an automated web vulnerability assessment platform integrating Nuclei, OWASP ZAP, and custom fuzzing engines with real-time telemetry and PDF reporting.',
   keywords: ['EthioVuln', 'DAST', 'vulnerability scanner', 'penetration testing', 'Nuclei', 'OWASP ZAP', 'security testing', 'Ethiopia', 'web security'],
   authors: [{ name: 'Melaku Deguale', url: 'https://github.com/melakudeguale9-droid' }],
   creator: 'Melaku Deguale',
@@ -74,21 +67,45 @@ export const metadata: Metadata = {
   },
 };
 
-import { SpotlightBackground } from '@/components/ui/SpotlightBackground';
-
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
-      <body className="antialiased" suppressHydrationWarning>
-        <div className="animated-bg" />
-        <SpotlightBackground />
-        <div style={{ position: 'relative', zIndex: 1 }}>
-          {children}
-        </div>
+    <html lang="en" className="font-sans overflow-x-hidden w-full max-w-full" suppressHydrationWarning>
+      <body className="bg-[#090D16] text-slate-100 antialiased selection:bg-cyan-500/20 selection:text-cyan-200 overflow-x-hidden w-full max-w-[100vw] min-w-0" suppressHydrationWarning>
+        <Script
+          id="theme-initializer"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var STORAGE_KEY = 'ethiovuln-theme';
+                  var saved = localStorage.getItem(STORAGE_KEY);
+                  var systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                  var theme = (saved === 'dark' || saved === 'light') ? saved : (systemDark ? 'dark' : 'light');
+                  document.documentElement.dataset.theme = theme;
+                  document.documentElement.style.colorScheme = theme;
+                  if (theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                  } else {
+                    document.documentElement.classList.remove('dark');
+                  }
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
+        <Script src="/theme-toggle.js" strategy="afterInteractive" />
+        <ThemeProvider>
+          <div className="animated-bg" />
+          <div className="relative z-[1] w-full max-w-full overflow-x-hidden min-w-0">
+            {children}
+          </div>
+          <PublicAiWidget />
+        </ThemeProvider>
       </body>
     </html>
   );

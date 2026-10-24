@@ -1,0 +1,46 @@
+name: Deploy to VPS
+
+on:
+  workflow_run:
+    workflows: ["CI Pipeline"]
+    types:
+      - completed
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy to VPS
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - name: Deploy to VPS via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          passphrase: ${{ secrets.VPS_PASSPHRASE }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          script_stop: true
+          script: |
+            echo "=== Connecting to VPS and updating repository ==="
+            cd ${{ secrets.VPS_PROJECT_PATH || '/home/ubuntu/ethiovuln' }}
+            git checkout main
+            git pull origin main
+
+            echo "=== Rebuilding and updating Docker containers (Workers & DB) ==="
+            if command -v docker-compose &> /dev/null; then
+              docker-compose up -d --build
+            else
+              docker compose up -d --build
+            fi
+
+            echo "=== Deployment Status ==="
+            if command -v docker-compose &> /dev/null; then
+              docker-compose ps
+            else
+              docker compose ps
+            fi

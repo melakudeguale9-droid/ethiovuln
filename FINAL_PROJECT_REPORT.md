@@ -7,7 +7,7 @@
 |:---|:---|
 | **Project Title** | **EthioVuln — Automated Web Vulnerability Assessment & Management Platform** |
 | **Track / Option** | Option A: Individual Product (Web Application Security Products) |
-| **Developer** | Melaku Deguale (Ethical Hacker & Security Researcher) |
+| **Developer** | Melaku Deguale (Cyber Security Student & Security Researcher) |
 | **Institution** | Information Network Security Administration (INSA) Cyber Security Bootcamp |
 | **Target Audience** | Bootcamp Mentors, Security Evaluators & Technical Defense Committee |
 | **Version & Status** | Version 1.0.0 (Production-Ready MVP — 131/131 Tests Passing) |

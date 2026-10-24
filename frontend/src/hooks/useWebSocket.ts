@@ -42,9 +42,22 @@ export function useWebSocket(scanId: string | null) {
     if (!scanId) return;
 
     const token = localStorage.getItem('access_token');
-    if (!token) return;
+    const getBaseUrl = () => {
+      if (WS_BASE_URL && (WS_BASE_URL.startsWith('ws://') || WS_BASE_URL.startsWith('wss://'))) {
+        return WS_BASE_URL;
+      }
+      if (typeof window !== 'undefined') {
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const hostname = window.location.hostname;
+        if (hostname === 'localhost' || hostname === '127.0.0.1') {
+          return `${protocol}//${hostname}:8000`;
+        }
+        return `${protocol}//${window.location.host}`;
+      }
+      return 'ws://localhost:8000';
+    };
 
-    const wsUrl = `${WS_BASE_URL}/api/ws/scans/${scanId}?token=${token}`;
+    const wsUrl = `${getBaseUrl()}/api/ws/scans/${scanId}?token=${token}`;
 
     try {
       const ws = new WebSocket(wsUrl);
@@ -76,10 +89,21 @@ export function useWebSocket(scanId: string | null) {
               break;
 
             case 'vulnerability':
-              setState(prev => ({
-                ...prev,
-                vulnerabilities: [...prev.vulnerabilities, msg.data as Vulnerability],
-              }));
+              setState(prev => {
+                const incoming = msg.data as Vulnerability;
+                if (!incoming || (!incoming.title && !incoming.id)) return prev;
+                const exists = prev.vulnerabilities.some(
+                  v => (v.id && incoming.id && v.id === incoming.id) ||
+                       (v.title === incoming.title &&
+                        (v.url || v.target_url) === (incoming.url || incoming.target_url) &&
+                        v.severity === incoming.severity)
+                );
+                if (exists) return prev;
+                return {
+                  ...prev,
+                  vulnerabilities: [...prev.vulnerabilities, incoming],
+                };
+              });
               break;
 
             case 'status':

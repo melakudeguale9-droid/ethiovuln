@@ -87,37 +87,30 @@ function NewScanContent() {
   };
 
   return (
-    <div>
-      <PageNav backHref="/dashboard/scans" backLabel="Scans" title="Launch Assessment" />
+    <div className="w-full max-w-full overflow-x-hidden min-w-0">
+      <PageNav backHref="/dashboard/scans" backLabel="Scans" />
 
       {/* Header */}
-      <div style={{ marginBottom: 28 }}>
+      <div className="w-full max-w-full overflow-x-hidden min-w-0" style={{ marginBottom: 28 }}>
         <h1
           style={{
-            fontSize: 26,
+            fontSize: 30,
             fontWeight: 800,
             color: '#F8FAFC',
             letterSpacing: '-0.02em',
-            marginBottom: 6,
+            marginBottom: 8,
           }}
         >
           New Vulnerability Assessment
         </h1>
-        <p style={{ color: '#94A3B8', fontSize: 13 }}>
+        <p style={{ color: '#94A3B8', fontSize: 16, lineHeight: 1.5 }}>
           Configure target parameters and select automated scanning scopes from the 8-tier assessment taxonomy
         </p>
       </div>
 
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'minmax(0, 1fr) 340px',
-          gap: 24,
-          alignItems: 'start',
-        }}
-      >
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start w-full max-w-full">
         {/* Main Column */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+        <div className="lg:col-span-8 flex flex-col gap-6 min-w-0 w-full">
           {error && <Alert type="error">{error}</Alert>}
 
           {/* 1. Target URL Input */}
@@ -127,7 +120,7 @@ function NewScanContent() {
           />
 
           {/* 2. Assessment Modes (Categories 1 through 8) */}
-          <div className="glass-card" style={{ padding: 24 }}>
+          <div className="glass-card overflow-hidden" style={{ padding: 24 }}>
             <AssessmentModes
               categories={categories}
               selectedCategoryId={selectedCategoryId}
@@ -158,7 +151,7 @@ function NewScanContent() {
               <button
                 className="btn-glow btn-glow-cyan"
                 onClick={handleStartScan}
-                style={{ width: '100%', padding: '14px', fontSize: 15, fontWeight: 700 }}
+                style={{ width: '100%', padding: '16px', fontSize: 16.5, fontWeight: 700 }}
               >
                 Proceed to Launch {activeCategory.title} →
               </button>
@@ -167,7 +160,9 @@ function NewScanContent() {
         </div>
 
         {/* Right Column: SSRF Gate and Scope Notice */}
-        <SsrfGateNotice />
+        <div className="lg:col-span-4 min-w-0 w-full">
+          <SsrfGateNotice />
+        </div>
       </div>
 
       {/* Legal Authorization Disclaimer Modal */}

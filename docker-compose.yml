@@ -13,7 +13,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U dast -d dast_db"]
+      test: [ "CMD-SHELL", "pg_isready -U dast -d dast_db" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -29,7 +29,7 @@ services:
       - redis_data:/data
     command: redis-server --appendonly yes
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: [ "CMD", "redis-cli", "ping" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -42,14 +42,9 @@ services:
     ports:
       - "8080:8080"
     command: >
-      zap.sh -daemon
-      -host 0.0.0.0
-      -port 8080
-      -config api.addrs.addr.name=.*
-      -config api.addrs.addr.regex=true
-      -config api.key=${ZAP_API_KEY:-changeme}
+      zap.sh -daemon -host 0.0.0.0 -port 8080 -config api.addrs.addr.name=.* -config api.addrs.addr.regex=true -config api.key=${ZAP_API_KEY:-changeme}
     healthcheck:
-      test: ["CMD-SHELL", "curl -sf -H 'X-ZAP-API-Key: ${ZAP_API_KEY:-changeme}' http://localhost:8080/JSON/core/view/version/ || exit 1"]
+      test: [ "CMD-SHELL", "curl -sf -H 'X-ZAP-API-Key: ${ZAP_API_KEY:-changeme}' http://localhost:8080/JSON/core/view/version/ || exit 1" ]
       interval: 30s
       timeout: 10s
       retries: 10
@@ -86,7 +81,7 @@ services:
       redis:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl -sf http://localhost:8000/api/health || exit 1"]
+      test: [ "CMD-SHELL", "curl -sf http://localhost:8000/api/health || exit 1" ]
       interval: 15s
       timeout: 5s
       retries: 5
@@ -130,7 +125,7 @@ services:
         DOCKER_BUILD: "1"
     container_name: dast_frontend
     ports:
-      - "3000:3000"
+      - "3000:10000"
     environment:
       NODE_ENV: production
     depends_on:

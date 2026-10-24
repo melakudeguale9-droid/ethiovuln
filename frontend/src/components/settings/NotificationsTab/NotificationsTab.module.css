@@ -1,5 +1,9 @@
+/* EthioVuln — Spacious NotificationsTab */
 .submitBtn {
   width: 100%;
-  margin-top: 16px;
-  font-size: 14px;
+  margin-top: 24px;
+  padding: 12px 20px;
+  font-size: 14.5px;
+  font-weight: 600;
+  letter-spacing: normal;
 }

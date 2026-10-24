@@ -25,8 +25,19 @@ class User(Base):
     )
     hashed_password: Mapped[str] = mapped_column(String(255), nullable=False)
     full_name: Mapped[str] = mapped_column(String(255), nullable=True)
+    role: Mapped[str] = mapped_column(
+        String(100), default="Cyber Security Student", server_default="Cyber Security Student", nullable=False
+    )
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
-    is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
+    is_admin: Mapped[bool] = mapped_column(
+        Boolean, default=False, server_default=func.false(), nullable=False
+    )
+    subscription_tier: Mapped[str] = mapped_column(
+        String(50), default="Free", server_default="Free", nullable=False
+    )
+    trial_ends_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
     tos_accepted_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True
     )

@@ -1,0 +1,243 @@
+/* ─── EthioVuln — Dark Cybersecurity Theme (ethiovuln-dark-theme.css) ────────── */
+/* Matching the reference design token specification */
+
+:root {
+  --cyber-bg: #080d1b;
+  --cyber-surface: #101628;
+  --cyber-surface-2: #0b1120;
+  --cyber-border: #263149;
+  --cyber-text: #f8fafc;
+  --cyber-muted: #a7b0c3;
+  --cyber-cyan: #11d9e8;
+  --cyber-cyan-dark: #0891b2;
+  --cyber-orange: #f97316;
+  --cyber-yellow: #fbbf24;
+  --cyber-yellow-hover: #f59e0b;
+}
+
+/* Apply this class to the main application wrapper, or use [data-theme="dark"] on html. */
+.cyber-dark,
+[data-theme="dark"] {
+  background: var(--cyber-bg);
+  color: var(--cyber-text);
+
+  /* Bridge to existing design tokens */
+  --bg-page: var(--cyber-bg);
+  --bg-surface: var(--cyber-surface);
+  --bg-muted: var(--cyber-surface-2);
+  --bg-sidebar: #060a15;
+  --text-heading: var(--cyber-text);
+  --text-body: var(--cyber-muted);
+  --text-muted: var(--cyber-muted);
+  --text-on-dark: var(--cyber-text);
+  --border: var(--cyber-border);
+  --border-strong: #33415e;
+  --color-primary-soft: rgba(17, 217, 232, 0.08);
+  --color-cyan-soft: rgba(17, 217, 232, 0.08);
+}
+
+[data-theme="dark"] body,
+[data-theme="dark"] .app-shell,
+[data-theme="dark"] .main-shell {
+  background: var(--cyber-bg);
+  color: var(--cyber-text);
+}
+
+[data-theme="dark"] .topbar {
+  background: rgba(8, 13, 27, .94);
+  border-color: var(--cyber-border);
+}
+
+[data-theme="dark"] .card,
+[data-theme="dark"] .scan-mode,
+[data-theme="dark"] .toast {
+  background: var(--cyber-surface);
+  border-color: var(--cyber-border);
+  color: var(--cyber-text);
+}
+
+[data-theme="dark"] h1,
+[data-theme="dark"] h2,
+[data-theme="dark"] h3,
+[data-theme="dark"] h4,
+[data-theme="dark"] .finding-title,
+[data-theme="dark"] .scan-mode-title {
+  color: var(--cyber-text);
+}
+
+[data-theme="dark"] .subtitle,
+[data-theme="dark"] .stat-label,
+[data-theme="dark"] .form-help,
+[data-theme="dark"] .breadcrumb,
+[data-theme="dark"] .finding-url {
+  color: var(--cyber-muted);
+}
+
+/* Orange announcement/banner */
+[data-theme="dark"] .announcement,
+[data-theme="dark"] .promo-banner {
+  background: var(--cyber-orange);
+  color: #111827;
+}
+
+/* Cyan brand and links */
+[data-theme="dark"] .brand-mark,
+[data-theme="dark"] .logo-mark {
+  background: linear-gradient(135deg, var(--cyber-cyan), #0ea5e9);
+  color: #06202a;
+  box-shadow: 0 8px 24px rgba(17, 217, 232, .28);
+}
+
+[data-theme="dark"] a,
+[data-theme="dark"] .eyebrow,
+[data-theme="dark"] .nav-link.active .nav-icon {
+  color: var(--cyber-cyan);
+}
+
+/* Yellow main CTA like the reference screenshot */
+[data-theme="dark"] .btn-primary,
+[data-theme="dark"] .start-scan,
+[data-theme="dark"] .start-free-scan {
+  background: var(--cyber-yellow);
+  border-color: var(--cyber-yellow);
+  color: #111827;
+  box-shadow: 0 8px 24px rgba(251, 191, 36, .2);
+}
+
+[data-theme="dark"] .btn-primary:hover,
+[data-theme="dark"] .start-scan:hover,
+[data-theme="dark"] .start-free-scan:hover {
+  background: var(--cyber-yellow-hover);
+  border-color: var(--cyber-yellow-hover);
+}
+
+[data-theme="dark"] .btn-secondary {
+  background: transparent;
+  border-color: var(--cyber-border);
+  color: var(--cyber-text);
+}
+
+[data-theme="dark"] .btn-secondary:hover {
+  border-color: var(--cyber-cyan);
+  color: var(--cyber-cyan);
+  background: rgba(17, 217, 232, .08);
+}
+
+/* Scan panel and selected scan mode */
+[data-theme="dark"] .scan-mode:hover,
+[data-theme="dark"] .scan-mode.selected {
+  background: rgba(17, 217, 232, .08);
+  border-color: var(--cyber-cyan);
+  box-shadow: 0 0 0 3px rgba(17, 217, 232, .08);
+}
+
+[data-theme="dark"] .form-input,
+[data-theme="dark"] .form-select,
+[data-theme="dark"] .form-textarea {
+  background: var(--cyber-surface-2);
+  border-color: var(--cyber-border);
+  color: var(--cyber-text);
+}
+
+[data-theme="dark"] .form-input:focus,
+[data-theme="dark"] .form-select:focus,
+[data-theme="dark"] .form-textarea:focus {
+  border-color: var(--cyber-cyan);
+  box-shadow: 0 0 0 3px rgba(17, 217, 232, .12);
+}
+
+[data-theme="dark"] .form-label {
+  color: var(--cyber-text);
+}
+
+[data-theme="dark"] .findings-table th {
+  background: var(--cyber-surface-2);
+  color: var(--cyber-muted);
+}
+
+[data-theme="dark"] .findings-table td {
+  border-color: var(--cyber-border);
+  color: var(--cyber-text);
+}
+
+[data-theme="dark"] .findings-table tr:hover td {
+  background: rgba(17, 217, 232, .05);
+}
+
+[data-theme="dark"] .progress {
+  background: var(--cyber-surface-2);
+}
+
+[data-theme="dark"] .progress-bar {
+  background: linear-gradient(90deg, var(--cyber-cyan), #38bdf8);
+}
+
+/* Add a subtle cyan glow to key elements */
+[data-theme="dark"] .hero,
+[data-theme="dark"] .dashboard-grid {
+  --glow-cyan: 0 0 42px rgba(17, 217, 232, .06);
+}
+
+/* ─── Hero Scan Card Dark Cyber Overrides ─── */
+[data-theme="dark"] .hero-scan-card {
+  background-color: var(--cyber-surface) !important;
+  border-color: var(--cyber-border) !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45), 0 0 30px rgba(17, 217, 232, 0.05) !important;
+}
+
+[data-theme="dark"] .hero-scan-card .bg-white {
+  background-color: var(--cyber-surface-2) !important;
+  border-color: var(--cyber-border) !important;
+}
+
+[data-theme="dark"] .hero-scan-card input,
+[data-theme="dark"] .hero-scan-card select {
+  color: var(--cyber-text) !important;
+}
+
+[data-theme="dark"] .hero-scan-card input::placeholder {
+  color: var(--cyber-muted) !important;
+}
+
+/* Dark mode ambient backgrounds */
+[data-theme="dark"] .animated-bg {
+  background-color: var(--cyber-bg) !important;
+}
+
+/* ─── Navigation Dropdown Flyout (Dark Mode) ─────────────────────────────── */
+[data-theme="dark"] .nav-dropdown {
+  background-color: var(--cyber-surface) !important;
+  border-color: var(--cyber-border) !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 30px rgba(17, 217, 232, 0.05) !important;
+}
+
+[data-theme="dark"] .nav-dropdown .nav-dropdown-item {
+  color: inherit !important;
+}
+
+[data-theme="dark"] .nav-dropdown .nav-dropdown-item:hover {
+  background-color: #162035 !important;
+  border-color: #263149 !important;
+}
+
+[data-theme="dark"] .nav-dropdown-title {
+  color: var(--cyber-text) !important;
+}
+
+[data-theme="dark"] .nav-dropdown .nav-dropdown-item:hover .nav-dropdown-title {
+  color: var(--cyber-cyan) !important;
+}
+
+[data-theme="dark"] .nav-dropdown-desc {
+  color: var(--cyber-muted) !important;
+}
+
+[data-theme="dark"] .nav-dropdown .nav-dropdown-item:hover .nav-dropdown-desc {
+  color: #cbd5e1 !important;
+}
+
+[data-theme="dark"] .nav-dropdown-badge {
+  background-color: rgba(17, 217, 232, 0.12) !important;
+  color: var(--cyber-cyan) !important;
+  border-color: rgba(17, 217, 232, 0.28) !important;
+}

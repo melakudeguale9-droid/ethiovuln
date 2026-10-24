@@ -1,24 +1,32 @@
+/* EthioVuln — Spacious, High-Contrast ProfileTab */
 .roleBox {
-  margin-top: 8px;
-  padding: 10px 14px;
-  background: rgba(255, 255, 255, 0.03);
+  margin-top: 14px;
+  padding: 14px 18px;
+  background: rgba(30, 41, 59, 0.45);
   border-radius: 10px;
-  border: 1px solid rgba(148, 163, 184, 0.08);
+  border: 1px solid rgba(148, 163, 184, 0.16);
 }
 
 .roleLabel {
-  font-size: 11px;
-  color: #64748b;
-  margin-bottom: 2px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #94A3B8;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .roleValue {
-  font-size: 13px;
-  color: #f1f5f9;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: #00E5FF;
 }
 
 .submitBtn {
   width: 100%;
-  margin-top: 18px;
-  font-size: 14px;
+  margin-top: 24px;
+  padding: 12px 20px;
+  font-size: 14.5px;
+  font-weight: 600;
+  letter-spacing: normal;
 }

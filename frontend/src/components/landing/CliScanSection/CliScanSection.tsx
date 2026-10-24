@@ -86,7 +86,7 @@ export function CodeTerminal({ lines, headerRight }: CodeTerminalProps) {
         type="button"
         onClick={handleCopy}
         aria-label="Copy code block"
-        className="absolute bottom-3 right-3 px-2.5 py-1 rounded-md bg-slate-800/90 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-sans font-medium border border-slate-700/60 flex items-center gap-1.5 transition-all shadow-md backdrop-blur-sm"
+        className="absolute bottom-3 right-3 px-2.5 py-1 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white text-xs font-sans font-medium border border-slate-700 flex items-center gap-1.5 transition-all shadow-md"
       >
         {copied ? (
           <>
@@ -301,16 +301,16 @@ export function CliTerminalCard() {
   };
 
   return (
-    <div className="bg-[#111622] border border-slate-800 rounded-3xl p-5 sm:p-7 space-y-6 shadow-2xl">
+    <div className="bg-[#111827] border border-slate-800 rounded-3xl p-5 sm:p-7 space-y-6 shadow-2xl">
       {/* Tab Selector: Linux / macOS / Windows */}
-      <div className="bg-[#0B0F17] p-1.5 rounded-2xl border border-slate-800/80 grid grid-cols-3 gap-1">
+      <div className="bg-[#090D16] p-2 rounded-2xl border border-slate-800 grid grid-cols-3 gap-1.5">
         <button
           type="button"
           onClick={() => setActiveOs('linux')}
-          className={`py-2 px-3 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
+          className={`py-3 px-4 rounded-xl text-base sm:text-lg font-bold transition-all cursor-pointer ${
             activeOs === 'linux'
-              ? 'bg-[#1C2333] text-white shadow-sm'
-              : 'text-slate-400 hover:text-slate-200'
+              ? 'bg-slate-800 text-white shadow-sm'
+              : 'text-slate-300 hover:text-white'
           }`}
         >
           Linux instructions
@@ -318,10 +318,10 @@ export function CliTerminalCard() {
         <button
           type="button"
           onClick={() => setActiveOs('macos')}
-          className={`py-2 px-3 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
+          className={`py-3 px-4 rounded-xl text-base sm:text-lg font-bold transition-all cursor-pointer ${
             activeOs === 'macos'
-              ? 'bg-[#1C2333] text-white shadow-sm'
-              : 'text-slate-400 hover:text-slate-200'
+              ? 'bg-slate-800 text-white shadow-sm'
+              : 'text-slate-300 hover:text-white'
           }`}
         >
           macOS instructions
@@ -329,10 +329,10 @@ export function CliTerminalCard() {
         <button
           type="button"
           onClick={() => setActiveOs('windows')}
-          className={`py-2 px-3 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
+          className={`py-3 px-4 rounded-xl text-base sm:text-lg font-bold transition-all cursor-pointer ${
             activeOs === 'windows'
-              ? 'bg-[#1C2333] text-white shadow-sm'
-              : 'text-slate-400 hover:text-slate-200'
+              ? 'bg-slate-800 text-white shadow-sm'
+              : 'text-slate-300 hover:text-white'
           }`}
         >
           Windows instructions
@@ -341,7 +341,7 @@ export function CliTerminalCard() {
 
       {/* 1. Installation */}
       <div className="space-y-3">
-        <h3 className="text-sm sm:text-base font-bold text-slate-200">
+        <h3 className="text-base sm:text-lg font-bold text-slate-100">
           1. Installation
         </h3>
 
@@ -349,20 +349,20 @@ export function CliTerminalCard() {
 
         {/* Docker / Pip Alternative Sub-Terminal */}
         <div className="pt-2 space-y-2.5">
-          <p className="text-xs sm:text-sm text-slate-400">
+          <p className="text-base text-slate-300">
             If you have docker or pip installed, you can use them to get ev-scan:
           </p>
 
           <CodeTerminal
             lines={getPkgLines()}
             headerRight={
-              <div className="flex items-center gap-1 bg-[#080C14] p-0.5 rounded-md border border-slate-800">
+              <div className="flex items-center gap-1.5 bg-[#080C14] p-1 rounded-lg border border-slate-800">
                 <button
                   type="button"
                   onClick={() => setActivePkg('docker')}
-                  className={`px-2.5 py-0.5 rounded text-[11px] font-mono transition-colors ${
+                  className={`px-3 py-1 rounded text-base font-mono font-bold transition-colors cursor-pointer ${
                     activePkg === 'docker'
-                      ? 'bg-[#1C2333] text-white font-semibold'
+                      ? 'bg-[#1C2333] text-cyan-300 font-bold'
                       : 'text-slate-400 hover:text-slate-200'
                   }`}
                 >
@@ -371,9 +371,9 @@ export function CliTerminalCard() {
                 <button
                   type="button"
                   onClick={() => setActivePkg('pip')}
-                  className={`px-2.5 py-0.5 rounded text-[11px] font-mono transition-colors ${
+                  className={`px-3 py-1 rounded text-base font-mono font-bold transition-colors cursor-pointer ${
                     activePkg === 'pip'
-                      ? 'bg-[#1C2333] text-white font-semibold'
+                      ? 'bg-[#1C2333] text-cyan-300 font-bold'
                       : 'text-slate-400 hover:text-slate-200'
                   }`}
                 >
@@ -387,11 +387,11 @@ export function CliTerminalCard() {
 
       {/* 2. Usage */}
       <div className="space-y-3 pt-2">
-        <h3 className="text-sm sm:text-base font-bold text-slate-200">
+        <h3 className="text-base sm:text-lg font-bold text-slate-100">
           2. Usage
         </h3>
 
-        <p className="text-xs sm:text-sm text-slate-400">
+        <p className="text-base text-slate-300">
           Quickstart: Run the following command in your terminal/command line to find the vulnerabilities of your website.
         </p>
 
@@ -412,7 +412,7 @@ export function CliTerminalCard() {
           ]}
         />
 
-        <p className="text-xs sm:text-sm text-slate-400 pt-1">
+        <p className="text-base text-slate-300 pt-1">
           You can learn more options with the -h flag:
         </p>
 
@@ -441,8 +441,8 @@ interface CliScanSectionProps {
 
 export function CliScanSection({ onOpenComparisonModal }: CliScanSectionProps) {
   return (
-    <section id="cli-scan" className="relative bg-[#0B0F19] py-16 sm:py-24 border-t border-slate-800/80">
-      <div className="w-full max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-12">
+    <section id="cli-scan" className="relative bg-[#090D16] py-16 sm:py-24 border-t border-slate-800">
+      <div className="w-full max-w-full px-4 sm:px-8 lg:px-14 xl:px-20">
         <div className="flex items-start gap-6 lg:gap-10">
           
           {/* Vertical 10-Step Progress Rail (Dash 8 Active matching Screenshot) */}
@@ -464,16 +464,16 @@ export function CliScanSection({ onOpenComparisonModal }: CliScanSectionProps) {
             
             {/* Left Column: Headline, Description & Download CTAs */}
             <div className="lg:col-span-5 space-y-6 pt-2">
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-[1.12]">
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white tracking-normal leading-relaxed">
                 Use this tool from your command line interface
               </h2>
 
-              <p className="text-slate-400 text-sm sm:text-base leading-relaxed">
+              <p className="text-gray-150 text-base sm:text-lg leading-relaxed tracking-normal">
                 If you prefer it, we also provide a CLI version of our Website Vulnerability Scanner. Through the EthioVuln CLI, you can run{' '}
                 <button
                   type="button"
                   onClick={onOpenComparisonModal}
-                  className="text-slate-300 underline underline-offset-4 decoration-slate-600 hover:text-cyan-400 hover:decoration-cyan-400 transition-colors font-semibold"
+                  className="text-cyan-400 underline underline-offset-4 decoration-cyan-500/50 hover:text-cyan-300 hover:decoration-cyan-400 transition-colors font-bold cursor-pointer"
                 >
                   Light scans
                 </button>{' '}
@@ -481,22 +481,22 @@ export function CliScanSection({ onOpenComparisonModal }: CliScanSectionProps) {
               </p>
 
               {/* Platform Download Buttons */}
-              <div className="pt-2 flex flex-wrap items-center gap-3">
+              <div className="pt-2 flex flex-wrap items-center gap-4">
                 <a
                   href="/downloads/ethiovuln-cli-linux.tar.gz"
                   download
-                  className="px-5 py-2.5 rounded-xl bg-[#141923] border border-slate-700/80 hover:border-slate-500 hover:bg-[#1C2333] text-slate-200 font-semibold text-xs sm:text-sm transition-all inline-flex items-center gap-2 shadow-sm"
+                  className="px-6 py-3 rounded-xl bg-[#141923] border border-slate-700/80 hover:border-slate-500 hover:bg-[#1C2333] text-slate-200 font-bold text-base transition-all inline-flex items-center gap-2.5 shadow-sm cursor-pointer"
                 >
-                  <DownloadIcon className="w-4 h-4 text-slate-400" />
+                  <DownloadIcon className="w-5 h-5 text-slate-400" />
                   <span>Linux</span>
                 </a>
 
                 <a
                   href="/downloads/ethiovuln-cli-darwin.tar.gz"
                   download
-                  className="px-5 py-2.5 rounded-xl bg-[#141923] border border-slate-700/80 hover:border-slate-500 hover:bg-[#1C2333] text-slate-200 font-semibold text-xs sm:text-sm transition-all inline-flex items-center gap-2 shadow-sm"
+                  className="px-6 py-3 rounded-xl bg-[#141923] border border-slate-700/80 hover:border-slate-500 hover:bg-[#1C2333] text-slate-200 font-bold text-base transition-all inline-flex items-center gap-2.5 shadow-sm cursor-pointer"
                 >
-                  <DownloadIcon className="w-4 h-4 text-slate-400" />
+                  <DownloadIcon className="w-5 h-5 text-slate-400" />
                   <span>macOS</span>
                 </a>
               </div>

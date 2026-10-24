@@ -8,14 +8,14 @@ export function SocialConnect() {
       {/* Featured Photo Card */}
       <div className={styles.featuredCard}>
         <img
-          src="/profile.png"
+          src="/profile.png?v=2"
           alt="Melaku Deguale - Security Researcher"
           className={styles.featuredImage}
         />
         <div className={styles.featuredOverlay} />
         <div className={styles.featuredDetails}>
           <p className={styles.featuredName}>Melaku Deguale</p>
-          <p className={styles.featuredRole}>Ethical Hacker & Security Researcher</p>
+          <p className={styles.featuredRole}>Cyber Security Student &amp; Security Researcher</p>
         </div>
       </div>
 
@@ -27,14 +27,14 @@ export function SocialConnect() {
         <div>
           <p className={styles.badgeTitle}>EthioVuln Creator</p>
           <p className={styles.badgeDesc}>
-            Enterprise-grade vulnerability scanner built with Next.js & FastAPI
+            Enterprise-grade vulnerability scanner built with Next.js &amp; FastAPI
           </p>
         </div>
       </div>
 
       {/* Socials & Contact Box */}
       <div className={styles.socialBox}>
-        <h3 className={styles.socialHeading}>Contact & Social Media</h3>
+        <h3 className={styles.socialHeading}>Contact &amp; Social Media</h3>
         <div className={styles.socialList}>
           <a
             href={SOCIAL_LINKS.github.repoUrl}
@@ -71,20 +71,6 @@ export function SocialConnect() {
             </svg>
             <span>LinkedIn (Melaku Deguale)</span>
           </a>
-
-          {SOCIAL_LINKS.youtube.url && (
-            <a
-              href={SOCIAL_LINKS.youtube.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.socialLink}
-            >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.547 12 3.547 12 3.547s-7.505 0-9.377.503A3.014 3.014 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.503 9.376.503 9.376.503s7.505 0 9.377-.503a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-              </svg>
-              <span>YouTube Channel</span>
-            </a>
-          )}
         </div>
       </div>
     </div>

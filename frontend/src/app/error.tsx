@@ -18,7 +18,7 @@ export default function Error({
   return (
     <div style={{
       minHeight: '100vh',
-      background: '#0a0e1a',
+      background: '#090D16',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
@@ -34,18 +34,6 @@ export default function Error({
         inset: 0,
         backgroundImage: 'linear-gradient(rgba(255,0,64,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,0,64,0.03) 1px, transparent 1px)',
         backgroundSize: '40px 40px',
-        pointerEvents: 'none',
-      }} />
-
-      {/* Glow effect */}
-      <div style={{
-        position: 'absolute',
-        top: '30%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: 400,
-        height: 400,
-        background: 'radial-gradient(circle, rgba(255,0,64,0.06) 0%, transparent 70%)',
         pointerEvents: 'none',
       }} />
 
@@ -82,7 +70,7 @@ export default function Error({
 
         <p style={{
           fontSize: 15,
-          color: '#94a3b8',
+          color: '#CBD5E1',
           lineHeight: 1.7,
           marginBottom: 36,
         }}>
@@ -92,14 +80,14 @@ export default function Error({
         {/* Error digest for debugging */}
         {error.digest && (
           <div style={{
-            background: 'rgba(255,255,255,0.03)',
-            border: '1px solid rgba(148,163,184,0.1)',
+            background: '#111827',
+            border: '1px solid #334155',
             borderRadius: 6,
             padding: '8px 16px',
             marginBottom: 28,
             fontFamily: 'JetBrains Mono, monospace',
             fontSize: 11,
-            color: '#64748b',
+            color: '#94a3b8',
           }}>
             Error ID: {error.digest}
           </div>
@@ -131,8 +119,8 @@ export default function Error({
             alignItems: 'center',
             gap: 8,
             padding: '11px 24px',
-            background: 'rgba(255,255,255,0.05)',
-            border: '1px solid rgba(148,163,184,0.2)',
+            background: '#111827',
+            border: '1px solid #334155',
             color: '#f1f5f9',
             borderRadius: 8,
             textDecoration: 'none',

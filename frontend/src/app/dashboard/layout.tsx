@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AuthProvider, useAuth } from '@/hooks/useAuth';
 import { Sidebar } from '@/components/navigation/Sidebar';
-import Link from 'next/link';
+import { GlobalAiDock } from '@/components/ai';
 
 function DashboardShell({ children }: { children: React.ReactNode }) {
   const { user, loading, logout } = useAuth();
@@ -35,9 +35,9 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-200 flex flex-col md:flex-row antialiased">
+    <div className="min-h-screen bg-[#090D16] text-slate-100 font-sans flex flex-col antialiased w-full max-w-full overflow-x-hidden min-w-0 relative">
       {/* Mobile Top Header (Navbar) */}
-      <header className="md:hidden flex items-center justify-between px-4 py-3 bg-slate-900/95 backdrop-blur-md border-b border-slate-800 sticky top-0 z-50">
+      <header className="md:hidden flex items-center justify-between px-4 py-3 bg-[#090D16] border-b border-slate-800 sticky top-0 z-50 w-full">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-400 to-indigo-500 flex items-center justify-center font-bold text-slate-950 shadow-md">
             E
@@ -56,15 +56,21 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
       {mobileMenuOpen && (
         <div
           onClick={() => setMobileMenuOpen(false)}
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 md:hidden"
+          className="fixed inset-0 bg-black/75 z-30 md:hidden"
         />
       )}
 
-      {/* Sidebar Area */}
-      <div
-        className={`fixed inset-y-0 left-0 z-40 transform transition-transform duration-300 ease-in-out md:translate-x-0 md:static ${
-          mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+      {/* Sidebar Area — Stationary Fixed Desktop Sidebar & Slide-in Mobile Drawer */}
+      <aside
+        id="dashboard-sidebar"
+        className={`fixed inset-y-0 left-0 z-40 h-screen h-[100dvh] transition-transform duration-300 ease-in-out md:translate-x-0 ${mobileMenuOpen
+          ? "translate-x-0 visible pointer-events-auto block"
+          : "-translate-x-full invisible md:visible pointer-events-none md:pointer-events-auto max-md:hidden"
+          }`}
+        style={{
+          width: sidebarCollapsed ? '68px' : '240px',
+        }}
+        aria-label="Dashboard Navigation Sidebar"
       >
         <Sidebar
           user={user}
@@ -72,15 +78,20 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
           onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
           onLogout={logout}
         />
-      </div>
+      </aside>
 
-      {/* Main Content Area */}
-      <main className="flex-1 w-full min-w-0 transition-all duration-300" style={{ marginLeft: mobileMenuOpen ? 0 : (sidebarCollapsed ? '68px' : '240px') }} >
-        {/* We use inline style for desktop margin because Sidebar uses fixed position internally. Let's fix Sidebar later or handle it here via CSS class if Sidebar is fixed */}
-        <div className="max-w-5xl mx-auto w-full p-4 sm:p-6 lg:p-8">
+      {/* Main Content Area — Offset on desktop by the stationary fixed sidebar */}
+      <main
+        className={`w-full max-w-full min-w-0 overflow-x-hidden transition-all duration-300 pb-24 ${sidebarCollapsed ? 'md:pl-[68px]' : 'md:pl-[240px]'
+          }`}
+      >
+        <div className="w-full max-w-[1720px] mx-auto px-4 sm:px-6 lg:px-8 py-6 min-w-0 overflow-x-hidden">
           {children}
         </div>
       </main>
+
+      {/* ─── Global Fixed Persistent Floating AI Dock, Probe Card & Chat Assistant ─── */}
+      <GlobalAiDock />
     </div>
   );
 }

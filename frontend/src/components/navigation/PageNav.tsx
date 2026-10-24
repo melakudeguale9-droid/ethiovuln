@@ -33,6 +33,12 @@ export function PageNav({
         marginBottom: 24,
         padding: '10px 0',
         borderBottom: '1px solid rgba(148, 163, 184, 0.08)',
+        width: '100%',
+        maxWidth: '100%',
+        minWidth: 0,
+        flexWrap: 'wrap',
+        gap: 12,
+        boxSizing: 'border-box',
       }}
     >
       {/* Back button */}
@@ -44,14 +50,14 @@ export function PageNav({
               display: 'inline-flex',
               alignItems: 'center',
               gap: 6,
-              padding: '7px 16px',
+              padding: '8px 18px',
               borderRadius: 8,
               background: 'rgba(255, 255, 255, 0.04)',
               border: '1px solid rgba(148, 163, 184, 0.15)',
               color: '#94a3b8',
               textDecoration: 'none',
-              fontSize: 13,
-              fontWeight: 500,
+              fontSize: 14.5,
+              fontWeight: 600,
               transition: 'all 0.2s',
             }}
             onMouseOver={(e) => {
@@ -72,14 +78,14 @@ export function PageNav({
               display: 'inline-flex',
               alignItems: 'center',
               gap: 6,
-              padding: '7px 16px',
+              padding: '8px 18px',
               borderRadius: 8,
               background: 'rgba(255, 255, 255, 0.04)',
               border: '1px solid rgba(148, 163, 184, 0.15)',
               color: '#94a3b8',
               cursor: 'pointer',
-              fontSize: 13,
-              fontWeight: 500,
+              fontSize: 14.5,
+              fontWeight: 600,
               transition: 'all 0.2s',
             }}
             onMouseOver={(e) => {
@@ -98,7 +104,7 @@ export function PageNav({
 
       {/* Page title / breadcrumb */}
       {title && (
-        <span style={{ fontSize: 13, color: '#64748b', fontWeight: 500 }}>
+        <span style={{ fontSize: 15, color: '#94a3b8', fontWeight: 600 }}>
           {title}
         </span>
       )}
@@ -114,14 +120,14 @@ export function PageNav({
               display: 'inline-flex',
               alignItems: 'center',
               gap: 6,
-              padding: '7px 16px',
+              padding: '8px 18px',
               borderRadius: 8,
               background: 'rgba(0, 255, 136, 0.08)',
               border: '1px solid rgba(0, 255, 136, 0.2)',
               color: '#00ff88',
               textDecoration: 'none',
-              fontSize: 13,
-              fontWeight: 500,
+              fontSize: 14.5,
+              fontWeight: 600,
               transition: 'all 0.2s',
             }}
             onMouseOver={(e) => {

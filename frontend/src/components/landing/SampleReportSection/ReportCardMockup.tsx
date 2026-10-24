@@ -31,9 +31,6 @@ export function ReportCardMockup() {
 
   return (
     <div className="relative w-full max-w-[620px] mx-auto select-none">
-      {/* Ambient Cyan Backdrop Reflection */}
-      <div className="absolute -inset-2 bg-gradient-to-r from-cyan-500/10 via-sky-500/10 to-indigo-500/10 rounded-3xl blur-2xl pointer-events-none" />
-
       {/* Base White Sheet (Report Background) */}
       <div className="relative bg-white text-slate-900 rounded-2xl p-5 sm:p-7 shadow-2xl border border-slate-200">
         
@@ -51,7 +48,7 @@ export function ReportCardMockup() {
               </svg>
             </div>
             <div>
-              <span className="font-extrabold text-sm sm:text-base tracking-tight text-slate-900 leading-none block">
+              <span className="font-extrabold text-sm sm:text-base tracking-normal text-slate-900 leading-none block">
                 Ethio<span className="text-cyan-600">Vuln</span>
               </span>
               <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">
@@ -210,8 +207,8 @@ export function ReportCardMockup() {
               </div>
 
               {/* Data Row */}
-              <div className="col-span-3 font-mono text-cyan-600 truncate" title="https://pentest-tools.com/demo/vulnerabilities/rfi">
-                https://pentest-tools.com/demo/vulnerabilities/rfi
+              <div className="col-span-3 font-mono text-cyan-600 truncate" title="https://target-app.ethiovuln.io/vulnerabilities/rfi">
+                https://target-app.ethiovuln.io/vulnerabilities/rfi
               </div>
               <div className="col-span-2 font-mono font-bold text-slate-800">
                 GET

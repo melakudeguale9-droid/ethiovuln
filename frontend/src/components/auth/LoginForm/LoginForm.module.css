@@ -3,10 +3,9 @@
   width: 100%;
   max-width: 440px;
   border-radius: 16px;
-  background: rgba(17, 24, 39, 0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid #1F2937;
+  background: #111827;
+  border: 1px solid #1E293B;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
   transition: all 300ms ease-in-out;
 }
 
@@ -25,10 +24,30 @@
 
 .label {
   display: block;
-  font-size: 13px;
+  font-size: 13.5px;
   font-weight: 600;
   color: #f8fafc;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
+}
+
+.forgotRow {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 9px;
+  margin-bottom: 2px;
+}
+
+.forgotLink {
+  font-size: 14px;
+  font-weight: 500;
+  color: #00e5ff;
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.forgotLink:hover {
+  color: #38bdf8;
+  text-decoration: underline;
 }
 
 .passwordWrapper {
@@ -66,16 +85,20 @@
 .footerRow {
   margin-top: 24px;
   text-align: center;
-  font-size: 13px;
+  font-size: 15px;
   color: #94a3b8;
+  line-height: 1.5;
 }
 
 .registerLink {
   color: #00e5ff;
   font-weight: 600;
+  font-size: 15px;
   text-decoration: none;
+  transition: color var(--transition-fast);
 }
 
 .registerLink:hover {
+  color: #38bdf8;
   text-decoration: underline;
 }

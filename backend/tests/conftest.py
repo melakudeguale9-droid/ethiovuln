@@ -64,3 +64,19 @@ def sample_scan_data():
 def now_utc():
     """Return the current UTC time."""
     return datetime.now(timezone.utc)
+
+
+@pytest.fixture(autouse=True)
+def reset_rate_limiter():
+    """Reset rate limiter before each test so tests don't pollute each other's rate limits."""
+    try:
+        from app.core.rate_limit import limiter
+        limiter.limiter.storage.reset()
+    except Exception:
+        pass
+    yield
+    try:
+        from app.core.rate_limit import limiter
+        limiter.limiter.storage.reset()
+    except Exception:
+        pass

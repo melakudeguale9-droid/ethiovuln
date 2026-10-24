@@ -50,11 +50,20 @@ class Settings(BaseSettings):
     BACKEND_URL: str = "http://localhost:8000"
     FRONTEND_URL: str = "http://localhost:3000"
     DEBUG: bool = True
+    ENVIRONMENT: str = "development"
+    ENABLE_API_DOCS: bool = True
+    DOCS_USERNAME: str = "admin"
+    DOCS_PASSWORD: str = "ethiovuln_secret2026"
+    DOCS_REQUIRE_AUTH: bool = False
 
     # Fuzzer
     FUZZER_THREADS: int = 30
     FUZZER_TIMEOUT: int = 5
     FUZZER_RATE_LIMIT: float = 0.0
+
+    # Google GenAI / Gemini
+    GEMINI_API_KEY: str = ""
+    GEMINI_MODEL: str = "gemini-3.5-flash-lite"
 
     model_config = {
         "env_file": _ENV_FILE,

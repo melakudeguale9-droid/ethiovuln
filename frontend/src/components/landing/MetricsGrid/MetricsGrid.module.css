@@ -9,10 +9,8 @@
 .card {
   padding: 14px 18px;
   text-align: left;
-  border: 1px solid #1F2937;
-  background: rgba(17, 24, 39, 0.75);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid #1E293B;
+  background: #111827;
   border-radius: 12px;
   transition: all 300ms ease-in-out;
 }

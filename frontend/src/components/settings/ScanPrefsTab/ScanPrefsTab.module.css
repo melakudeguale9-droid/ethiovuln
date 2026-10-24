@@ -1,10 +1,18 @@
+/* EthioVuln — Spacious, High-Contrast ScanPrefsTab */
 .submitBtn {
   width: 100%;
-  margin-top: 16px;
-  font-size: 14px;
+  margin-top: 24px;
+  padding: 12px 20px;
+  font-size: 14.5px;
+  font-weight: 600;
+  letter-spacing: normal;
 }
 
 .rangeInput {
   width: 100%;
-  accent-color: #00ff88;
+  height: 8px;
+  accent-color: #00E5FF;
+  border-radius: 4px;
+  background: rgba(30, 41, 59, 0.6);
+  cursor: pointer;
 }

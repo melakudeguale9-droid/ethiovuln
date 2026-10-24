@@ -6,8 +6,7 @@ import uuid
 from datetime import datetime, timezone
 from urllib.parse import urlparse
 from fastapi import APIRouter, Depends, HTTPException, Request, status, Query, BackgroundTasks
-from slowapi import Limiter
-from slowapi.util import get_remote_address
+from app.core.rate_limit import limiter, RATE_LIMIT_SCAN_INITIATE, RATE_LIMIT_GENERAL
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, desc
 from sqlalchemy.orm import selectinload
@@ -21,11 +20,11 @@ from app.schemas.scan import (
     ScanListResponse,
     ScanDetailResponse,
 )
-from app.api.deps import get_current_user
+from app.schemas.vulnerability import VulnerabilityResponse
+from app.api.deps import get_current_user, require_active_subscription
 from app.core.target_verification import target_verifier
 
 router = APIRouter(prefix="/api/scans", tags=["Scans"])
-limiter = Limiter(key_func=get_remote_address)
 
 
 import logging
@@ -33,12 +32,12 @@ import logging
 logger = logging.getLogger(__name__)
 
 @router.post("", response_model=ScanResponse, status_code=201)
-@limiter.limit("10/minute")
+@limiter.limit(RATE_LIMIT_SCAN_INITIATE)
 async def create_scan(
     request: Request,
     data: ScanCreate,
     background_tasks: BackgroundTasks,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_active_subscription),
     db: AsyncSession = Depends(get_db),
 ):
     """Create and launch a new vulnerability scan."""

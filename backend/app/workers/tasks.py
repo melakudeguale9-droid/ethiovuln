@@ -22,11 +22,17 @@ def get_redis_client():
 
 
 def publish_update(scan_id: str, update_type: str, data: dict):
-    """Publish a real-time update to the scan's WebSocket channel."""
+    """Publish a real-time update to the scan's WebSocket channel and persist logs and findings."""
     try:
         r = get_redis_client()
         message = json.dumps({"type": update_type, "data": data})
         r.publish(f"scan:{scan_id}", message)
+        if update_type == "log":
+            r.rpush(f"scan:{scan_id}:logs", json.dumps(data))
+            r.expire(f"scan:{scan_id}:logs", 86400 * 7)
+        elif update_type == "vulnerability":
+            r.rpush(f"scan:{scan_id}:vulnerabilities", json.dumps(data))
+            r.expire(f"scan:{scan_id}:vulnerabilities", 86400 * 7)
         r.close()
     except Exception as e:
         logger.error(f"Failed to publish update for scan {scan_id}: {e}")
@@ -43,7 +49,7 @@ def publish_progress(scan_id: str, progress: int, stage: str = ""):
 
 
 def publish_vulnerability(scan_id: str, vuln: dict):
-    """Publish a new vulnerability finding to the scan's WebSocket channel."""
+    """Publish a new vulnerability finding to the scan's WebSocket channel in real-time."""
     publish_update(scan_id, "vulnerability", vuln)
 
 
@@ -67,7 +73,7 @@ def update_scan_in_db(scan_id: str, **kwargs):
 
 
 def save_vulnerability_to_db(scan_id: str, vuln_data: dict):
-    """Save a vulnerability finding to the database."""
+    """Save a vulnerability finding to the database and attach ID/scan_id."""
     from sqlalchemy import create_engine
     from sqlalchemy.orm import Session
     from app.models.vulnerability import Vulnerability, Severity, ScanSource
@@ -108,8 +114,12 @@ def save_vulnerability_to_db(scan_id: str, vuln_data: dict):
             )
             session.add(vuln)
             session.commit()
+            vuln_data["id"] = str(vuln.id)
+            vuln_data["scan_id"] = scan_id
+            if vuln.created_at:
+                vuln_data["created_at"] = vuln.created_at.isoformat()
         sync_engine.dispose()
-        logger.info(f"Saved vuln: {vuln_data.get('title')} [{vuln_data.get('severity')}]")
+        logger.info(f"Saved vuln: {vuln_data.get('title')} [{vuln_data.get('severity')}] id={vuln_data.get('id')}")
     except Exception as e:
         logger.error(f"FAILED to save vulnerability: {e} | data: {vuln_data.get('title')}")
 

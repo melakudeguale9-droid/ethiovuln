@@ -4,5 +4,7 @@ export * from './FeatureGrid';
 export * from './EngineShowcase';
 export * from './WorkflowSection';
 export * from './CtaSection';
+export * from './SolutionsSection';
+export * from './ServicesSection';
+export * from './ResourcesSection';
 export * from './Footer';
-

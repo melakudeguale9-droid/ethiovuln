@@ -97,6 +97,11 @@ export function LoginForm() {
               <PasswordToggleIcon show={showPassword} />
             </button>
           </div>
+          <div className={styles.forgotRow}>
+            <Link href="/forgot-password" className={styles.forgotLink}>
+              Forgot password?
+            </Link>
+          </div>
         </div>
 
         <button

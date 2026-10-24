@@ -30,55 +30,61 @@
 }
 
 .badgeText {
-  font-size: 11px;
-  font-weight: 700;
+  font-size: 13px;
+  font-weight: 800;
   color: #22d3ee;
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
 .title {
-  font-size: 24px;
-  font-weight: 700;
+  font-size: 30px;
+  font-weight: 800;
   color: #ffffff;
-  letter-spacing: -0.02em;
+  letter-spacing: 0.01em;
 }
 
 .subtitle {
   color: #94a3b8;
-  font-size: 14px;
-  margin-top: 4px;
+  font-size: 16px;
+  margin-top: 6px;
 }
 
 .actions {
   display: flex;
-  gap: 12px;
+  gap: 14px;
 }
 
 .launchBtn {
-  padding: 8px 16px;
-  background: #06b6d4;
-  color: #020617;
-  font-size: 14px;
-  font-weight: 600;
-  border-radius: 8px;
+  padding: 10px 22px;
+  background: #0284C7;
+  border: 1px solid #38BDF8;
+  color: #FFFFFF;
+  font-size: 15.5px;
+  font-weight: 700;
+  border-radius: 10px;
   text-decoration: none;
-  box-shadow: 0 0 15px rgba(6, 182, 212, 0.4);
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);
   transition: all var(--transition-base);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .launchBtn:hover {
-  background: #22d3ee;
+  background: #0369A1;
+  border-color: #00F0FF;
+  box-shadow: 0 6px 20px rgba(0, 240, 255, 0.3);
   transform: translateY(-1px);
 }
 
 .reportsBtn {
-  padding: 8px 16px;
+  padding: 10px 20px;
   border: 1px solid #334155;
   color: #cbd5e1;
-  font-size: 14px;
-  font-weight: 500;
-  border-radius: 8px;
+  font-size: 15.5px;
+  font-weight: 600;
+  border-radius: 10px;
   text-decoration: none;
   transition: all var(--transition-base);
 }

@@ -8,11 +8,11 @@ export function DashboardHeader() {
       <div>
         <div className={styles.badgeRow}>
           <span className={styles.pulseDot} />
-          <span className={styles.badgeText}>Security Operations Center</span>
+          <span className={styles.badgeText}>Live Telemetry</span>
         </div>
-        <h1 className={styles.title}>Dashboard Overview</h1>
+        <h1 className={styles.title}>Security Overview</h1>
         <p className={styles.subtitle}>
-          Real-time assessment telemetry and vulnerability tracking across all targets
+          Real-time vulnerability telemetry across target domains
         </p>
       </div>
 
@@ -21,7 +21,7 @@ export function DashboardHeader() {
           ＋ Launch Scan
         </Link>
         <Link href="/dashboard/reports" className={styles.reportsBtn}>
-          ◧ View Reports
+          ◧ Reports
         </Link>
       </div>
     </div>

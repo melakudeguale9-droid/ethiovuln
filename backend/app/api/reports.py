@@ -12,7 +12,7 @@ from sqlalchemy.orm import selectinload
 from app.database import get_db
 from app.models.user import User
 from app.models.scan import Scan, ScanStatus
-from app.api.deps import get_current_user
+from app.api.deps import get_current_user, require_active_subscription
 
 router = APIRouter(prefix="/api/reports", tags=["Reports"])
 
@@ -20,7 +20,7 @@ router = APIRouter(prefix="/api/reports", tags=["Reports"])
 @router.get("/{scan_id}/pdf")
 async def generate_pdf_report(
     scan_id: uuid.UUID,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_active_subscription),
     db: AsyncSession = Depends(get_db),
 ):
     """Generate and download a PDF executive summary for a completed scan."""

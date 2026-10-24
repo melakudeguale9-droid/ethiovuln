@@ -39,7 +39,7 @@ export function MetricsRow({
       <div className={styles.card}>
         <div className={styles.label}>Vulnerabilities Found</div>
         <div className={styles.value}>{loading ? '—' : totalVulns}</div>
-        <div className={styles.subtext}>Aggregate security issues</div>
+        <div className={styles.subtext}>Detected across scope</div>
       </div>
 
       {/* Critical & High Risks Card */}
@@ -50,7 +50,7 @@ export function MetricsRow({
           {loading ? '—' : criticalHighCount}
         </div>
         <div className={`${styles.subtext} ${styles.criticalSubtext}`}>
-          Immediate remediation required
+          Requires immediate action
         </div>
       </div>
 
@@ -58,7 +58,7 @@ export function MetricsRow({
       <div className={styles.card}>
         <div className={styles.label}>Target Domains</div>
         <div className={styles.value}>{loading ? '—' : uniqueTargets}</div>
-        <div className={styles.subtext}>Unique audited targets</div>
+        <div className={styles.subtext}>Audited endpoints</div>
       </div>
     </div>
   );

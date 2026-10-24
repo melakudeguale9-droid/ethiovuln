@@ -23,14 +23,21 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     return bcrypt.checkpw(plain_password.encode()[:72], hashed_password.encode())
 
 
-def create_access_token(user_id: str, email: str) -> str:
-    """Create a JWT access token."""
+def create_access_token(
+    user_id: str,
+    email: str,
+    role: str = "Cyber Security Student",
+    is_admin: bool = False,
+) -> str:
+    """Create a JWT access token with security role claim and admin flag."""
     expire = datetime.now(timezone.utc) + timedelta(
         minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
     )
     payload = {
         "sub": str(user_id),
         "email": email,
+        "role": role,
+        "is_admin": is_admin,
         "type": "access",
         "exp": expire,
         "iat": datetime.now(timezone.utc),
@@ -79,3 +86,26 @@ def verify_refresh_token(token: str) -> dict | None:
     if payload and payload.get("type") == "refresh":
         return payload
     return None
+
+
+def create_password_reset_token(user_id: str, email: str) -> str:
+    """Create a temporary JWT password reset token (valid for 30 minutes)."""
+    expire = datetime.now(timezone.utc) + timedelta(minutes=30)
+    payload = {
+        "sub": str(user_id),
+        "email": email,
+        "type": "password_reset",
+        "exp": expire,
+        "iat": datetime.now(timezone.utc),
+        "jti": str(uuid.uuid4()),
+    }
+    return jwt.encode(payload, settings.SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
+
+
+def verify_password_reset_token(token: str) -> dict | None:
+    """Verify a password reset token and return its payload if valid."""
+    payload = decode_token(token)
+    if payload and payload.get("type") == "password_reset":
+        return payload
+    return None
+

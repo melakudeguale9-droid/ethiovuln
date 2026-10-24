@@ -10,30 +10,30 @@
 }
 
 .warningIcon {
-  font-size: 20px;
+  font-size: 22px;
   color: #f59e0b;
 }
 
 .modalTitle {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 800;
   color: #f8fafc;
 }
 
 .modalSubtitle {
   color: #94a3b8;
-  font-size: 13px;
-  margin-bottom: 18px;
+  font-size: 15px;
+  margin-bottom: 20px;
 }
 
 .warningBox {
   background: rgba(245, 158, 11, 0.06);
   border: 1px solid rgba(245, 158, 11, 0.2);
   border-radius: 10px;
-  padding: 16px;
-  margin-bottom: 20px;
-  font-size: 12px;
-  color: #94a3b8;
+  padding: 18px;
+  margin-bottom: 22px;
+  font-size: 14px;
+  color: #cbd5e1;
   line-height: 1.7;
 }
 
@@ -43,18 +43,19 @@
 }
 
 .warningItem {
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
 .targetHighlight {
   color: #00e5ff;
   font-family: var(--font-mono);
+  font-weight: 700;
 }
 
 .tosLabel {
   display: flex;
   align-items: flex-start;
-  gap: 10px;
+  gap: 12px;
   margin-bottom: 24px;
   cursor: pointer;
   padding: 12px 14px;
@@ -65,11 +66,14 @@
 .tosCheckbox {
   accent-color: #00e5ff;
   margin-top: 3px;
+  width: 17px;
+  height: 17px;
 }
 
 .tosText {
-  font-size: 13px;
+  font-size: 14.5px;
   color: #f8fafc;
+  line-height: 1.5;
 }
 
 .btnRow {
@@ -79,12 +83,14 @@
 
 .cancelBtn {
   flex: 1;
-  padding: 11px 20px;
-  font-size: 13px;
+  padding: 13px 20px;
+  font-size: 15px;
+  font-weight: 700;
 }
 
 .launchBtn {
   flex: 1;
-  padding: 11px 20px;
-  font-size: 13px;
+  padding: 13px 20px;
+  font-size: 15px;
+  font-weight: 700;
 }

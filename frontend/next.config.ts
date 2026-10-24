@@ -21,7 +21,11 @@ try {
 const nextConfig: NextConfig = {
   output: "standalone",
 
-  allowedDevOrigins: ['172.29.192.1', '192.168.56.1', '192.168.1.*', '10.*.*.*'],
+  experimental: {
+    serverActions: {
+      allowedOrigins: ['172.29.192.1', '192.168.56.1', '192.168.1.*', '10.*.*.*'],
+    },
+  },
 
   async rewrites() {
     return [

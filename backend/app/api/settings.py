@@ -12,8 +12,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Request, UploadFile, File, status
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, EmailStr
-from slowapi import Limiter
-from slowapi.util import get_remote_address
+from app.core.rate_limit import limiter
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, delete
 from app.database import get_db
@@ -23,8 +22,16 @@ from app.models.scan import Scan
 from app.api.deps import get_current_user
 from app.core.security import hash_password, verify_password
 
+from app.schemas.settings import (
+    ProfileResponse,
+    ProfileUpdate,
+    PreferencesUpdate,
+    ApiKeyCreate,
+    SubscriptionResponse,
+    SubscriptionUpgradeRequest,
+)
+
 router = APIRouter(prefix="/api/settings", tags=["Settings"])
-limiter = Limiter(key_func=get_remote_address)
 
 
 # ─── Helper ──────────────────────────────────────────────────────────────────
@@ -42,57 +49,30 @@ async def get_or_create_preferences(user: User, db: AsyncSession) -> UserPrefere
     return prefs
 
 
-# ─── Schemas ─────────────────────────────────────────────────────────────────
-
-class ProfileUpdate(BaseModel):
-    full_name: Optional[str] = None
-    username: Optional[str] = None
-    email: Optional[EmailStr] = None
-
-
-class PreferencesUpdate(BaseModel):
-    default_scan_type: Optional[str] = None
-    default_scan_timeout: Optional[int] = None
-    default_fuzzer_threads: Optional[int] = None
-    auto_stop_on_critical: Optional[bool] = None
-    exclude_paths: Optional[str] = None
-    default_severity_filter: Optional[str] = None
-    items_per_page: Optional[int] = None
-    show_stats_cards: Optional[bool] = None
-    notify_scan_complete: Optional[bool] = None
-    notify_critical_finding: Optional[bool] = None
-    notify_email: Optional[bool] = None
-    report_include_low: Optional[bool] = None
-    report_company_name: Optional[str] = None
-
-
-class ApiKeyCreate(BaseModel):
-    name: str
-
-
 # ─── Profile ─────────────────────────────────────────────────────────────────
 
-@router.get("/profile")
+@router.get("/profile", response_model=ProfileResponse)
 async def get_profile(current_user: User = Depends(get_current_user)):
-    """Get current user profile."""
-    return {
-        "id": str(current_user.id),
-        "email": current_user.email,
-        "username": current_user.username,
-        "full_name": current_user.full_name,
-        "is_admin": current_user.is_admin,
-        "is_active": current_user.is_active,
-        "created_at": current_user.created_at.isoformat() if current_user.created_at else None,
-    }
+    """Get current user profile with security telemetry role."""
+    return ProfileResponse(
+        id=str(current_user.id),
+        email=current_user.email,
+        username=current_user.username,
+        full_name=current_user.full_name,
+        role=getattr(current_user, "role", "Cyber Security Student") or "Cyber Security Student",
+        is_admin=current_user.is_admin,
+        is_active=current_user.is_active,
+        created_at=current_user.created_at.isoformat() if current_user.created_at else None,
+    )
 
 
-@router.patch("/profile")
+@router.patch("/profile", response_model=ProfileResponse)
 async def update_profile(
     data: ProfileUpdate,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """Update user profile (name, username, email)."""
+    """Update user profile (name, username, email, role)."""
     if data.email and data.email != current_user.email:
         existing = await db.execute(select(User).where(User.email == data.email))
         if existing.scalar_one_or_none():
@@ -108,15 +88,21 @@ async def update_profile(
     if data.full_name is not None:
         current_user.full_name = data.full_name
 
+    if data.role is not None:
+        current_user.role = data.role.strip()
+
     await db.flush()
     await db.refresh(current_user)
-    return {
-        "id": str(current_user.id),
-        "email": current_user.email,
-        "username": current_user.username,
-        "full_name": current_user.full_name,
-        "is_admin": current_user.is_admin,
-    }
+    return ProfileResponse(
+        id=str(current_user.id),
+        email=current_user.email,
+        username=current_user.username,
+        full_name=current_user.full_name,
+        role=getattr(current_user, "role", "Cyber Security Student") or "Cyber Security Student",
+        is_admin=current_user.is_admin,
+        is_active=current_user.is_active,
+        created_at=current_user.created_at.isoformat() if current_user.created_at else None,
+    )
 
 
 # ─── Preferences ─────────────────────────────────────────────────────────────
@@ -357,3 +343,74 @@ async def delete_account(
     await db.delete(current_user)
     await db.flush()
     return {"message": "Account permanently deleted"}
+
+
+@router.get("/subscription", response_model=SubscriptionResponse)
+async def get_subscription_status(
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Get user's current subscription tier, trial status, and remaining days.
+    """
+    tier = getattr(current_user, "subscription_tier", "Free")
+    trial_ends = getattr(current_user, "trial_ends_at", None)
+    now = datetime.now(timezone.utc)
+
+    if getattr(current_user, "is_admin", False):
+        is_expired = False
+        days_remaining = 365
+        trial_ends_str = trial_ends.isoformat() if trial_ends else None
+    elif trial_ends:
+        diff = trial_ends - now
+        days_remaining = max(0, diff.days if diff.total_seconds() > 0 else 0)
+        is_expired = now > trial_ends and tier.strip().lower() in ("free", "trial")
+        trial_ends_str = trial_ends.isoformat()
+    elif current_user.created_at:
+        from datetime import timedelta
+        calculated_end = current_user.created_at + timedelta(days=7)
+        diff = calculated_end - now
+        days_remaining = max(0, diff.days if diff.total_seconds() > 0 else 0)
+        is_expired = now > calculated_end and tier.strip().lower() in ("free", "trial")
+        trial_ends_str = calculated_end.isoformat()
+    else:
+        days_remaining = 7
+        is_expired = False
+        trial_ends_str = None
+
+    return SubscriptionResponse(
+        subscription_tier=tier,
+        trial_ends_at=trial_ends_str,
+        is_trial_expired=is_expired,
+        days_remaining=days_remaining,
+        created_at=current_user.created_at.isoformat() if current_user.created_at else None,
+    )
+
+
+@router.post("/subscription/upgrade")
+async def upgrade_subscription(
+    data: SubscriptionUpgradeRequest,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Upgrade user subscription package (e.g. Monthly, Annual, Enterprise).
+    Restores full access to all core DAST features.
+    """
+    valid_tiers = ["Monthly", "Annual", "Pro Monthly", "Pro Annual", "Enterprise"]
+    selected = data.tier.strip()
+    match = next((vt for vt in valid_tiers if vt.lower() == selected.lower()), None)
+    if not match:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid subscription tier. Please choose from: {', '.join(valid_tiers)}",
+        )
+
+    current_user.subscription_tier = match
+    await db.flush()
+    await db.refresh(current_user)
+
+    return {
+        "message": f"Successfully activated {match} subscription package. All core security features are unlocked.",
+        "subscription_tier": current_user.subscription_tier,
+    }
+

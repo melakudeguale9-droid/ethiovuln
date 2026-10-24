@@ -49,17 +49,16 @@ export default function ReportsPage() {
   }
 
   return (
-    <div>
+    <div className="w-full max-w-full overflow-x-hidden min-w-0">
       <PageNav
         backHref="/dashboard"
         backLabel="Overview"
-        title="Reports"
         nextHref="/dashboard/scans/new"
         nextLabel="New Scan"
       />
 
       {/* Header */}
-      <div style={{ marginBottom: 28 }}>
+      <div className="w-full max-w-full overflow-x-hidden min-w-0" style={{ marginBottom: 28 }}>
         <h1 style={{ fontSize: 26, fontWeight: 700, marginBottom: 4 }}>
           <span className="text-gradient">◧ Reports</span>
         </h1>
@@ -112,36 +111,40 @@ export default function ReportsPage() {
       {/* Reports table */}
       {!loading && reports.length > 0 && (
         <div className="glass-card" style={{ overflow: 'hidden' }}>
-          {/* Table header */}
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 80px 80px 80px 80px 200px',
-              padding: '12px 20px',
-              borderBottom: '1px solid rgba(148,163,184,0.1)',
-              fontSize: 11,
-              fontWeight: 700,
-              color: '#64748b',
-              letterSpacing: '0.05em',
-            }}
-          >
-            <span>TARGET</span>
-            <span style={{ color: SEVERITY_CONFIG.critical.color }}>CRIT</span>
-            <span style={{ color: SEVERITY_CONFIG.high.color }}>HIGH</span>
-            <span style={{ color: SEVERITY_CONFIG.medium.color }}>MED</span>
-            <span style={{ color: SEVERITY_CONFIG.low.color }}>LOW</span>
-            <span>ACTION</span>
-          </div>
+          <div style={{ overflowX: 'auto', width: '100%' }}>
+            <div style={{ minWidth: 680 }}>
+              {/* Table header */}
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 80px 80px 80px 80px 200px',
+                  padding: '12px 20px',
+                  borderBottom: '1px solid rgba(148,163,184,0.1)',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  color: '#64748b',
+                  letterSpacing: '0.05em',
+                }}
+              >
+                <span>TARGET</span>
+                <span style={{ color: SEVERITY_CONFIG.critical.color }}>CRIT</span>
+                <span style={{ color: SEVERITY_CONFIG.high.color }}>HIGH</span>
+                <span style={{ color: SEVERITY_CONFIG.medium.color }}>MED</span>
+                <span style={{ color: SEVERITY_CONFIG.low.color }}>LOW</span>
+                <span>ACTION</span>
+              </div>
 
-          {reports.map((report, i) => (
-            <ReportCard
-              key={report.scan_id}
-              report={report}
-              onDownload={handleDownload}
-              isDownloading={downloading === report.scan_id}
-              isLast={i === reports.length - 1}
-            />
-          ))}
+              {reports.map((report, i) => (
+                <ReportCard
+                  key={report.scan_id}
+                  report={report}
+                  onDownload={handleDownload}
+                  isDownloading={downloading === report.scan_id}
+                  isLast={i === reports.length - 1}
+                />
+              ))}
+            </div>
+          </div>
         </div>
       )}
     </div>

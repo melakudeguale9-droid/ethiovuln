@@ -21,6 +21,7 @@ export default function ScanDetailPage() {
     scan,
     loading,
     ws,
+    status,
     isRunning,
     isCompleted,
     progress,
@@ -44,11 +45,10 @@ export default function ScanDetailPage() {
   }
 
   return (
-    <div>
+    <div className="w-full max-w-full overflow-x-hidden min-w-0">
       <PageNav
         backHref="/dashboard/scans"
         backLabel="Scans"
-        title={scan?.target_domain || 'Scan Telemetry'}
       />
 
       {/* ─── Header: Domain, Status Pill & Action Buttons ─────── */}
@@ -78,21 +78,18 @@ export default function ScanDetailPage() {
       />
 
       {/* ─── 2-Column Grid: Console Stream & Findings Accordion ── */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'minmax(340px, 1fr) minmax(380px, 1.2fr)',
-          gap: 24,
-          alignItems: 'start',
-        }}
-      >
-        <ConsoleStream logs={ws.logs} connected={ws.connected} />
-        <VulnerabilityAccordion
-          filteredVulns={filteredVulns}
-          selectedSeverity={selectedSeverity}
-          onClearFilter={() => setSelectedSeverity('all')}
-          isRunning={isRunning}
-        />
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start w-full max-w-full">
+        <div className="xl:col-span-5 min-w-0">
+          <ConsoleStream logs={ws.logs} connected={ws.connected} status={status} />
+        </div>
+        <div className="xl:col-span-7 min-w-0">
+          <VulnerabilityAccordion
+            filteredVulns={filteredVulns}
+            selectedSeverity={selectedSeverity}
+            onClearFilter={() => setSelectedSeverity('all')}
+            isRunning={isRunning}
+          />
+        </div>
       </div>
     </div>
   );

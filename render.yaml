@@ -21,6 +21,8 @@ services:
     runtime: python
     region: oregon
     plan: free
+    branch: main
+    autoDeploy: true
     rootDir: backend
     buildCommand: pip install -r requirements.txt
     startCommand: bash render-start.sh
@@ -68,6 +70,8 @@ services:
     runtime: node
     region: oregon
     plan: free
+    branch: main
+    autoDeploy: true
     rootDir: frontend
     buildCommand: npm install --include=dev && npm run build
     startCommand: npm run start
