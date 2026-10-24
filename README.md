@@ -4,7 +4,7 @@
 > Enterprise-grade Dynamic Application Security Testing (DAST) engineered for automated web reconnaissance, vulnerability discovery, CVSS v3.1 scoring, and executive reporting.
 
 [![CI Status](https://img.shields.io/badge/build-passing-brightgreen.svg)]()
-[![Backend Tests](https://img.shields.io/badge/pytest-198%2F198%20passed-10B981.svg)]()
+[![Backend Tests](https://img.shields.io/badge/pytest-202%2F202%20passed-10B981.svg)]()
 [![Frontend Unit Tests](https://img.shields.io/badge/vitest%20RTL-13%2F13%20passed-10B981.svg)]()
 [![Frontend E2E Tests](https://img.shields.io/badge/playwright-4%2F4%20passed-10B981.svg)]()
 [![Next.js](https://img.shields.io/badge/Next.js-15.1.0-00E5FF.svg)](https://nextjs.org/)
@@ -316,7 +316,7 @@ In adherence to the **OWASP API Security Top 10 (API8:2023 Security Misconfigura
 | `GET` | `/api/scans/{id}` | Scans | Inspect scan status, progress, and finding counts | Bearer Token |
 | `POST` | `/api/scans/{id}/stop` | Scans | Cancel/abort an active running assessment | Bearer Token |
 | `GET` | `/api/scans/{id}/vulnerabilities` | Scans | Query discovered vulnerabilities with severity filters | Bearer Token |
-| `GET` | `/api/scans/{id}/report` | Reports | Generate and download executive PDF report | Bearer Token |
+| `GET` | `/api/reports/{id}/pdf` | Reports | Generate and download executive PDF report | Bearer Token |
 | `GET` | `/api/settings/profile` | Settings | Retrieve user profile and contact details | Bearer Token |
 | `PATCH`| `/api/settings/profile` | Settings | Update user name, organization, or email | Bearer Token |
 | `GET` | `/api/settings/preferences` | Settings | Fetch dashboard theme and scan defaults | Bearer Token |
@@ -554,13 +554,14 @@ EthioVuln maintains rigorous test automation spanning backend unit & integration
 
 ### 1. Backend Testing (Pytest)
 
-The backend test suite contains **198 automated tests** covering:
+The backend test suite contains **202 automated tests** covering:
 - **Authentication & RBAC:** Password hashing, timing-safe validation, JWT claims, refresh token rotation, failed-login transaction isolation (`test_auth.py`, `test_security.py`).
 - **Authorization & Multi-Tenancy (IDOR):** Horizontal access control, resource ownership validation, cross-tenant scan isolation (`test_authorization_idor.py`).
 - **SSRF Protection Gate:** IP CIDRs, RFC 1918 subnets, cloud metadata (`169.254.169.254`), loopback filters, DNS rebind checks (`test_target_verification.py`).
 - **Deep Health & Observability:** Database (PostgreSQL) and Redis connectivity, connection pooling, degraded dependency reporting (`test_health.py`).
 - **Structured Logging & Exception Handling:** Structlog JSON formatting, contextual metadata injection (`request_id`, `user_id`, `endpoint`), traceback logging, and sanitized 500 error responses (`test_logging_and_errors.py`).
 - **Rate Limiting & Abuse Prevention:** SlowAPI tiered thresholds, Redis backends, rate limit header verification (`test_rate_limiting.py`).
+- **Executive PDF Report Compilation:** Validates ReportLab PDF generation, CVSS matrices, table styles, null resilience, and clean scan reports (`test_pdf_report.py`).
 - **API Documentation Hardening:** Validating `/api/docs`, `/api/redoc`, OpenAPI security components (`BearerAuth`, `ApiKeyAuth`), and production 404 lockout (`test_api_docs_hardening.py`).
 - **AI Intelligence Probes:** Gemini API connectivity, latency benchmarks, ping probes, fallback handling (`test_ai_ping.py`).
 - **Trial & Subscription Enforcement:** Subscription plan limits, trial expiration date math, 402 Payment Required gates (`test_trial_subscription.py`).
@@ -571,7 +572,7 @@ cd backend
 source venv/bin/activate
 pytest -v
 ```
-> **Status:** `198 / 198 passed (100% pass rate)`
+> **Status:** `202 / 202 passed (100% pass rate)`
 
 ---
 

@@ -10,7 +10,7 @@
 | **Developer** | Melaku Deguale (Cyber Security Student & Security Researcher) |
 | **Institution** | Information Network Security Administration (INSA) Cyber Security Bootcamp |
 | **Target Audience** | Bootcamp Mentors, Security Evaluators & Technical Defense Committee |
-| **Version & Status** | Version 1.0.0 (Production-Ready MVP — 131/131 Tests Passing) |
+| **Version & Status** | Version 1.0.0 (Production-Ready MVP — 202 Pytest Tests, 13 Vitest Tests, 4 Playwright E2E Tests: 219 Total Passing) |
 | **Repository** | [GitHub: melakudeguale9-droid/ethiovuln](https://github.com/melakudeguale9-droid/ethiovuln) |
 
 ---
@@ -48,7 +48,7 @@ The platform is designed around a decoupled, microservices-oriented architecture
 
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
-│                   Next.js 16 Web Dashboard (Port 3000)                 │
+│                   Next.js 15 Web Dashboard (Port 3000)                 │
 │              (React 19 / Turbopack / Tailwind CSS / WebSockets)        │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
@@ -85,17 +85,20 @@ The platform is designed around a decoupled, microservices-oriented architecture
 
 | Layer | Technology | Version | Purpose in EthioVuln |
 |:---|:---|:---|:---|
-| **Frontend Framework** | Next.js (App Router) | 16.2.3 | Server-rendered shell, glassmorphic UI, responsive data tables |
-| **Frontend Library** | React & TypeScript | 19.x / 5.x | Reactive UI components, strict compile-time type validation |
-| **Styling System** | Vanilla CSS + Tailwind | 4.x | Design tokens, glowing status indicators, responsive mobile drawers |
-| **Backend Framework** | FastAPI | 0.115.6 | Asynchronous high-throughput REST API with OpenAPI documentation |
-| **Asynchronous Engine** | Uvicorn / Asyncio | 0.34.0 | Non-blocking event loop execution |
+| **Frontend Framework** | Next.js (App Router) | 15.1.0 | Server-rendered shell, glassmorphic UI, responsive data tables |
+| **Frontend Library** | React & TypeScript | 19.0.0 / 5.x | Reactive UI components, strict compile-time type validation |
+| **Styling System** | Vanilla CSS + Tailwind | 3.4.1 | Design tokens, glowing status indicators, responsive mobile drawers |
+| **Backend Framework** | FastAPI | 0.115.0 | Asynchronous high-throughput REST API with OpenAPI documentation |
+| **Asynchronous Engine** | Uvicorn / Asyncio | 0.30.0 | Non-blocking event loop execution |
 | **Task Queue & Broker**| Celery + Redis | 5.4.0 / 7.2 | Distributed job distribution and WebSocket pub/sub telemetry |
-| **Database & ORM** | PostgreSQL + SQLAlchemy | 16 / 2.0.36 | Relational store for users, scans, findings, and Alembic migrations |
+| **Database & ORM** | PostgreSQL + SQLAlchemy | 16 / 2.0.52 | Relational store for users, scans, findings, and Alembic migrations |
+| **AI Threat Intelligence**| Google GenAI SDK (Gemini) | 1.x | Conversational AI assistant & automated code mitigation patch generation |
+| **Structured Logging** | structlog | 24.x | JSON structured logging with automated context injection & error sanitization |
 | **Crawling Engine** | OWASP ZAP Daemon | 2.14+ | Traditional and AJAX spidering, active injection fuzzing |
 | **Template Scanner** | ProjectDiscovery Nuclei | v3.x | Deterministic YAML template matching across 8,000+ CVEs |
 | **PDF Generation** | Python ReportLab | 4.2.5 | Native programmatic PDF rendering with CVSS charts |
-| **Containerization** | Docker & Compose | Multi-Stage | 5-container topology with non-root security privileges |
+| **Containerization** | Docker & Compose | Multi-Stage | 6-container topology with non-root security privileges |
+| **CI/CD Automation** | GitHub Actions & VPS Deploy | YAML | Automated test runs, migrations, and zero-downtime container deployments |
 
 ---
 
@@ -106,8 +109,8 @@ The development was structured into four two-week engineering sprints aligned wi
 ```
  Sprint 1: Weeks 1–2           Sprint 2: Weeks 3–4           Sprint 3: Weeks 5–6           Sprint 4: Weeks 7–8
 ┌───────────────────────┐     ┌───────────────────────┐     ┌───────────────────────┐     ┌───────────────────────┐
-│ • Architecture Design │     │ • ZAP & Nuclei Pipe   │     │ • Next.js 16 UI       │     │ • Juice Shop Audits   │
-│ • Docker Topology     │ ──► │ • CVSS v3.1 Engine    │ ──► │ • WebSocket Terminal  │ ──► │ • Pytest (131 Tests)  │
+│ • Architecture Design │     │ • ZAP & Nuclei Pipe   │     │ • Next.js 15 UI       │     │ • Juice Shop Audits   │
+│ • Docker Topology     │ ──► │ • CVSS v3.1 Engine    │ ──► │ • WebSocket Terminal  │ ──► │ • Pytest (202 Tests)  │
 │ • Database & Alembic  │     │ • SSRF Security Gate  │     │ • ReportLab PDF Export│     │ • Hardening & Defense │
 └───────────────────────┘     └───────────────────────┘     └───────────────────────┘     └───────────────────────┘
 ```
@@ -125,14 +128,15 @@ The development was structured into four two-week engineering sprints aligned wi
 * Built dynamic **CVSS v3.1 mathematical scoring** and mapped vulnerabilities to official **MITRE CWE** IDs.
 
 ### Phase 3: Dashboard Integration & Executive PDF Reporting (Weeks 5–6)
-* Engineered the Next.js 16 frontend with deep navy/slate glassmorphic aesthetics, profile selectors, and responsive navigation.
+* Engineered the Next.js 15 frontend with deep navy/slate glassmorphic aesthetics, profile selectors, and responsive navigation.
 * Implemented bi-directional **WebSocket telemetry** streaming live terminal logs, phase indicators, and percentage progress (0–100%) without page refreshing.
 * Built the automated **ReportLab PDF generator** producing executive cover pages, risk distribution matrices, and developer remediation blueprints.
 * Implemented user authentication with HS256 JWT tokens, bcrypt password hashing, timing-attack countermeasures, and SHA-256 hashed API keys.
 
 ### Phase 4: Testing, Refinement & Capstone Delivery (Weeks 7–8)
 * Conducted comprehensive validation against live testbeds (**OWASP Juice Shop** and **Acunetix Vulnweb**).
-* Built an automated test suite comprising **131 unit and integration tests** in `pytest` verifying all critical endpoints, security controls, and calculations.
+* Built an automated test suite comprising **202 unit and integration tests** in `pytest`, **13 Vitest unit tests**, and **4 Playwright E2E browser tests** (219 total tests).
+* Implemented enterprise structured JSON logging (`structlog`), sanitized global exception handling, and deep `/api/health` monitoring with UptimeRobot.
 * Cleaned and optimized repository hygiene, eliminated duplicate artifacts, and finalized technical defense documentation.
 
 ---
@@ -275,7 +279,7 @@ Every assessment successfully produced:
 | **1. Service Latency During Scans** | Running intensive DAST scans synchronously locked the HTTP server and blocked user requests. | Decoupled all audit routines into Celery background tasks with Redis pub/sub message brokers and WebSocket status updates. |
 | **2. Scanner Weaponization (SSRF)** | Malicious users could input `http://169.254.169.254` to steal cloud credentials via the scanner. | Built a 3-tier SSRF validation gate that performs pre-scan scheme checks, DNS resolution, and private RFC 1918/link-local CIDR blocking. |
 | **3. Subjective Vulnerability Severity** | Basic scanners assign arbitrary High/Medium labels without objective justification. | Built a CVSS v3.1 vector calculator deriving mathematically sound base scores mapped directly to MITRE CWE catalogs. |
-| **4. Docker Port & Memory Contention** | Coordinating 5 containers (Postgres, Redis, ZAP, FastAPI, Next.js) created port collisions and ZAP memory spikes. | Mapped explicit host ports (`5433:5432`, `8080:8080`), configured isolated bridge networks, and tuned JVM memory arguments in `docker-compose.yml`. |
+| **4. Docker Port & Memory Contention** | Coordinating 6 containers (Postgres, Redis, ZAP, FastAPI, Celery Worker, Next.js) created port collisions and ZAP memory spikes. | Mapped explicit host ports (`5433:5432`, `8080:8080`, `3000:10000`), configured isolated bridge networks, and tuned JVM memory arguments in `docker-compose.yml`. |
 | **5. Dual-Audience Reporting Need** | C-level managers need visual risk summaries, while software developers need exact code-level fixes. | Designed a dual-section PDF generator with high-level executive charts on page one and code remediation blueprints in the technical appendix. |
 
 ---
@@ -286,9 +290,12 @@ All required capstone deliverables for Option A have been completed, verified, a
 
 * [x] **Production Source Code:** Full-stack codebase hosted on GitHub with multi-container Docker orchestration.
 * [x] **Technical Documentation:** Comprehensive architecture diagrams, setup instructions, and endpoint references in [`README.md`](file:///home/Melaku/Downloads/ethiovuln-main/README.md).
-* [x] **Automated Test Suite:** 131/131 passing `pytest` unit and integration tests verifying security controls and calculation algorithms.
+* [x] **Automated Test Suite:** 202/202 passing `pytest` unit/integration tests, 13 Vitest unit tests, and 4 Playwright E2E browser tests (219 total tests passing).
+* [x] **AI Threat Intelligence (Gemini):** Multi-turn conversational security assistant and automated remediation patch generation.
+* [x] **CI/CD Pipeline Automation:** GitHub Actions CI (`ci.yml`) and VPS continuous deployment (`deploy-vps.yml`).
+* [x] **System Observability & Monitoring:** Structured JSON logging (`structlog`), global exception sanitization, and deep PostgreSQL/Redis health check (`/api/health`) with UptimeRobot guide (`MONITORING.md`).
 * [x] **Business Plan:** Commercialization strategy, market analysis, and SaaS freemium monetization model in [`BUSINESS_PLAN.md`](file:///home/Melaku/Downloads/ethiovuln-main/BUSINESS_PLAN.md).
-* [x] **Presentation Deck:** Executive slide deck outline for final capstone defense in [`PRESENTATION_SLIDES.md`](file:///home/Melaku/Downloads/ethiovuln-main/PRESENTATION_SLIDES.md).
+* [x] **Presentation Deck:** Executive slide deck for final capstone defense in [`PRESENTATION_SLIDES.md`](file:///home/Melaku/Downloads/ethiovuln-main/PRESENTATION_SLIDES.md).
 * [x] **Working Product Demo:** Functional UI with live target scanning, WebSocket terminal telemetry, and ReportLab PDF compilation.
 
 ---
@@ -300,5 +307,5 @@ The **EthioVuln** capstone project successfully fulfilled all evaluation require
 ### Future Roadmap
 1. **Automated Recurring Scans:** Cron-based continuous security monitoring and change detection.
 2. **Alerting Channels:** Native incident notifications via Telegram bots, Discord webhooks, and email.
-3. **AI-Assisted False-Positive Pruning:** LLM-assisted verification of findings and automated code pull request generation.
-4. **CI/CD Integration:** Official GitHub Actions and GitLab CI integrations for automated security gating in deployment pipelines.
+3. **Authenticated Application Scanning:** Session cookie injection and multi-step login sequence recording.
+4. **Team Workspaces & Multi-Tenancy:** Role-based access control (Admin, Analyst, Viewer) for enterprise organizations.

@@ -171,7 +171,7 @@ cd backend
 source venv/bin/activate
 pytest -v
 ```
-*Pass Rate: 178 / 178 tests passed.*
+*Pass Rate: 202 / 202 tests passed (100% pass rate).*
 
 ### Frontend Unit Tests (React Testing Library & Vitest)
 ```bash

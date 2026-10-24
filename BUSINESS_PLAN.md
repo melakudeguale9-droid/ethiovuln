@@ -69,7 +69,7 @@ EthioVuln fills the market gap between complex, expensive enterprise platforms a
 | Evaluation Criteria | Enterprise Commercial Scanners *(Burp Suite, Acunetix, Qualys)* | Open-Source CLI Tools *(Nuclei CLI, OWASP ZAP, Nikto)* | **EthioVuln Platform** |
 |:---|:---|:---|:---|
 | **Pricing & Payment** | Expensive ($3k–$15k+/yr) in foreign currency (USD) | Free, but requires self-hosting and manual maintenance | **Cost-effective local subscriptions (ETB via Telebirr / Chapa)** |
-| **User Experience** | Complex enterprise configuration and steep learning curve | Terminal/CLI only (high technical barrier) | **Intuitive glassmorphic Next.js 16 web dashboard** |
+| **User Experience** | Complex enterprise configuration and steep learning curve | Terminal/CLI only (high technical barrier) | **Intuitive glassmorphic Next.js 15 web dashboard** |
 | **Execution Architecture** | Heavy desktop application or proprietary cloud agents | Manual single-run scripts without orchestration | **Asynchronous Celery + Redis queue with real-time WebSockets** |
 | **Reporting Output** | Comprehensive enterprise compliance PDFs | Plain-text logs or raw JSON dumps | **Automated ReportLab PDF summaries & developer blueprints** |
 | **Deployment Ease** | Complex agent topology and infrastructure | Manual individual tool compilation | **Turnkey Docker Compose multi-container stack** |
@@ -109,17 +109,20 @@ EthioVuln utilizes a tiered freemium SaaS model complemented by enterprise on-pr
 
 EthioVuln is built on a modern, battle-tested microservices architecture:
 
-* **Frontend Dashboard:** Next.js 16 (React 19, Turbopack, TypeScript, Tailwind CSS), featuring a glassmorphic dark theme, real-time WebSocket console terminal, and responsive UI components.
-* **Backend REST API:** FastAPI (Python 3.11, Pydantic v2 validation, Uvicorn ASGI) delivering high-throughput asynchronous endpoints.
+* **Frontend Dashboard:** Next.js 15 (React 19, Turbopack, TypeScript, Tailwind CSS 3.4), featuring a glassmorphic dark theme, real-time WebSocket console terminal, interactive finding accordions, and responsive UI components.
+* **Backend REST API:** FastAPI 0.115.0 (Python 3.11, Pydantic v2 validation, Uvicorn ASGI) delivering high-throughput asynchronous endpoints.
 * **Asynchronous Task Queue:** Celery 5.4 distributed workers powered by Redis 7 for long-running, non-blocking scan execution.
 * **Relational Database:** PostgreSQL 16 managed via asynchronous SQLAlchemy 2.0 and Alembic schema migrations.
+* **AI Intelligence & Assistance:** Google GenAI SDK (Gemini) powering conversational threat intelligence, finding explanations, and automated mitigation code patches.
+* **Structured Observability & Logging:** Production-ready `structlog` formatting all logs into JSON with automatic context injection (`request_id`, `user_id`, `endpoint`, timestamps), paired with a global exception handler.
+* **Deep System Health Monitoring:** Dedicated `/api/health` multi-service probe actively verifying PostgreSQL pool latency and Redis message broker availability for third-party uptime monitoring (UptimeRobot).
 * **Scanning Engine Suite:**
   * **OWASP ZAP 2.14+ Daemon:** Active/passive crawler, spider, and injection payload tester.
   * **ProjectDiscovery Nuclei v3.x:** Fast YAML template matching against 8,000+ known CVEs.
-  * **Smart Content Fuzzer:** Custom asynchronous directory brute-forcing and HTTP security header analyzer.
-* **Reporting Module:** Native Python ReportLab 4.2 compiling publication-grade PDF documents with CVSS risk charts.
-* **Defense-in-Depth:** 3-Tier SSRF Protection Gate (Scheme whitelist, DNS resolver, private CIDR filtering) and non-root Docker containers.
-* **Infrastructure Orchestration:** Docker Compose multi-container stack and Render Cloud Blueprint (`render.yaml`).
+  * **Smart Content Fuzzer:** Custom asynchronous directory brute-forcing (153+ sensitive paths) and HTTP security header analyzer.
+* **Reporting Module:** Native Python ReportLab 4.2 compiling publication-grade PDF documents with CVSS risk charts, running headers/footers, and developer remediation blueprints.
+* **Defense-in-Depth:** 3-Tier SSRF Protection Gate (Scheme whitelist, DNS resolver, private RFC 1918 CIDR filtering) and non-root Docker containers.
+* **Infrastructure Orchestration:** Docker Compose multi-container stack, automated GitHub Actions CI/CD workflows, and Render Cloud Blueprint (`render.yaml`).
 
 ---
 
@@ -128,20 +131,23 @@ EthioVuln is built on a modern, battle-tested microservices architecture:
 ```
   Phase 1 (Completed)          Phase 2 (Months 1–3)         Phase 3 (Months 4–6)         Phase 4 (Months 7–12)
  ┌──────────────────────┐     ┌──────────────────────┐     ┌──────────────────────┐     ┌──────────────────────┐
- │ • Core DAST Engines  │     │ • Scan Scheduler     │     │ • AI-Assisted Filter │     │ • Enterprise VPC App │
- │ • Next.js 16 UI      │ ──► │ • Telegram Alerts    │ ──► │ • Chapa/Telebirr Pay │ ──► │ • Regional Expansion │
- │ • PDF Report Engine  │     │ • Team Multi-Tenancy │     │ • Auth Crawl Macros  │     │ • Compliance Modules │
- │ • SSRF Security Gate │     │ • API Key CI/CD Ext  │     │ • GitHub Action App  │     │ • ISO/PCI Checklists │
+ │ • Core DAST Engines  │     │ • Scan Scheduler     │     │ • Chapa/Telebirr Pay │     │ • Enterprise VPC App │
+ │ • Next.js 15 UI      │ ──► │ • Telegram Alerts    │ ──► │ • Auth Crawl Macros  │ ──► │ • Regional Expansion │
+ │ • AI Threat Chat     │     │ • Team Workspaces    │     │ • Advanced Fuzzing   │     │ • ISO/PCI Checklists │
+ │ • CI/CD & Deploy VPS │     │ • Multi-User RBAC    │     │ • Custom Templates   │     │ • Compliance Mapping │
  └──────────────────────┘     └──────────────────────┘     └──────────────────────┘     └──────────────────────┘
 ```
 
 ### Phase 1: Core Foundation & Platform MVP *(Completed)*
-* [x] Multi-engine scanning coordination (SQLi, XSS, CSRF, and security header checks).
-* [x] Asynchronous Celery + Redis scanning pipeline with live WebSocket console logs.
-* [x] Quantitative CVSS v3.1 scoring logic and MITRE CWE references.
-* [x] Automated ReportLab executive PDF generation with score visualization.
-* [x] 3-Tier SSRF protection gateway blocking loopback and private cloud metadata IP ranges.
-* [x] Complete multi-container Docker Compose topology and 131 automated unit/integration tests.
+* [x] **Multi-Engine Scanning Coordination:** Automated detection of SQLi, XSS, CSRF, and missing security headers.
+* [x] **Asynchronous Telemetry Pipeline:** Celery + Redis worker pool streaming live WebSocket terminal logs and progress (0–100%).
+* [x] **Quantitative Risk Scoring:** Standardized mathematical CVSS v3.1 base score calculations mapped to MITRE CWE catalogs.
+* [x] **Automated Executive PDF Reports:** Production ReportLab compiler with risk distribution tables and code remediation blueprints.
+* [x] **3-Tier SSRF Protection Gate:** Strict scheme, DNS, and CIDR filtering blocking loopback, RFC 1918, and cloud metadata IPs.
+* [x] **AI Threat Intelligence (Gemini):** Integrated multi-turn security assistant, latency ping probes, and automated code mitigation patches.
+* [x] **Enterprise Observability & Health Probing:** Structured JSON logging (`structlog`), global error sanitization, and deep PostgreSQL/Redis health check (`/api/health`).
+* [x] **Automated CI/CD Workflows:** GitHub Actions CI (`ci.yml`) and VPS continuous deployment (`deploy-vps.yml`).
+* [x] **Comprehensive Quality Assurance:** 202 automated backend pytest tests, 13 Vitest unit tests, and 4 Playwright E2E browser tests (219 total tests passing).
 
 ### Phase 2: Automation, Alerts & Commercialization *(Next 3 Months)*
 * [ ] **Automated Recurring Scans:** Cron-like scheduled weekly/monthly assessments.
@@ -150,9 +156,9 @@ EthioVuln is built on a modern, battle-tested microservices architecture:
 * [ ] **Local Payment Gateway:** Automated subscription onboarding via Chapa and Telebirr.
 
 ### Phase 3: Intelligence & Developer Ecosystem *(Next 6 Months)*
-* [ ] **AI-Assisted False-Positive Verification:** LLM-assisted verification and tailored code patch generation.
 * [ ] **Authenticated Application Scanning:** Session cookie injection and login sequence recording.
-* [ ] **CI/CD Pipeline Integrations:** Official GitHub Action and GitLab CI plugins for automated build gating.
+* [ ] **Advanced Crawl Macros:** Form filling and multi-step business logic sequence crawling.
+* [ ] **Custom Nuclei Template Studio:** In-dashboard editor for creating custom organization-specific vulnerability templates.
 
 ### Phase 4: Enterprise Scale & Regional Expansion *(Months 7–12)*
 * [ ] **On-Premise Enterprise Distribution:** Pre-configured virtual appliances for financial and enterprise air-gapped networks.
