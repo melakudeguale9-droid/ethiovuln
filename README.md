@@ -4,17 +4,18 @@
 > Enterprise-grade Dynamic Application Security Testing (DAST) engineered for automated web reconnaissance, vulnerability discovery, CVSS v3.1 scoring, and executive reporting.
 
 [![CI Status](https://img.shields.io/badge/build-passing-brightgreen.svg)]()
-[![Backend Tests](https://img.shields.io/badge/pytest-180%2F180%20passed-10B981.svg)]()
+[![Backend Tests](https://img.shields.io/badge/pytest-198%2F198%20passed-10B981.svg)]()
 [![Frontend Unit Tests](https://img.shields.io/badge/vitest%20RTL-13%2F13%20passed-10B981.svg)]()
 [![Frontend E2E Tests](https://img.shields.io/badge/playwright-4%2F4%20passed-10B981.svg)]()
 [![Next.js](https://img.shields.io/badge/Next.js-15.1.0-00E5FF.svg)](https://nextjs.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.115.6-009688.svg)](https://fastapi.tiangolo.com/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.115.0-009688.svg)](https://fastapi.tiangolo.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791.svg)](https://www.postgresql.org/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ---
 
-> 🚀 **Quick Start:** For a streamlined, step-by-step setup guide, see [**`QUICKSTART.md`**](QUICKSTART.md).
+> 🚀 **Quick Start:** For a streamlined, step-by-step setup guide, see [**`QUICKSTART.md`**](QUICKSTART.md).  
+> 📡 **Uptime Monitoring:** For external alerting with UptimeRobot, see [**`MONITORING.md`**](MONITORING.md).
 
 ## Table of Contents
 
@@ -33,15 +34,17 @@
 13. [Local Development Setup](#13-local-development-setup)
 14. [Docker Setup](#14-docker-setup)
 15. [Environment Variables Reference](#15-environment-variables-reference)
-16. [Testing Suite](#16-testing-suite)
+16. [Comprehensive Testing Suite](#16-comprehensive-testing-suite)
 17. [Production Build](#17-production-build)
-18. [Render Deployment Guide](#18-render-deployment-guide)
-19. [Render Free Tier vs. Local Docker Limitations](#19-render-free-tier-vs-local-docker-limitations)
-20. [Security Engineering & Hardening](#20-security-engineering--hardening)
-21. [Responsible Use & Ethics Policy](#21-responsible-use--ethics-policy)
-22. [Screenshots & Interface Previews](#22-screenshots--interface-previews)
-23. [Author & Social Links](#23-author--social-links)
-24. [License](#24-license)
+18. [Continuous Integration & Deployment (CI/CD)](#18-continuous-integration--deployment-cicd)
+19. [Render Deployment Guide](#19-render-deployment-guide)
+20. [Render Free Tier vs. Local Docker Limitations](#20-render-free-tier-vs-local-docker-limitations)
+21. [Security Engineering & Observability](#21-security-engineering--observability)
+22. [System Health & Uptime Monitoring](#22-system-health--uptime-monitoring)
+23. [Responsible Use & Ethics Policy](#23-responsible-use--ethics-policy)
+24. [Screenshots & Interface Previews](#24-screenshots--interface-previews)
+25. [Author & Social Links](#25-author--social-links)
+26. [License](#26-license)
 
 ---
 
@@ -62,7 +65,9 @@ Every assessment runs through a multi-tier SSRF validation gate, streams real-ti
 - **Executive PDF Reporting:** Automated report compilation powered by ReportLab, featuring severity distribution charts and remediation blueprints.
 - **Hardened Authentication:** JWT token rotation, bcrypt password hashing, timing-attack countermeasures, and isolated failed-login transaction commits.
 - **API Key Management:** User-scoped SHA-256 hashed API keys for headless CI/CD pipeline integration.
-- **Modern Cyber UI/UX:** Built with Next.js 16 (Turbopack), featuring deep navy/slate themes, subtle glassmorphism, responsive data tables, and zero cartoonish elements.
+- **Structured JSON Logging & Observability:** Production-ready `structlog` logging injecting `request_id`, `user_id`, `endpoint`, and timestamps into all events, paired with safe global exception handling.
+- **Deep Health Telemetry:** Multi-service dependency probing verifying PostgreSQL and Redis status and roundtrip latency.
+- **Modern Cyber UI/UX:** Built with Next.js 15 (Turbopack) and React 19, featuring deep navy/slate themes, subtle glassmorphism, responsive data tables, and zero cartoonish elements.
 
 ---
 
@@ -70,7 +75,7 @@ Every assessment runs through a multi-tier SSRF validation gate, streams real-ti
 
 ```
                              ┌──────────────────────────────────────┐
-                             │       Next.js 16 Web Dashboard       │
+                             │       Next.js 15 Web Dashboard       │
                              │   (React 19 / Turbopack / Port 3000) │
                              └──────────────────┬───────────────────┘
                                                 │
@@ -109,15 +114,18 @@ Every assessment runs through a multi-tier SSRF validation gate, streams real-ti
 
 | Layer | Component | Version | Description |
 |---|---|---|---|
-| **Frontend Framework** | [Next.js](https://nextjs.org/) | 16.2.3 | Modern App Router, Server Components & Turbopack |
-| **Frontend Library** | [React](https://react.dev/) | 19.x | Component runtime with Hooks & Suspense |
+| **Frontend Framework** | [Next.js](https://nextjs.org/) | 15.1.0 | Modern App Router, Server Components & Turbopack |
+| **Frontend Library** | [React](https://react.dev/) | 19.0.0 | Component runtime with Hooks & Suspense |
 | **Frontend Language** | [TypeScript](https://www.typescriptlang.org/) | 5.x | End-to-end static typing and contract validation |
-| **Styling** | Vanilla CSS + [Tailwind CSS](https://tailwindcss.com/) | 4.x | Design system tokens, glassmorphism, responsive grids |
-| **Backend Framework** | [FastAPI](https://fastapi.tiangolo.com/) | 0.115.6 | Asynchronous Python REST API with Pydantic v2 validation |
-| **ASGI Server** | [Uvicorn](https://www.uvicorn.org/) | 0.34.0 | High-performance asynchronous server |
+| **Styling** | Vanilla CSS + [Tailwind CSS](https://tailwindcss.com/) | 3.4.1 | Design system tokens, glassmorphism, responsive grids |
+| **Backend Framework** | [FastAPI](https://fastapi.tiangolo.com/) | 0.115.0 | Asynchronous Python REST API with Pydantic v2 validation |
+| **ASGI Server** | [Uvicorn](https://www.uvicorn.org/) | 0.30.0 | High-performance asynchronous server |
 | **Database** | [PostgreSQL](https://www.postgresql.org/) | 16 | Relational data store for scans, users, and findings |
-| **ORM & Migrations** | [SQLAlchemy](https://www.sqlalchemy.org/) + [Alembic](https://alembic.sqlalchemy.org/) | 2.0.36 / 1.14.0 | Asyncpg-powered asynchronous database management |
+| **ORM & Migrations** | [SQLAlchemy](https://www.sqlalchemy.org/) + [Alembic](https://alembic.sqlalchemy.org/) | 2.0.52 / 1.13.2 | Asyncpg-powered asynchronous database management |
 | **Task Queue & Broker** | [Celery](https://docs.celeryq.dev/) + [Redis](https://redis.io/) | 5.4.0 / 7.2 | Distributed job execution and telemetry pub/sub |
+| **Structured Logging** | [structlog](https://www.structlog.org/) | 24.x | JSON-formatted structured logs with automatic context injection |
+| **Rate Limiting** | [SlowAPI](https://github.com/laurentS/slowapi) | 0.1.9 | Tiered IP and user rate limiting backed by Redis |
+| **AI Intelligence** | [Google GenAI SDK](https://github.com/google/generative-ai-python) | 1.x (Gemini) | AI vulnerability analysis, mitigation patches & chat assistant |
 | **Template Scanner** | [ProjectDiscovery Nuclei](https://github.com/projectdiscovery/nuclei) | v3.x | Community-curated vulnerability template matcher |
 | **Dynamic Scanner** | [OWASP ZAP](https://www.zaproxy.org/) | 2.14+ | Spidering, crawling, and active web injection engine |
 | **PDF Generation** | [ReportLab](https://www.reportlab.com/) | 4.2.5 | Native Python PDF rendering with CVSS charts |
@@ -128,23 +136,29 @@ Every assessment runs through a multi-tier SSRF validation gate, streams real-ti
 
 ```
 ethiovuln/
+├── .github/
+│   └── workflows/
+│       ├── ci.yml                    # Automated GitHub Actions CI (pytest, lint, typecheck, build)
+│       └── deploy-vps.yml            # Automated VPS Continuous Deployment (SSH + Docker Compose)
 ├── backend/
-│   ├── alembic/                      # Database migration scripts
+│   ├── alembic/                      # Database migration scripts & version revisions
 │   ├── app/
-│   │   ├── api/                      # REST endpoints (auth, scans, reports, keys, ws)
-│   │   ├── core/                     # Configuration, database engine, security tokens
-│   │   ├── models/                   # SQLAlchemy database models (User, Scan, Finding)
-│   │   ├── schemas/                  # Pydantic request/response schemas
-│   │   ├── services/                 # Scan orchestration, engines (Nuclei/ZAP), ReportLab PDF
-│   │   └── tasks/                    # Celery task definitions
-│   ├── tests/                        # Pytest suite (131 test cases)
+│   │   ├── api/                      # REST routers (auth, scans, reports, settings, ai, ws)
+│   │   ├── core/                     # Logging, rate limiting, security tokens, target verification
+│   │   ├── models/                   # SQLAlchemy database models (User, Scan, Finding, ApiKey)
+│   │   ├── schemas/                  # Pydantic v2 request/response schemas
+│   │   ├── services/                 # Scan orchestration, Gemini AI integration, ReportLab PDF
+│   │   ├── workers/                  # Celery tasks & engines (Nuclei, ZAP, Smart Fuzzer)
+│   │   ├── config.py                 # Central environment & runtime configuration
+│   │   ├── database.py               # Async SQLAlchemy engine & session factory
+│   │   └── main.py                   # FastAPI app entrypoint, health checks & exception handlers
+│   ├── tests/                        # Automated Pytest suite (198 test cases across 15 files)
 │   ├── Dockerfile                    # Multi-stage production container
-│   ├── render-start.sh               # Render entrypoint with automated migrations
+│   ├── render-start.sh               # Render entrypoint with automated database migrations
 │   └── requirements.txt              # Backend dependencies
 ├── frontend/
 │   ├── src/
-│   │   ├── app/                      # Next.js 16 App Router pages
-│   │   │   ├── about/                # Developer bio and platform architecture
+│   │   ├── app/                      # Next.js 15 App Router pages (about, dashboard, pricing, etc.)
 │   │   │   ├── dashboard/            # Overview, scans, reports, settings
 │   │   │   │   └── scans/            # Scan history, new scan wizard, live telemetry [id]
 │   │   │   ├── login/                # Sign in with password toggle & alert banner
@@ -152,18 +166,22 @@ ethiovuln/
 │   │   │   ├── globals.css           # Design tokens, color system, cyber animations
 │   │   │   └── layout.tsx            # Global metadata, Inter & JetBrains Mono fonts
 │   │   ├── components/               # Modular UI architecture
-│   │   │   ├── layout/               # Section headers and shell containers
+│   │   │   ├── ai/                   # AIChatDrawer, AIChatBubble, AIStatusBadge
+│   │   │   ├── layout/               # Shell containers, section headers
 │   │   │   ├── navigation/           # Navbar, Sidebar, PageNav
-│   │   │   ├── reports/              # Report card components
-│   │   │   ├── scans/                # Scan rows, severity badges, status pills
+│   │   │   ├── reports/              # Report card & summary components
+│   │   │   ├── scans/                # ConsoleStream, VulnerabilityAccordion, severity badges
 │   │   │   └── ui/                   # Button, Card, Input, Alert, Badge, Skeleton
 │   │   ├── hooks/                    # useAuth, useWebSocket custom state hooks
 │   │   ├── lib/                      # Central API client, constants, CVSS calculators
 │   │   └── types/                    # Shared TypeScript interfaces
-│   ├── Dockerfile                    # Frontend production container
+│   ├── e2e/                          # Playwright end-to-end integration tests
+│   ├── Dockerfile                    # Frontend multi-stage production container (Port 10000)
 │   └── package.json                  # Frontend scripts and dependencies
-├── docker-compose.yml                # Full local 5-container development topology
+├── docker-compose.yml                # Full local 6-container development topology
 ├── render.yaml                       # Render Infrastructure-as-Code Blueprint
+├── MONITORING.md                     # Uptime monitoring setup guide (UptimeRobot / Health Check)
+├── QUICKSTART.md                     # Step-by-step developer setup guide
 ├── .env.example                      # Centralized environment variable documentation
 └── README.md                         # Project documentation
 ```
@@ -299,14 +317,23 @@ In adherence to the **OWASP API Security Top 10 (API8:2023 Security Misconfigura
 | `POST` | `/api/scans/{id}/stop` | Scans | Cancel/abort an active running assessment | Bearer Token |
 | `GET` | `/api/scans/{id}/vulnerabilities` | Scans | Query discovered vulnerabilities with severity filters | Bearer Token |
 | `GET` | `/api/scans/{id}/report` | Reports | Generate and download executive PDF report | Bearer Token |
-| `GET` | `/api/apikeys/` | API Keys | List user-scoped API keys (max 5) | Bearer Token |
-| `POST` | `/api/apikeys/` | API Keys | Generate a new SHA-256 hashed CI/CD API key | Bearer Token |
-| `DELETE`| `/api/apikeys/{id}` | API Keys | Revoke an active automation API key | Bearer Token |
-| `GET` | `/api/ai/health` | AI Intelligence | Probe Gemini AI service connectivity & latency | Bearer Token |
-| `POST` | `/api/ai/analyze-finding` | AI Intelligence | Request AI analysis & remediation for finding | Bearer Token |
-| `GET` | `/api/settings/subscription`| Settings | Inspect trial period, plan limits, and days left | Bearer Token |
-| `GET` | `/api/health` | System | Health check verifying DB & service status | No |
-| `GET` | `/` | System | Service metadata and documentation links | No |
+| `GET` | `/api/settings/profile` | Settings | Retrieve user profile and contact details | Bearer Token |
+| `PATCH`| `/api/settings/profile` | Settings | Update user name, organization, or email | Bearer Token |
+| `GET` | `/api/settings/preferences` | Settings | Fetch dashboard theme and scan defaults | Bearer Token |
+| `PATCH`| `/api/settings/preferences` | Settings | Update notification and theme settings | Bearer Token |
+| `GET` | `/api/settings/api-keys` | API Keys | List user-scoped API keys (max 5) | Bearer Token |
+| `POST` | `/api/settings/api-keys` | API Keys | Generate a new SHA-256 hashed CI/CD API key | Bearer Token |
+| `DELETE`| `/api/settings/api-keys/{key_id}`| API Keys | Revoke an active automation API key | Bearer Token |
+| `GET` | `/api/settings/login-history` | Audit | Retrieve timestamped audit log of sign-in events | Bearer Token |
+| `GET` | `/api/settings/subscription` | Settings | Inspect trial period, plan limits, and days left | Bearer Token |
+| `POST` | `/api/settings/subscription/upgrade` | Settings | Upgrade subscription tier or renew plan | Bearer Token |
+| `GET` | `/api/ai/status` | AI Intelligence | Check if Google GenAI (Gemini) is configured | Bearer Token (Optional) |
+| `POST` | `/api/ai/ping` | AI Intelligence | Probe Gemini AI connectivity, measure latency & response | Bearer Token (Optional) |
+| `POST` | `/api/ai/generate` | AI Intelligence | Request vulnerability explanation and guidance | Bearer Token (Optional) |
+| `POST` | `/api/ai/chat` | AI Intelligence | Interactive multi-turn cyber security AI assistant | Bearer Token (Optional) |
+| `POST` | `/api/ai/mitigate` | AI Intelligence | Generate code remediation patch & mitigation steps | Bearer Token (Optional) |
+| `GET` | `/api/health` | Observability | Deep health probe verifying PostgreSQL & Redis connectivity | No |
+| `GET` | `/` | System | Service metadata, status, and documentation links | No |
 
 ---
 
@@ -462,7 +489,7 @@ docker-compose up --build -d
 
 | Container Name | Service | Host Port | Internal Port | Healthcheck |
 |---|---|---|---|---|
-| `dast_frontend` | Next.js 15 Web Dashboard | `3000` | `3000` | HTTP GET `/` |
+| `dast_frontend` | Next.js 15 Web Dashboard | `3000` | `10000` | HTTP GET `/` |
 | `dast_backend` | FastAPI REST & WS Core | `8000` | `8000` | HTTP GET `/api/health` |
 | `dast_worker` | Celery Background Scanner | — | — | Process Supervision |
 | `dast_postgres` | PostgreSQL 16 Database | `5433` | `5432` | `pg_isready -U dast` |
@@ -527,19 +554,24 @@ EthioVuln maintains rigorous test automation spanning backend unit & integration
 
 ### 1. Backend Testing (Pytest)
 
-The backend test suite contains **178 automated tests** covering:
-- **Authentication & RBAC:** Password hashing, timing-safe validation, JWT claims, refresh token rotation, failed-login transaction isolation.
-- **SSRF Protection Gate:** IP CIDRs, RFC 1918 subnets, cloud metadata (`169.254.169.254`), DNS rebinds.
-- **API Documentation Hardening:** Validating `/api/docs`, `/api/redoc`, OpenAPI security components (`BearerAuth`, `ApiKeyAuth`), and production 404 lockout.
-- **AI Service Probes:** Roundtrip Gemini API connectivity, latency benchmarks, fallback handling.
-- **Trial & Subscription Enforcement:** Trial expiration date math, 402 Payment Required gates.
+The backend test suite contains **198 automated tests** covering:
+- **Authentication & RBAC:** Password hashing, timing-safe validation, JWT claims, refresh token rotation, failed-login transaction isolation (`test_auth.py`, `test_security.py`).
+- **Authorization & Multi-Tenancy (IDOR):** Horizontal access control, resource ownership validation, cross-tenant scan isolation (`test_authorization_idor.py`).
+- **SSRF Protection Gate:** IP CIDRs, RFC 1918 subnets, cloud metadata (`169.254.169.254`), loopback filters, DNS rebind checks (`test_target_verification.py`).
+- **Deep Health & Observability:** Database (PostgreSQL) and Redis connectivity, connection pooling, degraded dependency reporting (`test_health.py`).
+- **Structured Logging & Exception Handling:** Structlog JSON formatting, contextual metadata injection (`request_id`, `user_id`, `endpoint`), traceback logging, and sanitized 500 error responses (`test_logging_and_errors.py`).
+- **Rate Limiting & Abuse Prevention:** SlowAPI tiered thresholds, Redis backends, rate limit header verification (`test_rate_limiting.py`).
+- **API Documentation Hardening:** Validating `/api/docs`, `/api/redoc`, OpenAPI security components (`BearerAuth`, `ApiKeyAuth`), and production 404 lockout (`test_api_docs_hardening.py`).
+- **AI Intelligence Probes:** Gemini API connectivity, latency benchmarks, ping probes, fallback handling (`test_ai_ping.py`).
+- **Trial & Subscription Enforcement:** Subscription plan limits, trial expiration date math, 402 Payment Required gates (`test_trial_subscription.py`).
+- **CVSS v3.1 & CWE Mappings:** Quantitative vector calculations and MITRE taxonomy validation (`test_cvss_cwe.py`).
 
 ```bash
 cd backend
 source venv/bin/activate
 pytest -v
 ```
-> **Status:** `178 / 178 passed (100% pass rate)`
+> **Status:** `198 / 198 passed (100% pass rate)`
 
 ---
 
@@ -611,24 +643,49 @@ gunicorn app.main:app -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000
 
 ---
 
-## 18. Render Deployment Guide
+## 18. Continuous Integration & Deployment (CI/CD)
 
-EthioVuln includes a Blueprint configuration ([`render.yaml`](render.yaml)) for deploying to [Render](https://render.com).
+EthioVuln features enterprise CI/CD automation implemented via GitHub Actions:
+
+### Continuous Integration Pipeline (`.github/workflows/ci.yml`)
+Triggers automatically on every `push` and `pull_request` to the `main` branch:
+- **Backend Quality Job:**
+  - Spins up containerized services: **PostgreSQL 16** (port 5432) and **Redis 7** (port 6379).
+  - Installs Python 3.11 with pip caching.
+  - Applies all database migrations with `alembic upgrade head`.
+  - Executes the full **198 automated pytest suite**, verifying 100% pass rate.
+- **Frontend Quality Job:**
+  - Installs Node.js 20 with npm caching.
+  - Verifies TypeScript contracts (`tsc --noEmit`).
+  - Audits code quality with ESLint (`npm run lint`).
+  - Executes Vitest component suites (`npm run test`).
+  - Compiles optimized production bundle (`npm run build`).
+
+### Continuous Deployment for VPS (`.github/workflows/deploy-vps.yml`)
+- Triggers on `push` to `main`, strictly gated upon both CI test jobs completing successfully (`needs: [backend-test, frontend-test]`).
+- Uses `appleboy/ssh-action` to establish encrypted SSH connections to the production VPS.
+- Automatically pulls latest repository revisions and executes `docker-compose up -d --build` to safely update backend, worker, database, and frontend containers with zero downtime.
+
+---
+
+## 19. Render Deployment Guide
+
+EthioVuln includes a Blueprint configuration ([`render.yaml`](render.yaml)) with `autoDeploy: true` on branch `main` for one-click deployment to [Render](https://render.com).
 
 ### Deployment Steps
 1. Fork or push this repository to your GitHub account.
 2. In the Render Dashboard, click **New +** → **Blueprint**.
 3. Connect your repository.
 4. Render will parse `render.yaml` and provision:
-   - `ethiovuln-backend` (Web Service)
-   - `ethiovuln-frontend` (Web Service)
+   - `ethiovuln-backend` (Web Service running FastAPI on Python 3.11)
+   - `ethiovuln-frontend` (Web Service running Next.js 15 on Node.js)
    - `ethiovuln-redis` (Key-Value Store under `services:`)
-   - `ethiovuln-db` (PostgreSQL Database under `databases:`)
+   - `ethiovuln-db` (PostgreSQL 16 Database under `databases:`)
 5. Click **Apply** to launch the services.
 
 ---
 
-## 19. Render Free Tier vs. Local Docker Limitations
+## 20. Render Free Tier vs. Local Docker Limitations
 
 To maintain transparency regarding cloud hosting boundaries:
 
@@ -646,16 +703,33 @@ To maintain transparency regarding cloud hosting boundaries:
 
 ---
 
-## 20. Security Engineering & Hardening
+## 21. Security Engineering & Observability
 
 - **Non-Root Containers:** Both backend and frontend Dockerfiles run under unprivileged system users (`appuser` / `nextjs`).
 - **SQL Injection Prevention:** 100% of queries use SQLAlchemy parameterized async queries; raw SQL concatenation is strictly prohibited.
 - **Content Security:** Strict HTTP headers configured in production (CSP, HSTS, X-Content-Type-Options, Frame-Options).
-- **Data Privacy:** User passwords and API keys are never stored in plaintext.
+- **Data Privacy & Cryptography:** Passwords hashed with bcrypt; API keys stored strictly as SHA-256 hashes.
+- **Structured JSON Logging:** Built with `structlog`. All requests and operations are emitted as structured JSON lines containing timestamp, level, `request_id`, authenticated `user_id`, client IP, HTTP method, and response status code.
+- **Centralized Error Handling:** Global exception handler intercepts unhandled exceptions, records tracebacks into internal structured logs, and returns sanitized `500 Internal Server Error` JSON responses to clients, guaranteeing zero backend stack trace leakage.
 
 ---
 
-## 21. Responsible Use & Ethics Policy
+## 22. System Health & Uptime Monitoring
+
+EthioVuln provides a robust system health probe at `/api/health`:
+
+- **Endpoint:** `GET /api/health` (No authentication required)
+- **Deep Dependency Probing:**
+  - **PostgreSQL Connectivity:** Verifies database connection pool and measures roundtrip query latency (`SELECT 1`).
+  - **Redis Connectivity:** Issues a Redis `PING` command and measures latency in milliseconds.
+- **Status Reporting:**
+  - Returns HTTP `200 OK` with `{"status": "ok", "checks": {"database": {"status": "ok", "latency_ms": 1.2}, "redis": {"status": "ok", "latency_ms": 0.8}}}` when all dependencies are healthy.
+  - Returns HTTP `503 Service Unavailable` with `{"status": "degraded"}` if any core dependency fails.
+- **Uptime Monitoring Integration:** Can be connected to free monitoring services such as **UptimeRobot**, Better Stack, or Pingdom to receive instant email/SMS alerts if backend instances fail. Detailed step-by-step instructions are documented in [**`MONITORING.md`**](MONITORING.md).
+
+---
+
+## 23. Responsible Use & Ethics Policy
 
 > **WARNING:**  
 > EthioVuln is built exclusively for authorized penetration testing, vulnerability assessments, and academic security research.
@@ -666,7 +740,7 @@ To maintain transparency regarding cloud hosting boundaries:
 
 ---
 
-## 22. Screenshots & Interface Previews
+## 24. Screenshots & Interface Previews
 
 | View | Description | Key Features |
 |---|---|---|
@@ -678,7 +752,7 @@ To maintain transparency regarding cloud hosting boundaries:
 
 ---
 
-## 23. Author & Social Links
+## 25. Author & Social Links
 
 EthioVuln is designed and engineered by **Melaku Deguale**.
 
@@ -689,7 +763,7 @@ EthioVuln is designed and engineered by **Melaku Deguale**.
 
 ---
 
-## 24. License
+## 26. License
 
 This project is licensed under the **MIT License**. See the [`LICENSE`](LICENSE) file for full terms and conditions.
 
