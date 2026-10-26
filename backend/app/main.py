@@ -146,7 +146,11 @@ _FRONTEND_URL = _os.getenv("FRONTEND_URL", "https://ethiovuln.onrender.com")
 
 _ALLOWED_ORIGINS = [
     "http://localhost:3000",
+    "http://localhost:3001",
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:3001",
     "http://localhost:8000",
+    "http://127.0.0.1:8000",
     "https://ethiovuln.onrender.com",
     _FRONTEND_URL,
 ]

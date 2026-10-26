@@ -125,7 +125,7 @@ services:
         DOCKER_BUILD: "1"
     container_name: dast_frontend
     ports:
-      - "3000:10000"
+      - "${FRONTEND_PORT:-3000}:10000"
     environment:
       NODE_ENV: production
     depends_on:
